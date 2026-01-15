@@ -1,5 +1,6 @@
 import { json } from '@sveltejs/kit'
 import { siteConfig } from '$lib/config'
+export const prerender = true 
 
 /**
  * Sveltia CMS configuration (minimal & stable)
@@ -24,8 +25,6 @@ export async function GET() {
   const defaultAuthor = siteConfig?.author?.name || ''
 
   const config = {
-    // Local development backend
-    local_backend: true,
 
     // Production backend (GitHub via Netlify)
     backend: {

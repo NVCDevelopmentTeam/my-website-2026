@@ -9,7 +9,7 @@ Rất vui vì anh em đã tò mò (hoặc lỡ tay) nhấn vào cái mục giớ
 
 Nói thật nhé, nếu anh em đang đợi chờ một bản hồ sơ hoành tráng kiểu _"Kỹ sư phần mềm 10 năm kinh nghiệm, thông thạo đủ loại ngôn ngữ trên đời"_ thì... chia buồn là nhầm chỗ rồi. Ở đây chẳng có chuyên gia hay siêu nhân nào cả, chỉ có một ông giáo quèn chuyên đi **test dạo** và đang tập tành **debug cuộc sống** mà thôi.
 
-### **Ủa rồi sao lại là Coding Nguyễn?**
+## **Ủa rồi sao lại là Coding Nguyễn?**
 
 Cái tên nghe là thấy mùi gõ phím rồi đúng không? Mình là một thằng làm nghề kiểm thử, suốt ngày đi soi lỗi cho thiên hạ. Cả ngày cắm mặt vào màn hình, nói chuyện với cái máy tính đôi khi còn nhiều hơn nói với con người.
 
@@ -19,7 +19,7 @@ Nhưng rồi mình nhận ra một điều khá "khoai": **Code thì có thể v
 - **Sửa lỗi tư duy:** Đời mà, đôi khi mình cứ đi vào mấy cái vòng lặp bế tắc mãi không thoát ra được. Viết là cách để mình nhìn lại và tự tìm cách thoát ra.
 - **Tìm đồng đội:** Để thấy rằng giữa cái thế giới đầy những dòng code lạnh lùng này, vẫn có những tâm hồn thích luyên thuyên về nhân sinh, về một ly cafe ngon hay đơn giản là một buổi chiều tan làm không bị kẹt xe.
 
-### **Mấy cái nguyên tắc "vớ vẩn" của mình**
+## **Mấy cái nguyên tắc "vớ vẩn" của mình**
 
 Mình cực kỳ dị ứng nói đạo lý, vì mình tin mỗi người có một cách sống riêng. Ở đây mình chỉ có vài quan điểm kiểu "nhà làm":
 

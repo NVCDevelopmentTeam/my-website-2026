@@ -14,7 +14,7 @@ Như cái tên, mình là một thằng **Dev**, suốt ngày cắm mặt vào m
 - Có hôm cuộc đời **build** mượt không tì vết, nhưng cũng có hôm dính **bug** tình cảm, **bug** tài chính làm mình xỉu ngang xỉu dọc.
 - Có những suy nghĩ vụn vặt về đủ thứ trên đời, nếu không gõ ra cho nhẹ máy, mình sợ đầu mình sớm muộn cũng bị "tràn bộ nhớ".
 
-### **Mấy cái "cam kết" nhà làm:**
+## **Mấy cái "cam kết" nhà làm:**
 
 Ở đây không có tiêu chuẩn ngành hay quy trình khắt khe nào cả, chỉ có mấy nguyên tắc tự thân của mình thôi:
 

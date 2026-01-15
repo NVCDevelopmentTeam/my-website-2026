@@ -2,7 +2,7 @@ import { getFilteredPosts } from '$lib/data/posts.server'
 import { siteConfig } from '$lib/config'
 import { error } from '@sveltejs/kit'
 
-export const prerender = false
+export const prerender = true
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load({ url, depends }) {
