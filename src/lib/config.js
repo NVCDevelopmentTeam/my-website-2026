@@ -1,8 +1,7 @@
 export const siteConfig = {
   title: 'Nhật ký ánh sáng',
   description:
-    'Chia sẻ trải nghiệm, câu chuyện và cảm xúc của người khiếm thị trong đời sống thường ngày.',
-
+'Lan tỏa nguồn năng lượng tích cực mỗi ngày',
   author: {
     name: 'Coding Nguyễn',
     email: 'contact@codingnguyen.dev',
@@ -24,9 +23,9 @@ export const siteConfig = {
   },
 
   social: {
-    facebook: '',
-    zalo: '',
+    facebook: '/',
+    zalo: '/',
     github: 'https://github.com/NVCDevelopmentTeam',
-    viber: ''
+    viber: '/'
   }
 }

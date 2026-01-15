@@ -3,19 +3,10 @@
 
   /**
    * @typedef {Object} Props
-   * @property {any[] | { pages: any[] }} [pages] - list of Markdown pages { slug, metadata: { title } }
+   * @property {any[]} [navPages] - list of Markdown pages { slug, metadata: { title } }
    */
-  let { pages: pagesInput = [] } = $props();
-  
-  // Normalize to array format (handle both array and object with pages property)
-  const pages = $derived.by(() => {
-    // If pagesInput is already an array, use it
-    if (Array.isArray(pagesInput)) return pagesInput;
-    // If it's an object with pages property, extract it
-    if (pagesInput?.pages && Array.isArray(pagesInput.pages)) return pagesInput.pages;
-    // Fallback to empty array
-    return [];
-  });
+  // Taking navPages directly from props as discussed
+  let { navPages = [] } = $props();
   
   let isMenuOpen = $state(false);
   let containerRef = $state(null);
@@ -82,12 +73,10 @@
   });
 </script>
 
-<!-- Mobile Responsive Menu (Hamburger) -->
 <nav 
   class="flex items-center justify-end lg:hidden"
   aria-label="Thực đơn"
 >
-  <!-- Menu Open Button -->
   <button
     bind:this={openButtonRef}
     onclick={openMenu}
@@ -108,7 +97,6 @@
     </svg>
   </button>
 
-  <!-- Responsive Menu Container -->
   {#if isMenuOpen}
     <div
       bind:this={containerRef}
@@ -118,7 +106,6 @@
       onfocusout={handleMenuFocusout}
       onkeydown={handleMenuKeydown}
     >
-      <!-- Backdrop / Overlay -->
       <div 
         class="fixed inset-0 bg-black/50 animate-in fade-in duration-200"
         onclick={handleBackdropClick}
@@ -130,13 +117,11 @@
         role="button"
         tabindex="0"
       >
-        <!-- Dialog Panel -->
         <div
           class="fixed top-0 right-0 bottom-0 w-full max-w-md bg-white text-[#111111] overflow-y-auto shadow-2xl animate-in slide-in-from-right duration-300"
           role="dialog"
           aria-label="Thực đơn"
         >
-          <!-- Close Button -->
           <button
             onclick={closeMenu}
             aria-label="Đóng menu"
@@ -155,11 +140,9 @@
             </svg>
           </button>
           
-          <!-- Menu Content -->
           <div class="p-8 pt-20" id="modal-1-content">
             <ul class="list-none m-0 p-0 flex flex-col items-start justify-start w-full">
-              <!-- Dynamic Pages from Markdown -->
-              {#each pages as p (p.slug)}
+              {#each navPages as p (p.slug)}
                 <li class="w-full">
                   <a 
                     class="block py-3 px-0 no-underline text-[#111111] text-lg hover:underline font-normal -tracking-[0.1px]"
@@ -172,7 +155,6 @@
                 </li>
               {/each}
 
-              <!-- Blog Link -->
               <li class="w-full">
                 <a 
                   class="block py-3 px-0 no-underline text-[#111111] text-lg hover:underline font-normal -tracking-[0.1px]"
@@ -191,14 +173,12 @@
   {/if}
 </nav>
 
-<!-- Desktop Menu (Horizontal) -->
 <nav
   class="hidden lg:block relative bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border border-gray-200 dark:border-gray-700 rounded-2xl shadow-md px-4 py-2"
   aria-label="menu chính"
 >
   <ul class="flex flex-wrap justify-center items-center gap-3">
-    <!-- Dynamic Pages from Markdown -->
-    {#each pages as p (p.slug)}
+    {#each navPages as p (p.slug)}
       <li>
         <a
           href={getHref(p.slug)}
@@ -210,7 +190,6 @@
       </li>
     {/each}
 
-    <!-- Blog Link -->
     <li>
       <a
         href="/blog"

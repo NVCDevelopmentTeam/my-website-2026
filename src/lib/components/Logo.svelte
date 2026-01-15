@@ -1,38 +1,18 @@
 <script>
-	import { page } from '$app/state'
-	import logo from '$lib/assets/logo.svg'
-	import { siteConfig } from '$lib/config'
+	import { page } from '$app/state';
+	import logo from '$lib/assets/logo.svg';
+	import { siteConfig } from '$lib/config';
 
-	// Accept both formats: array or object with pages property
-	const { pages: pagesInput = [] } = $props();
-	
-	// Normalize to array format
-	const pages = $derived.by(() => {
-		// If pagesInput is already an array, use it
-		if (Array.isArray(pagesInput)) return pagesInput;
-		// If it's an object with pages property, extract it
-		if (pagesInput?.pages && Array.isArray(pagesInput.pages)) return pagesInput.pages;
-		// Fallback to empty array
-		return [];
-	});
+	// Receive explicit pages prop from Header
+	let { pages = [] } = $props();
 
-	// Find the markdown page considered as the "home page"
-	const homePage = $derived.by(() => {
-		return pages.find(
-			(p) =>
-				p.slug === 'index' ||
-				p.slug === '' ||
-				p.metadata?.title?.toLowerCase() === 'trang chủ'
-		);
-	});
-
-	// If there is an empty slug or index, the href must be "/"
+	// Find the home page href using a clean derived state
 	const homeHref = $derived.by(() => {
-		return homePage && (homePage.slug === 'index' || homePage.slug === '')
-			? '/'
-			: homePage
-			? `/${homePage.slug}`
-			: '/';
+		const homePage = pages.find(
+			(p) => p.slug === 'index' || p.slug === '' || p.metadata?.title?.toLowerCase() === 'trang chủ'
+		);
+		if (homePage && (homePage.slug === 'index' || homePage.slug === '')) return '/';
+		return homePage ? `/${homePage.slug}` : '/';
 	});
 </script>
 
@@ -45,18 +25,11 @@
 	>
 		<img
 			src={logo}
-			alt="Logo trái tim Coding Nguyễn"
-			class="w-9 h-9 rounded-full shadow-md 
-				animate-[pulse_2s_ease-in-out_infinite] 
-				transition-all duration-500 ease-out 
-				hover:scale-110 
-				hover:shadow-[0_0_15px_3px_rgba(255,215,0,0.6)] 
-				dark:hover:shadow-[0_0_15px_3px_rgba(255,215,0,0.4)]"
+			alt="Logo {siteConfig.title}"
+			class="w-9 h-9 rounded-full shadow-md transition-all duration-500 hover:scale-110"
 			loading="lazy"
 			decoding="async"
-			draggable="false"
 		/>
-
 		<span class="hidden sm:inline tracking-wide">{siteConfig.title}</span>
 	</a>
 </p>

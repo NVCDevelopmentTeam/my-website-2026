@@ -5,22 +5,23 @@ import { error } from '@sveltejs/kit'
 /** @type {import('./$types').LayoutServerLoad} */
 export async function load() {
   try {
-    const pages = await getAllPages()
+    // Get all pages to support Logo/Search/Breadcrumbs
+    const { pages: allPages } = getAllPages()
 
-    // Get the latest posts, first page, no special filters
-    const { posts: allLatest } = getFilteredPosts({
-      offset: 0,
-      limit: 5
-    })
+    // Get only pages assigned to the 'nav' menu
+    const { pages: navPages } = getAllPages({ menu: 'nav' })
 
-    const latestPosts = allLatest // Limited to 5 posts
+    // Get the 5 most recent posts
+    const { posts: latestPosts } = getFilteredPosts({ offset: 0, limit: 5 })
 
     return {
-      pages,
+      allPages,
+      navPages,
       latestPosts
     }
   } catch (err) {
-    console.error('Error loading layout:', err)
-    error(500, 'Không thể tải dữ liệu giao diện.')
+    console.error('Error loading layout data:', err)
+    // Standard error handling for SvelteKit
+    error(500, 'Internal Server Error')
   }
 }

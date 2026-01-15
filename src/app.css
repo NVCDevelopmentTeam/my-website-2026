@@ -3,8 +3,10 @@
 @plugin '@tailwindcss/typography';
 
 @theme {
+  /* System font stack as fallback for better performance and accessibility */
   --font-inter: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
+  /* Primary Blue Scale */
   --color-primary-50: #eff6ff;
   --color-primary-100: #dbeafe;
   --color-primary-200: #bfdbfe;
@@ -16,25 +18,29 @@
   --color-primary-800: #1e40af;
   --color-primary-900: #1e3a8a;
 
+  /* Global Semantic Colors */
   --color-secondary: #3b82f6;
   --color-accent: #10b981;
   --color-foreground: #1f2937;
   --color-background: #ffffff;
   --color-border: #e5e7eb;
 
+  /* Custom Background Image */
   --image-custom-background: url('/background.jpg');
 }
 
+/* Dark mode strategy using the standard SvelteKit/Tailwind approach */
 @custom-variant dark (&:where(.dark, .dark *));
 
 @layer base {
-  /* Base styles */
   * {
     box-sizing: border-box;
   }
 
   html {
     scroll-behavior: smooth;
+    /* Ensuring base font size for accessibility */
+    font-size: 16px;
   }
 
   body {
@@ -42,15 +48,18 @@
     line-height: 1.6;
     color: var(--color-foreground);
     background-color: var(--color-background);
+    /* Prevent layout shift on hydration */
+    min-height: 100vh;
+    text-rendering: optimizeSpeed;
   }
 
-  /* Focus styles for accessibility */
+  /* Focus styles: High contrast for Screen Reader/Keyboard users */
   *:focus-visible {
-    outline: 2px solid var(--color-primary-500);
+    outline: 3px solid var(--color-primary-500);
     outline-offset: 2px;
   }
 
-  /* Custom scrollbar */
+  /* Custom scrollbar styling for a clean modern look */
   ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -69,7 +78,7 @@
     background: #94a3b8;
   }
 
-  /* Dark mode scrollbar */
+  /* Dark mode scrollbar overrides */
   .dark ::-webkit-scrollbar-track {
     background: #1e293b;
   }
@@ -83,8 +92,8 @@
   }
 }
 
-/* Typography Overrides (if needed) */
 @layer components {
+  /* Typography utilities for Markdown content */
   .prose {
     @apply max-w-none;
   }
@@ -94,7 +103,7 @@
   }
 }
 
-/* Animation utilities */
+/* Smooth motion animations */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -121,4 +130,14 @@
 
 .animate-slide-up {
   animation: slideUp 0.5s ease-out;
+}
+
+/* Reduced motion preference for better accessibility */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

@@ -1,6 +1,8 @@
 <script>
 	import { siteConfig } from '$lib/config';
 	import LatestPosts from './LatestPosts.svelte';
+ import LegalMenu from './LegalMenu.svelte';
+import SocialMenu from './SocialMenu.svelte';
 
 	
 	/**
@@ -9,18 +11,18 @@
 	 */
 
 	/** @type {Props} */
-	let { latestPosts  } = $props();
+	let { latestPosts, pages } = $props();
 </script>
 
-<footer class="bg-gray-800 text-white p-4 text-center">
+<footer class="bg-gray-50 dark:bg-gray-800/50 mt-16 border-t border-gray-100 dark:border-gray-800">
 			<LatestPosts {latestPosts } />
-	  <div class="flex justify-center space-x-4 mt-2">
-	    <h3>Theo dõi mình trên</h3>
-	    <ul>
-	      <li><a href={siteConfig.social.facebook} class="hover:text-gray-400">Facebook</a></li>
-	      <li><a href={siteConfig.social.zalo} class="hover:text-gray-400">Zalo</a></li>
-	      <li><a href={siteConfig.social.github} class="hover:text-gray-400">Github</a></li>
-	      <li><a href={siteConfig.social.viber} class="hover:text-gray-400">Viber</a></li>
-	    </ul>
-	  </div>	<p>&copy; {new Date().getFullYear()} {siteConfig.title}. Mọi quyền được bảo lưu.</p>
+  <div class="max-w-4xl mx-auto px-4 py-12 flex flex-col items-center gap-6">
+    <SocialMenu />
+
+    <LegalMenu {pages} />
+    <div class="text-xs text-gray-400 text-center">
+	  	<p>&copy; {new Date().getFullYear()} {siteConfig.author.name}. Mọi quyền được bảo lưu.</p>
+    </div>
+    
+  </div>
 </footer>

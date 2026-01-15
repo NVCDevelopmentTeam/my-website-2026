@@ -12,12 +12,12 @@
 </svelte:head>
 
 <div class="flex flex-col min-h-screen">
-<Header data={data} pages={data.pages} />
+  <Header     allPages={data.allPages}     navPages={data.navPages}   />
 
 <main id="main-content" tabindex="-1" class="flex-grow max-w-7xl mx-auto bg-custom-background bg-cover bg-center w-full">
   <!-- Google AdSense ad units can be placed here for integration -->
   {@render children?.()}
 </main>
 
-<Footer latestPosts={data.latestPosts} />
+<Footer latestPosts={data.latestPosts} pages={data.allPages} />
 </div>
