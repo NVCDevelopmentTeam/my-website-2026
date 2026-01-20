@@ -1,8 +1,9 @@
 import { getFilteredPosts } from '$lib/data/posts.server'
 import { siteConfig } from '$lib/config'
 import { error } from '@sveltejs/kit'
+import { building } from '$app/environment'
 
-export const prerender = false
+export const prerender = true
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load({ params, url, depends }) {
@@ -16,8 +17,8 @@ export async function load({ params, url, depends }) {
 
   const perPage = siteConfig.pagination.postsPerPage
 
-  // Get page from query
-  const pageParam = url.searchParams.get('page')
+  // Get page from query - avoid accessing during prerender
+  const pageParam = building ? null : url.searchParams.get('page')
   let currentPage = Number(pageParam)
   if (!currentPage || currentPage < 1) currentPage = 1
 

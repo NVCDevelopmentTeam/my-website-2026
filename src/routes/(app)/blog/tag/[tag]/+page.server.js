@@ -1,8 +1,9 @@
 import { getFilteredPosts } from '$lib/data/posts.server'
 import { siteConfig } from '$lib/config'
 import { error } from '@sveltejs/kit'
+import { building } from '$app/environment'
 
-export const prerender = false
+export const prerender = true
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load({ params, url }) {
@@ -12,8 +13,8 @@ export async function load({ params, url }) {
     error(400, 'Thẻ không hợp lệ.')
   }
 
-  // Current page
-  const pageParam = url.searchParams.get('page')
+  // Current page - avoid accessing during prerender
+  const pageParam = building ? null : url.searchParams.get('page')
   const currentPage =
     pageParam && !isNaN(Number(pageParam)) && Number(pageParam) > 0 ? Number(pageParam) : 1
 

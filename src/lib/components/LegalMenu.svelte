@@ -25,16 +25,20 @@
 </script>
 
 {#if footerPages.length > 0}
-  <nav aria-label="Liên kết pháp lý" class="flex flex-wrap gap-4 md:gap-8 justify-center mt-8">
-    {#each footerPages as p (p.slug)}
-      <a
-        href={getHref(p.slug)}
-        class="text-sm text-gray-500 hover:text-orange-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-amber-400 rounded-sm"
-        class:font-bold={isCurrentPage(p.slug)}
-        aria-current={isCurrentPage(p.slug) ? 'page' : undefined}
-      >
-        {p.metadata.title}
-      </a>
-    {/each}
+  <nav aria-label="Liên kết pháp lý">
+    <ul class="flex flex-col gap-2">
+      {#each footerPages as p (p.slug)}
+        <li>
+          <a
+            href={getHref(p.slug)}
+            class="text-sm text-gray-600 dark:text-gray-400 hover:text-sky-600 dark:hover:text-sky-400 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-sky-400 rounded-sm"
+            class:font-bold={isCurrentPage(p.slug)}
+            aria-current={isCurrentPage(p.slug) ? 'page' : undefined}
+          >
+            {p.metadata.title}
+          </a>
+        </li>
+      {/each}
+    </ul>
   </nav>
 {/if}

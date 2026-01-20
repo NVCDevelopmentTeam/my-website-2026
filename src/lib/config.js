@@ -1,7 +1,6 @@
 export const siteConfig = {
-  title: 'Nhật ký ánh sáng',
-  description:
-'Lan tỏa nguồn năng lượng tích cực mỗi ngày',
+  title: 'GÓc thư dãn',
+  description: 'Lan tỏa nguồn năng lượng tích cực mỗi ngày',
   author: {
     name: 'Coding Nguyễn',
     email: 'contact@codingnguyen.dev',

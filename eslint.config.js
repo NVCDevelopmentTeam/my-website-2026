@@ -56,8 +56,15 @@ export default defineConfig([
   },
 
   // 5. Additional ignore patterns
+
   {
-    files: ['src/lib/components/PostPreview.svelte'],
+    files: [
+      'src/routes/(app)/+layout.svelte',
+      'src/routes/(app)/blog/*/+page.svelte',
+      'src/lib/components/Breadcrumbs.svelte',
+      'src/lib/components/PageContent.svelte',
+      'src/lib/components/FAQ.svelte'
+    ],
     rules: {
       'svelte/no-at-html-tags': 'off'
     }

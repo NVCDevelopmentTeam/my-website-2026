@@ -1,41 +1,6 @@
-<script>
-	import { onMount, onDestroy } from 'svelte';
-	import { browser } from '$app/environment';
-
-	let isVisible = $state(false);
-
-	function handleKeyDown(e) {
-		if (e.key === 'Tab') {
-			isVisible = true;
-		}
-	}
-
-	function handleMouseMove() {
-		isVisible = false;
-	}
-
-	onMount(() => {
-		if (!browser) return;
-
-		window.addEventListener('keydown', handleKeyDown);
-		window.addEventListener('mousemove', handleMouseMove);
-	});
-
-	onDestroy(() => {
-		if (!browser) return;
-
-		window.removeEventListener('keydown', handleKeyDown);
-		window.removeEventListener('mousemove', handleMouseMove);
-	});
-</script>
-
 <a
 	href="#main-content"
-	class={`fixed top-3 left-3 z-[9999] flex items-center gap-2 rounded-full bg-gray-900 text-white text-xs font-semibold px-4 py-2 tracking-[0.12em] shadow-lg focus:outline-none focus:ring-4 focus:ring-sky-400 transition-all duration-300 ease-out ${
-		isVisible
-			? 'opacity-100 translate-y-0 pointer-events-auto'
-			: 'opacity-0 -translate-y-3 pointer-events-none'
-	}`}
+	class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[9999] focus:flex focus:items-center focus:gap-2 focus:rounded-full focus:bg-gray-900 focus:text-white focus:text-xs focus:font-semibold focus:px-4 focus:py-2 focus:tracking-[0.12em] focus:shadow-lg focus:outline-none focus:ring-4 focus:ring-sky-400 transition-all duration-300 ease-out"
 	aria-label="Chuyển đến nội dung chính"
 >
 	<!-- Braille shimmer -->

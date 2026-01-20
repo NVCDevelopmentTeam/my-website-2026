@@ -1,15 +1,19 @@
 import { json } from '@sveltejs/kit'
 import { siteConfig } from '$lib/config'
-export const prerender = true 
+export const prerender = true
 
 /**
- * Sveltia CMS configuration (minimal & stable)
+ * Sveltia CMS configuration with WordPress-like slug behavior
  *
  * Principles:
  * - English only (avoid CMS UI issues)
- * - No slug generation
- * - No preview / auto description
+ * - Auto-generate slug from title (can be customized)
  * - CMS = editor only, NOT data authority
+ *
+ * Slug logic:
+ * - Auto-generated from title when creating new post
+ * - User can edit/override slug manually
+ * - File name follows slug pattern
  *
  * Author logic:
  * - Default author comes from siteConfig
@@ -25,7 +29,6 @@ export async function GET() {
   const defaultAuthor = siteConfig?.author?.name || ''
 
   const config = {
-
     // Production backend (GitHub via Netlify)
     backend: {
       name: 'github',
@@ -47,11 +50,19 @@ export async function GET() {
         label: 'Pages',
         folder: 'src/lib/contents/pages',
         create: true,
+        slug: '{{slug}}', // File name will follow slug
         fields: [
           {
             label: 'Title',
             name: 'title',
             widget: 'string'
+          },
+          {
+            label: 'Slug',
+            name: 'slug',
+            widget: 'string',
+            required: false,
+            hint: 'Auto-generated from title. Edit to customize URL-friendly name (e.g., my-awesome-page)'
           },
           {
             label: 'Content',
@@ -65,11 +76,19 @@ export async function GET() {
         label: 'Posts',
         folder: 'src/lib/contents/posts',
         create: true,
+        slug: '{{slug}}', // File name will follow slug
         fields: [
           {
             label: 'Title',
             name: 'title',
             widget: 'string'
+          },
+          {
+            label: 'Slug',
+            name: 'slug',
+            widget: 'string',
+            required: false,
+            hint: 'Auto-generated from title. Edit to customize URL (e.g., bai-viet-cua-toi)'
           },
           {
             label: 'Publish Date',

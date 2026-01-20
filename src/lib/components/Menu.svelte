@@ -82,7 +82,7 @@
     onclick={openMenu}
     aria-haspopup="dialog"
     aria-label="Mở menu"
-    class="bg-transparent border-0 cursor-pointer p-2 flex items-center justify-center text-[#111111] hover:opacity-70 transition-opacity"
+    class="bg-transparent border-0 cursor-pointer p-2 flex items-center justify-center text-gray-900 dark:text-gray-100 hover:opacity-70 transition-opacity"
   >
     <svg 
       width="24" 
@@ -107,7 +107,7 @@
       onkeydown={handleMenuKeydown}
     >
       <div 
-        class="fixed inset-0 bg-black/50 animate-in fade-in duration-200"
+        class="fixed inset-0 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200"
         onclick={handleBackdropClick}
         onkeydown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
@@ -118,14 +118,14 @@
         tabindex="0"
       >
         <div
-          class="fixed top-0 right-0 bottom-0 w-full max-w-md bg-white text-[#111111] overflow-y-auto shadow-2xl animate-in slide-in-from-right duration-300"
+          class="fixed top-0 right-0 bottom-0 w-full max-w-md bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 overflow-y-auto shadow-2xl animate-in slide-in-from-right duration-300"
           role="dialog"
           aria-label="Thực đơn"
         >
           <button
             onclick={closeMenu}
             aria-label="Đóng menu"
-            class="absolute top-5 right-5 bg-transparent border-0 cursor-pointer p-2 flex items-center justify-center text-[#111111] hover:opacity-70 transition-opacity"
+            class="absolute top-5 right-5 bg-transparent border-0 cursor-pointer p-2 flex items-center justify-center text-gray-900 dark:text-gray-100 hover:opacity-70 transition-opacity"
           >
             <svg 
               xmlns="http://www.w3.org/2000/svg" 
@@ -145,7 +145,7 @@
               {#each navPages as p (p.slug)}
                 <li class="w-full">
                   <a 
-                    class="block py-3 px-0 no-underline text-[#111111] text-lg hover:underline font-normal -tracking-[0.1px]"
+                    class="block py-3 px-0 no-underline text-gray-900 dark:text-gray-100 text-lg hover:underline font-normal -tracking-[0.1px]"
                     class:font-bold={isCurrentPage(p.slug)}
                     href={getHref(p.slug)}
                     aria-current={isCurrentPage(p.slug) ? 'page' : undefined}
@@ -157,7 +157,7 @@
 
               <li class="w-full">
                 <a 
-                  class="block py-3 px-0 no-underline text-[#111111] text-lg hover:underline font-normal -tracking-[0.1px]"
+                  class="block py-3 px-0 no-underline text-gray-900 dark:text-gray-100 text-lg hover:underline font-normal -tracking-[0.1px]"
                   class:font-bold={page.url.pathname === '/blog'}
                   href="/blog"
                   aria-current={page.url.pathname === '/blog' ? 'page' : undefined}

@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 @import 'tailwindcss';
+@plugin '@tailwindcss/typography';
 
 @theme {
   /* System font stack as fallback for better performance and accessibility */
@@ -18,14 +19,14 @@
   --color-primary-900: #1e3a8a;
 
   /* Global Semantic Colors */
-  --color-secondary: #3b82f6;
-  --color-accent: #10b981;
-  --color-foreground: #1f2937;
+  --color-secondary: #2563eb;
+  --color-accent: #059669;
+  --color-foreground: #111827;
   --color-background: #ffffff;
-  --color-border: #e5e7eb;
+  --color-border: #d1d5db;
 
-  /* Custom Background Image */
-  --image-custom-background: url('/background.jpg');
+  /* Custom Background Image / Gradient */
+  --image-custom-background: linear-gradient(to bottom, #f8fafc, #ffffff);
 }
 
 /* Dark mode strategy using the standard SvelteKit/Tailwind approach */
@@ -45,7 +46,7 @@
   body {
     font-family: var(--font-inter);
     line-height: 1.6;
-    color: var(--color-foreground);
+    color: #171717;
     background-color: var(--color-background);
     /* Prevent layout shift on hydration */
     min-height: 100vh;
@@ -54,7 +55,7 @@
 
   /* Focus styles: High contrast for Screen Reader/Keyboard users */
   *:focus-visible {
-    outline: 3px solid var(--color-primary-500);
+    outline: 3px solid #020617;
     outline-offset: 2px;
   }
 
@@ -102,33 +103,48 @@
   }
 }
 
-/* Smooth motion animations */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
+@layer utilities {
+  /* Smooth motion animations */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
-  to {
-    opacity: 1;
-  }
-}
 
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
   }
-}
 
-.animate-fade-in {
-  animation: fadeIn 0.5s ease-out;
-}
+  .animate-slide-up {
+    animation: slideUp 0.5s ease-out forwards;
+  }
 
-.animate-slide-up {
-  animation: slideUp 0.5s ease-out;
+  /* Organic shape trends 2026 */
+  .shape-organic-1 {
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+  }
+
+  .shape-organic-2 {
+    border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+  }
+
+  .smooth-transition {
+    @apply transition-all duration-500 ease-in-out;
+  }
 }
 
 /* Reduced motion preference for better accessibility */

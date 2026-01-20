@@ -1,6 +1,7 @@
 import { getFilteredPosts } from '$lib/data/posts.server'
 import { siteConfig } from '$lib/config'
 import { error } from '@sveltejs/kit'
+import { building } from '$app/environment'
 
 export const prerender = true
 
@@ -9,11 +10,11 @@ export async function load({ url, depends }) {
   // Mark data to reload when navigating
   depends('blog:list')
 
-  // Get query params
-  const pageParam = url.searchParams.get('page')
-  const category = url.searchParams.get('category') || null
-  const author = url.searchParams.get('author') || null
-  const tag = url.searchParams.get('tag') || null
+  // Get query params - avoid accessing during prerender
+  const pageParam = building ? null : url.searchParams.get('page')
+  const category = building ? null : url.searchParams.get('category')
+  const author = building ? null : url.searchParams.get('author')
+  const tag = building ? null : url.searchParams.get('tag')
 
   // Process page
   let currentPage = Number(pageParam) || 1

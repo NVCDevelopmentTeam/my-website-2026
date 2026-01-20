@@ -66,6 +66,8 @@ function getAllPosts() {
       const readingTime =
         typeof meta.readingTime === 'number' && meta.readingTime > 0 ? meta.readingTime : 5
 
+      // Exclude the 'default' component (content) from the listing metadata to save size
+      // We only need metadata and rawName/slug for the listing
       return {
         slug,
         rawName: filename,
@@ -83,7 +85,8 @@ function getAllPosts() {
           featured: meta.featured === true,
           draft: meta.draft === true,
           image: meta.image || null,
-          excerpt: meta.excerpt || description
+          excerpt: meta.excerpt || description,
+          _wordsCount: meta._wordsCount
         }
       }
     })

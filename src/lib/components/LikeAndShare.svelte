@@ -54,26 +54,26 @@
 	// Share on Twitter
 	const shareOnTwitter = () => {
 		const url = encodeURIComponent(window.location.href);
-		const text = encodeURIComponent('Kiểm tra nội dung tuyệt vời này!');
-		window.open(`https://twitter.com/intent/tweet?url=${url}&text=${text}`, '_blank');
-		closeDialog();
-	};
-
-	// Share on LinkedIn
-	const shareOnLinkedIn = () => {
-		const url = encodeURIComponent(window.location.href);
-		window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}`, '_blank');
-		closeDialog();
-	};
-
-	// Copy link
-	const copyLink = () => {
-		navigator.clipboard
-			.writeText(window.location.href)
-			      .then(() => alert('Đã sao chép liên kết!'))			.catch((err) => console.error('Error copying link:', err));
-		closeDialog();
-	};
-
+		    const text = encodeURIComponent('Xem ngay nội dung thú vị này!');
+		    window.open(`https://twitter.com/intent/tweet?url=${url}&text=${text}`, '_blank');
+		    closeDialog();
+		  };
+		
+		  // Share on LinkedIn
+		  const shareOnLinkedIn = () => {
+		    const url = encodeURIComponent(window.location.href);
+		    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}`, '_blank');
+		    closeDialog();
+		  };
+		
+		  // Copy link
+		  const copyLink = () => {
+		    navigator.clipboard
+		      .writeText(window.location.href)
+		      .then(() => alert('Đã sao chép liên kết thành công!'))
+		      .catch((err) => console.error('Lỗi khi sao chép liên kết:', err));
+		    closeDialog();
+		  };
 	// Initialize likes from localStorage on page load
 	onMount(() => {
 		try {
@@ -109,12 +109,28 @@
 		aria-modal="true"
 		class="p-6 rounded-lg shadow-lg backdrop:bg-black/50"
 	>
-		<h2 id="dialog-title" class="text-xl font-bold mb-4">Chia sẻ bài viết</h2>
-		<button
-			onclick={closeDialog}
-			aria-label="Đóng"
-			class="absolute top-2 right-2 p-2 rounded-full hover:bg-gray-200">X</button
-		>
+		    <h2 id="dialog-title" class="text-xl font-bold mb-4">Chia sẻ bài viết</h2>
+		    <button
+		      onclick={closeDialog}
+		      aria-label="Đóng hộp thoại"
+		      class="absolute top-2 right-2 p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+		    >
+		      <svg
+		        xmlns="http://www.w3.org/2000/svg"
+		        viewBox="0 0 24 24"
+		        width="24"
+		        height="24"
+		        aria-hidden="true"
+		        fill="none"
+		        stroke="currentColor"
+		        stroke-width="2"
+		        stroke-linecap="round"
+		        stroke-linejoin="round"
+		      >
+		        <line x1="18" y1="6" x2="6" y2="18"></line>
+		        <line x1="6" y1="6" x2="18" y2="18"></line>
+		      </svg>
+		    </button>		>
 		<div class="grid grid-cols-2 gap-4">
 			<button
 				role="link"

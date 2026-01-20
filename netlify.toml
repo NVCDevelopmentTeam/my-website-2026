@@ -1,1 +1,4 @@
-// config netllify 
+[build]
+  command = "pnpm build"
+  publish = "build/"
+  functions = "functions/"

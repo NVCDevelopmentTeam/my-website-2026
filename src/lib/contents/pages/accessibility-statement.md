@@ -1,13 +1,18 @@
 ---
 title: 'Tuyên bố về Khả năng tiếp cận'
 menu: 'footer'
+faqs:
+  - question: 'Website có hỗ trợ trình đọc màn hình không?'
+    answer: 'Có, website được tối ưu hóa hoàn toàn cho các trình đọc màn hình phổ biến như NVDA, JAWS và VoiceOver bằng cách sử dụng HTML ngữ nghĩa và các thuộc tính ARIA cần thiết.'
+  - question: 'Làm thế nào để sử dụng phím tắt trên trang web?'
+    answer: 'Bạn có thể sử dụng phím Tab để di chuyển qua các thành phần tương tác và phím Enter để kích hoạt chúng. Ngoài ra, phím nhảy nhanh (Skip Link) có sẵn ở đầu trang để giúp bạn đến thẳng nội dung chính.'
 ---
 
 Tôi tin rằng Internet là tài nguyên chung dành cho tất cả mọi người. Website này được thiết kế và phát triển với nỗ lực cao nhất nhằm đảm bảo người dùng, bất kể điều kiện về thể chất hay kỹ thuật, đều có thể tiếp cận nội dung một cách bình đẳng.
 
 ## 1. Cam kết tiêu chuẩn
 
-Website được định hướng xây dựng theo tiêu chuẩn **WCAG 2.1 (Web Content Accessibility Guidelines)** cấp độ **AA**. Tôi tập trung tối ưu hóa các yếu tố cốt lõi để hỗ trợ người dùng sử dụng trình đọc màn hình (Screen Reader), bàn phím hoặc các thiết bị hỗ trợ khác.
+Website được định hướng xây dựng theo tiêu chuẩn **WCAG 2.2 (Web Content Accessibility Guidelines)** cấp độ **AAA**. Tôi tập trung tối ưu hóa các yếu tố cốt lõi để hỗ trợ người dùng sử dụng trình đọc màn hình (Screen Reader), bàn phím hoặc các thiết bị hỗ trợ khác.
 
 ## 2. Các tính năng hỗ trợ nổi bật
 
@@ -27,6 +32,6 @@ Mặc dù tôi đã nỗ lực tối đa, nhưng một số nội dung (như cá
 
 Nếu bạn gặp bất kỳ khó khăn nào trong việc truy cập thông tin hoặc có góp ý để website trở nên thân thiện hơn, tôi rất mong nhận được phản hồi từ bạn. Sự đóng góp của bạn không chỉ giúp ích cho cá nhân tôi mà còn cho cả cộng đồng người dùng hỗ trợ tiếp cận.
 
-Vui lòng liên lạc với tôi qua thông tin tại trang **Giới thiệu**. Tôi sẽ phản hồi và nỗ lực khắc phục sự cố trong thời gian sớm nhất.
+Vui lòng liên lạc với tôi qua thông tin tại trang **liên hệ**. Tôi sẽ phản hồi và nỗ lực khắc phục sự cố trong thời gian sớm nhất.
 
 _Cập nhật lần cuối: Tháng 01 năm 2026_

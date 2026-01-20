@@ -1,7 +1,7 @@
 import { getPostBySlug } from '$lib/data/posts.server'
 import { error } from '@sveltejs/kit'
 
-export const prerender = false
+export const prerender = true
 
 export async function load({ params }) {
   const slugOrRaw = params.post

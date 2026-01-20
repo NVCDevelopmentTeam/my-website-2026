@@ -11,13 +11,17 @@ export async function load() {
     // Get only pages assigned to the 'nav' menu
     const { pages: navPages } = getAllPages({ menu: 'nav' })
 
-    // Get the 5 most recent posts
-    const { posts: latestPosts } = getFilteredPosts({ offset: 0, limit: 5 })
+    // Get ALL posts for Breadcrumbs to match slugs
+    const { posts: allPosts } = getFilteredPosts()
+
+    // Get the 5 most recent posts for sidebar/footer
+    const { posts: recentPosts } = getFilteredPosts({ offset: 0, limit: 5 })
 
     return {
       allPages,
       navPages,
-      latestPosts
+      posts: allPosts, // ← Thêm dòng này để Breadcrumbs có data!
+      recentPosts
     }
   } catch (err) {
     console.error('Error loading layout data:', err)
