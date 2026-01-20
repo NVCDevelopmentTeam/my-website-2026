@@ -1,5 +1,14 @@
 ---
 title: TƯƠNG LAI NÀO CHO NGÀNH LẬP TRÌNH 2025?
+date: 2025-03-20
+categories:
+  - Công nghệ
+  - Nghề nghiệp
+tags:
+  - AI
+  - Lập trình
+  - Tương lai
+description: Chia sẻ về góc nhìn "u ám" nhưng thực tế về tương lai ngành lập trình trước làn sóng AI và biến động thị trường năm 2025.
 ---
 
 Thiệt tình thì dạo này mình đang cảm thấy hơi bi quan và mất niềm tin vào tương lai của cái ngành lập trình mà anh em mình đang theo đuổi. Mình đi làm cũng hơn chục năm có lẻ rồi, thường thì mình hay chém gió mấy chủ đề lạc quan, vui vẻ, khích lệ anh em là chính.

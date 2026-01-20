@@ -1,9 +1,17 @@
-import { getFilteredPosts } from '$lib/data/posts.server'
+import { getFilteredPosts, getAllTags } from '$lib/data/posts.server'
 import { siteConfig } from '$lib/config'
 import { error } from '@sveltejs/kit'
 import { building } from '$app/environment'
 
 export const prerender = true
+
+/** @type {import('./$types').EntryGenerator} */
+export async function entries() {
+  const tags = getAllTags()
+  return tags.map((t) => ({
+    tag: t.name
+  }))
+}
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load({ params, url }) {

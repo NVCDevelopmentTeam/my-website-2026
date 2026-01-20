@@ -122,7 +122,7 @@
 
 <svelte:head>
   {#if breadcrumbJsonLd}
-    {@html `<script type="application/ld+json">${JSON.stringify(breadcrumbJsonLd)}</script>`}
+    {@html '<script type="application/ld+json">' + JSON.stringify(breadcrumbJsonLd) + '</script>'}
   {/if}
 </svelte:head>
 
