@@ -6,8 +6,8 @@
   
   // Access latestPosts from layout data if available, or through data prop
   // In SvelteKit, leaf nodes receive combined data from all layouts
-  const latestPosts = $derived(data?.latestPosts || []);
-  const featuredPosts = $derived(latestPosts.filter(p => p.metadata.featured).slice(0, 3));
+  const recentPosts  = $derived(data?.recentPosts || []);
+  const featuredPosts = $derived(recentPosts.filter(p => p.metadata.featured).slice(0, 3));
 </script>
 
 <div class="space-y-16 pb-20">
@@ -74,7 +74,7 @@
       </a>
     </div>
     
-    <RecentPosts {latestPosts} />
+    <RecentPosts {recentPosts} />
   </section>
 
   <!-- Newsletter / Call to action - Vietnamese optimized -->
