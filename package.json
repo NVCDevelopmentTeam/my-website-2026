@@ -1,5 +1,7 @@
 {
-	"name": "My-website-2",
+	"name": "My-website-2026",
+	"description": "This is my personal website",
+"author": "Coding Nguyen",
 	"private": true,
 	"version": "0.0.1",
 	"type": "module",
