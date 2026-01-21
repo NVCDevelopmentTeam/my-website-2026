@@ -1,5 +1,6 @@
-.cache
-package.json
-package-lock.json
-public
-pnpm-lock.yaml
+# .prettierignore
+/build
+/functions
+/.svelte-kit
+/node_modules
+src/app.css

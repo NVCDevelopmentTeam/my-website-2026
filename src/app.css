@@ -1,158 +1,22 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-@import 'tailwindcss';
-@plugin '@tailwindcss/typography';
+/* src/app.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@theme {
-  /* System font stack as fallback for better performance and accessibility */
-  --font-inter: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-
-  /* Primary Blue Scale */
-  --color-primary-50: #eff6ff;
-  --color-primary-100: #dbeafe;
-  --color-primary-200: #bfdbfe;
-  --color-primary-300: #93c5fd;
-  --color-primary-400: #60a5fa;
-  --color-primary-500: #3b82f6;
-  --color-primary-600: #2563eb;
-  --color-primary-700: #1d4ed8;
-  --color-primary-800: #1e40af;
-  --color-primary-900: #1e3a8a;
-
-  /* Global Semantic Colors */
-  --color-secondary: #2563eb;
-  --color-accent: #059669;
-  --color-foreground: #111827;
-  --color-background: #ffffff;
-  --color-border: #d1d5db;
-
-  /* Custom Background Image / Gradient */
-  --image-custom-background: linear-gradient(to bottom, #f8fafc, #ffffff);
+/* Add any additional global styles here */
+html {
+  scroll-behavior: smooth;
 }
 
-/* Dark mode strategy using the standard SvelteKit/Tailwind approach */
-@custom-variant dark (&:where(.dark, .dark *));
-
-@layer base {
-  * {
-    box-sizing: border-box;
-  }
-
-  html {
-    scroll-behavior: smooth;
-    /* Ensuring base font size for accessibility */
-    font-size: 16px;
-  }
-
-  body {
-    font-family: var(--font-inter);
-    line-height: 1.6;
-    color: #171717;
-    background-color: var(--color-background);
-    /* Prevent layout shift on hydration */
-    min-height: 100vh;
-    text-rendering: optimizeSpeed;
-  }
-
-  /* Focus styles: High contrast for Screen Reader/Keyboard users */
-  *:focus-visible {
-    outline: 3px solid #020617;
-    outline-offset: 2px;
-  }
-
-  /* Custom scrollbar styling for a clean modern look */
-  ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
-
-  ::-webkit-scrollbar-track {
-    background: #f1f5f9;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 4px;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
-  }
-
-  /* Dark mode scrollbar overrides */
-  .dark ::-webkit-scrollbar-track {
-    background: #1e293b;
-  }
-
-  .dark ::-webkit-scrollbar-thumb {
-    background: #475569;
-  }
-
-  .dark ::-webkit-scrollbar-thumb:hover {
-    background: #64748b;
-  }
+body {
+  @apply bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-@layer components {
-  /* Typography utilities for Markdown content */
-  .prose {
-    @apply max-w-none;
-  }
-
-  .prose h1 {
-    @apply border-b border-gray-200 pb-2 dark:border-gray-700;
-  }
-}
-
-@layer utilities {
-  /* Smooth motion animations */
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-
-  @keyframes slideUp {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .animate-fade-in {
-    animation: fadeIn 0.5s ease-out forwards;
-  }
-
-  .animate-slide-up {
-    animation: slideUp 0.5s ease-out forwards;
-  }
-
-  /* Organic shape trends 2026 */
-  .shape-organic-1 {
-    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
-  }
-
-  .shape-organic-2 {
-    border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
-  }
-
-  .smooth-transition {
-    @apply transition-all duration-500 ease-in-out;
-  }
-}
-
-/* Reduced motion preference for better accessibility */
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
+/* Accessibility: Focus Visible */
+:focus-visible {
+  outline: 2px solid #26a2fa;
+  outline-offset: 2px;
+  border-radius: 4px;
 }
