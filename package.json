@@ -1,7 +1,7 @@
 {
 	"name": "My-website-2026",
 	"description": "This is my personal website",
-"author": "Coding Nguyen",
+	"author": "Coding Nguyen",
 	"private": true,
 	"version": "0.0.1",
 	"type": "module",
@@ -21,7 +21,7 @@
 		"@sveltejs/adapter-netlify": "^5.2.4",
 		"@sveltejs/kit": "^2.50.0",
 		"@sveltejs/vite-plugin-svelte": "^6.2.4",
-		"@sveltia/cms": "^0.128.4",
+		"@sveltia/cms": "^0.128.5",
 		"@tailwindcss/postcss": "^4.1.18",
 		"@tailwindcss/typography": "^0.5.19",
 		"@tailwindcss/vite": "^4.1.18",

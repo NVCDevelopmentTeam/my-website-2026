@@ -30,8 +30,8 @@
 }
 
 /* Dark mode strategy using the standard SvelteKit/Tailwind approach */
-@custom-variant dark (&:where(.dark, .dark *));
 
+@custom-variant dark (&:where(.dark, .dark *));
 @layer base {
   * {
     box-sizing: border-box;

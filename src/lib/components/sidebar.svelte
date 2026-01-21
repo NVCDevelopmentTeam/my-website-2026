@@ -1,3 +1,1 @@
-<script>
-/** add sidebar hear */
-</script>
+<!-- add static sidebar to wordpress and hugo theme style -->

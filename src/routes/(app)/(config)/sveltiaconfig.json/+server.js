@@ -32,7 +32,7 @@ export async function GET() {
     // Production backend (GitHub via Netlify)
     backend: {
       name: 'github',
-      repo: 'NVCDevelopmentTeam/my-website-2',
+      repo: 'NVCDevelopmentTeam/my-website-2026',
       branch: 'main',
       site_domain: siteConfig.siteDomain,
       base_url: siteConfig.siteUrl,
