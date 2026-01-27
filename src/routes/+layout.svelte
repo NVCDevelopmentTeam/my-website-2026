@@ -12,6 +12,7 @@
   
   <meta name="google-adsense-account" content="ca-pub-3602487920405886" />
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   <link href="/sveltiaconfig.json" type="application/json" rel="cms-config-url" />
   <link rel="sitemap" type="application/xml" href="{siteConfig.siteUrl}/sitemap.xml" />
   <link rel="alternate" type="application/rss+xml" href="{siteConfig.siteUrl}/rss.xml" />
@@ -26,6 +27,12 @@
   <link href="/sveltiaconfig.json" type="application/json" rel="cms-config-url" />
   <link rel="sitemap" type="application/xml" href="{siteConfig.siteUrl}/sitemap.xml" />
   <link rel="alternate" type="application/rss+xml" href="{siteConfig.siteUrl}/rss.xml" />
+=======
+
+  <link href="/sveltiaconfig.json" type="application/json" rel="cms-config-url" />
+  <link rel="sitemap" type="application/xml" href="{siteConfig.siteUrl}/sitemap.xml" />
+  <link rel="alternate" type="application/rss+xml" href="{siteConfig.siteUrl}/rss.xml" />
+>>>>>>> Stashed changes
   
   <!-- Performance: Preconnect & Load optimized fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -36,4 +43,7 @@
 <div class="min-h-screen bg-white dark:bg-gray-950 text-gray-950 dark:text-gray-50 flex flex-col selection:bg-sky-100 dark:selection:bg-sky-900/30">
   {@render children?.()}
 </div>
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes

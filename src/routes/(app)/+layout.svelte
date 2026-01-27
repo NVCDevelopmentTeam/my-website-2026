@@ -11,6 +11,7 @@
   let { children, data } = $props();
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 
   // Compute canonicalUrl defensively (avoid $derived misuse)
   const canonicalUrl = siteConfig.siteUrl + (page?.url?.pathname === '/' ? '' : (page?.url?.pathname ?? ''));
@@ -59,6 +60,8 @@
 =======
 =======
 >>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
 </script>
 
 <svelte:head>
@@ -90,6 +93,13 @@
     </div>
   </main>
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+
+  <Footer pages={data.allPages} />
+</div>
+
+>>>>>>> Stashed changes
+=======
 
   <Footer pages={data.allPages} />
 </div>
