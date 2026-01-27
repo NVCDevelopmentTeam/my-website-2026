@@ -1,14 +1,15 @@
 <script>
   import { siteConfig } from '$lib/config';
   import Header from '$lib/components/Header.svelte';
-import Sidebar from '$lib/components/sidebar.svelte';
+  import Sidebar from '$lib/components/Sidebar.svelte';
   import Footer from '$lib/components/Footer.svelte';
   import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
   import { page } from '$app/state';
 
   let { children, data } = $props();
 
-  const canonicalUrl = $derived(`${siteConfig.siteUrl}${page.url.pathname === '/' ? '' : page.url.pathname}`);
+  // Compute canonicalUrl defensively (avoid $derived misuse)
+  const canonicalUrl = siteConfig.siteUrl + (page?.url?.pathname === '/' ? '' : (page?.url?.pathname ?? ''));
 
   const orgJsonLd = {
     '@context': 'https://schema.org',
@@ -28,48 +29,26 @@ import Sidebar from '$lib/components/sidebar.svelte';
   const webSiteJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: siteConfig.title,
     url: siteConfig.siteUrl,
-    potentialAction: {
-      '@type': 'SearchAction',
-      target: `${siteConfig.siteUrl}/blog?search={search_term_string}`,
-      'query-input': 'required name=search_term_string'
-    }
-  };
-
-  const personJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Person',
-    name: siteConfig.author.name,
-    url: `${siteConfig.siteUrl}/about`,
-    sameAs: Object.values(siteConfig.social).filter(v => v && v !== '/'),
-    jobTitle: 'Người sáng tạo nội dung'
+    name: siteConfig.title
   };
 </script>
 
 <svelte:head>
-  <title>{siteConfig.title}</title>
-  <meta name="description" content={siteConfig.description} />
   <link rel="canonical" href={canonicalUrl} />
-  
-  <!-- Structured Data -->
   {@html '<script type="application/ld+json">' + JSON.stringify(orgJsonLd) + '</script>'}
   {@html '<script type="application/ld+json">' + JSON.stringify(webSiteJsonLd) + '</script>'}
-  {@html '<script type="application/ld+json">' + JSON.stringify(personJsonLd) + '</script>'}
 </svelte:head>
 
-<div class="flex flex-col min-h-screen">
-  <Header     allPages={data.allPages}     navPages={data.navPages}   />
-
-<Breadcrumbs 
-  allPages={data.allPages}  
-  posts={data.posts} />
-
-<main id="main-content" tabindex="-1" class="flex-grow max-w-7xl mx-auto bg-custom-background bg-cover bg-center w-full">
-  <!-- Google AdSense ad units can be placed here for integration -->
-  {@render children?.()}
-<Sidebar />
-</main>
-
-<Footer recentPosts={data.recentPosts} pages={data.allPages} />
+<div class="min-h-screen flex flex-col">
+  <Header />
+  <div class="flex-1 flex gap-8">
+    <main class="flex-1">
+      {@render children?.()}
+    </main>
+    <aside class="w-72 hidden lg:block">
+      <Sidebar />
+    </aside>
+  </div>
+  <Footer />
 </div>

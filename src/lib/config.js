@@ -26,5 +26,12 @@ export const siteConfig = {
     zalo: '/',
     github: 'https://github.com/NVCDevelopmentTeam',
     viber: '/'
+  },
+
+  // Backwards-compatibility alias:
+  // Some older files referenced `siteConfig.url`. Keep an alias so we don't
+  // break runtime immediately. Primary canonical value remains `siteUrl`.
+  get url() {
+    return this.siteUrl;
   }
 }
