@@ -1,6 +1,5 @@
 <script>
   import { siteConfig } from '$lib/config';
-  import { page } from '$app/state';
   import FAQ from './FAQ.svelte';
 
   // Receive `data` prop from parent load() result

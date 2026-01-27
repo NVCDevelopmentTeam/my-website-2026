@@ -9,59 +9,7 @@
 
   /** @type {Object} Props */
   let { children, data } = $props();
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
 
-  // Compute canonicalUrl defensively (avoid $derived misuse)
-  const canonicalUrl = siteConfig.siteUrl + (page?.url?.pathname === '/' ? '' : (page?.url?.pathname ?? ''));
-
-  const orgJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Organization',
-    name: siteConfig.title,
-    description: siteConfig.description,
-    url: siteConfig.siteUrl,
-    logo: {
-      '@type': 'ImageObject',
-      url: `${siteConfig.siteUrl}/favicon.ico`,
-      width: '32',
-      height: '32'
-    },
-    sameAs: Object.values(siteConfig.social).filter(v => v && v !== '/')
-  };
-
-  const webSiteJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'WebSite',
-    url: siteConfig.siteUrl,
-    name: siteConfig.title
-  };
-</script>
-
-<svelte:head>
-  <link rel="canonical" href={canonicalUrl} />
-  {@html '<script type="application/ld+json">' + JSON.stringify(orgJsonLd) + '</script>'}
-  {@html '<script type="application/ld+json">' + JSON.stringify(webSiteJsonLd) + '</script>'}
-</svelte:head>
-
-<div class="min-h-screen flex flex-col">
-  <Header />
-  <div class="flex-1 flex gap-8">
-    <main class="flex-1">
-      {@render children?.()}
-    </main>
-    <aside class="w-72 hidden lg:block">
-      <Sidebar />
-    </aside>
-  </div>
-  <Footer />
-</div>
-=======
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
 </script>
 
 <svelte:head>
@@ -92,22 +40,5 @@
       </aside>
     </div>
   </main>
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-
   <Footer pages={data.allPages} />
 </div>
-
->>>>>>> Stashed changes
-=======
-
-  <Footer pages={data.allPages} />
-</div>
-
->>>>>>> Stashed changes
-=======
-
-  <Footer pages={data.allPages} />
-</div>
-
->>>>>>> Stashed changes
