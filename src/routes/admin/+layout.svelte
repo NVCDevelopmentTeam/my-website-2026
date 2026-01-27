@@ -25,7 +25,7 @@
 
 	<!-- Main -->
 	<main
-		id="main"
+		id="main-content"
 		tabindex="-1" class="flex-1 container mx-auto p-4 bg-gray-50">
 		{@render children?.()}
 	</main>
@@ -35,13 +35,14 @@
 		<div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm">
 			<a
 				href="/"
-				class="text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300 font-medium transition-colors"
+				class="text-sky-800 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300 font-medium transition-colors"
 			>
 				← Quay về trang chủ
 			</a>
-			<p class="text-gray-600 dark:text-gray-400">
+			<p class="text-gray-800 dark:text-gray-400">
 				{siteConfig?.title ?? 'Coding Nguyễn'} Quản trị
 			</p>
 		</div>
 	</footer>
 </div>
+

@@ -1,5 +1,5 @@
 export const ssr = true
-export const prerender = false
+export const prerender = true
 
 export const load = async ({ fetch }) => {
   try {

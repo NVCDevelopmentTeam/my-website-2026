@@ -46,9 +46,19 @@ function getAllPosts() {
         date = new Date().toISOString()
       }
 
-      // Normalize arrays
-      const categories = Array.isArray(meta.categories) ? meta.categories.filter(Boolean) : []
-      const tags = Array.isArray(meta.tags) ? meta.tags.filter(Boolean) : []
+      // Normalize arrays/strings for categories and tags
+      const normalizeArray = (val) => {
+        if (Array.isArray(val)) return val.filter(Boolean).map((v) => v.trim())
+        if (typeof val === 'string')
+          return val
+            .split(',')
+            .map((v) => v.trim())
+            .filter(Boolean)
+        return []
+      }
+
+      const categories = normalizeArray(meta.categories)
+      const tags = normalizeArray(meta.tags)
       const toc = Array.isArray(meta.toc) ? meta.toc : []
 
       // Description validation
@@ -66,8 +76,6 @@ function getAllPosts() {
       const readingTime =
         typeof meta.readingTime === 'number' && meta.readingTime > 0 ? meta.readingTime : 5
 
-      // Exclude the 'default' component (content) from the listing metadata to save size
-      // We only need metadata and rawName/slug for the listing
       return {
         slug,
         rawName: filename,
@@ -85,8 +93,7 @@ function getAllPosts() {
           featured: meta.featured === true,
           draft: meta.draft === true,
           image: meta.image || null,
-          excerpt: meta.excerpt || description,
-          _wordsCount: meta._wordsCount
+          excerpt: meta.excerpt || description
         }
       }
     })
@@ -273,10 +280,10 @@ export function getAllCategories() {
   })
 
   cachedCategories = Array.from(map.entries())
-    .map(([name, count]) => ({
-      name,
+    .map(([title, count]) => ({
+      title,
       count,
-      slug: slugify(name)
+      slug: slugify(title)
     }))
     .sort((a, b) => b.count - a.count)
 
@@ -302,10 +309,10 @@ export function getAllTags() {
   })
 
   cachedTags = Array.from(map.entries())
-    .map(([name, count]) => ({
-      name,
+    .map(([title, count]) => ({
+      title,
       count,
-      slug: slugify(name)
+      slug: slugify(title)
     }))
     .sort((a, b) => b.count - a.count)
 
@@ -329,10 +336,10 @@ export function getAllAuthors() {
   })
 
   cachedAuthors = Array.from(map.entries())
-    .map(([name, count]) => ({
-      name,
+    .map(([title, count]) => ({
+      title,
       count,
-      slug: slugify(name)
+      slug: slugify(title)
     }))
     .sort((a, b) => b.count - a.count)
 

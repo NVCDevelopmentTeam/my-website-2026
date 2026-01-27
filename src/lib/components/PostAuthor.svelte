@@ -6,9 +6,9 @@
   const author = $derived.by(() => post?.metadata?.author || siteConfig.author.name);
 </script>
 
-<div class="flex items-center gap-2 px-4 py-1 bg-gray-50 dark:bg-gray-800 rounded-full border border-gray-100 dark:border-gray-700 transition-colors">
-  <div class="w-6 h-6 bg-gradient-to-br from-sky-400 to-violet-500 shape-organic-1 flex-shrink-0 shadow-sm" aria-hidden="true"></div>
-  <p class="text-sm text-gray-600 dark:text-gray-300">
-    <span class="font-medium">{author}</span>
+<div class="flex items-center gap-1.5 transition-colors">
+  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-gray-500 dark:text-gray-400" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+  <p class="text-sm text-gray-950 dark:text-gray-200 font-bold">
+    <span>{author}</span>
   </p>
 </div>

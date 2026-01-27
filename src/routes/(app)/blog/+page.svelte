@@ -8,19 +8,10 @@
 
 	// Always fallback to avoid SSR errors
 	let posts = $derived(data?.posts ?? []);
-	let pagination = $derived(
-		data?.pagination ?? {
-			currentPage: 1,
-			totalPages: 1,
-			totalPosts: 0
-		}
-	);
-
-
-
+	
 	// SEO metadata
 	const metadata = {
-		title: 'Bài viết',
+		title: 'Blog',
 		description: siteConfig.description
 	};
 </script>
@@ -28,7 +19,7 @@
 <svelte:head>
 	<title>
 		{metadata.title
-			? `${metadata.title} – ${siteConfig.title}`
+			? `${metadata.title} — ${siteConfig.title}`
 			: siteConfig.title}
 	</title>
 
@@ -39,9 +30,9 @@
 </svelte:head>
 
 <section class="max-w-4xl mx-auto px-4 py-12">
-	<h1 class="text-4xl font-extrabold text-center mb-10 tracking-tight">
-		<span class="bg-clip-text text-transparent bg-gradient-to-r from-sky-500 to-violet-500">
-			Bài viết
+	<h1 class="text-4xl sm:text-5xl font-black text-center mb-16 tracking-tight">
+		<span class="bg-clip-text text-transparent bg-gradient-to-r from-sky-800 to-violet-950 dark:from-sky-400 dark:to-violet-400">
+			Blog
 		</span>
 	</h1>
 
@@ -49,18 +40,12 @@
 		<!-- Post list -->
 		<PostsList {posts} />
 
-		<!-- Pagination -->
-		{#if pagination.totalPages > 1}
-			<div class="mt-12">
-				<Pagination
-					currentPage={pagination.currentPage}
-					totalPosts={pagination.totalPosts}
-					baseUrl="/blog"
-				/>
-			</div>
-		{/if}
+		<!-- Pagination - pass data.metadata from server -->
+		<div class="mt-12">
+			<Pagination metadata={data.metadata} />
+		</div>
 	{:else}
-		<p class="text-center text-gray-600 dark:text-gray-400 text-lg">
+		<p class="text-center text-gray-800 dark:text-gray-400 text-lg italic">
 			Chưa có bài viết nào được đăng.
 		</p>
 	{/if}

@@ -3,7 +3,7 @@ title: Liên hệ
 menu: 'nav'
 ---
 
-# **Kết nối với mình nhé! ☕**
+# Kết nối với mình nhé! ☕
 
 Cảm ơn anh em đã có nhã ý muốn ghé lại đây lâu hơn một chút để kết nối với mình.
 

@@ -29,19 +29,19 @@
 </svelte:head>
 
 {#if items.length > 0}
-  <section class="my-12 p-8 bg-gray-50 dark:bg-gray-800/50 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-sm" aria-labelledby="faq-heading">
-    <h2 id="faq-heading" class="text-2xl font-bold mb-8 text-gray-900 dark:text-white flex items-center gap-3">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-amber-500" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+  <section class="my-12 p-8 bg-gray-50 dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm" aria-labelledby="faq-heading">
+    <h2 id="faq-heading" class="text-2xl font-bold mb-8 text-gray-950 dark:text-white flex items-center gap-3">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="text-sky-800 dark:text-sky-400" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
       Câu hỏi thường gặp
     </h2>
     
     <div class="space-y-6">
       {#each items as item (item.question)}
-        <div class="border-b border-gray-200 dark:border-gray-700 pb-6 last:border-0 last:pb-0">
-          <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">
+        <div class="border-b border-gray-200 dark:border-gray-800 pb-6 last:border-0 last:pb-0">
+          <h3 class="text-lg font-bold text-gray-950 dark:text-gray-100 mb-2">
             {item.question}
           </h3>
-          <div class="text-gray-600 dark:text-gray-400 leading-relaxed">
+          <div class="text-gray-800 dark:text-gray-200 leading-relaxed font-medium">
             {item.answer}
           </div>
         </div>

@@ -1,27 +1,18 @@
-// svelte.config.js
-import adapter from '@sveltejs/adapter-netlify'
+import adapter from '@sveltejs/adapter-static'
+import preprocess from 'svelte-preprocess'
 import { mdsvex } from 'mdsvex'
-import { vitePreprocess } from '@sveltejs/vite-plugin-svelte'
 import mdsvexConfig from './mdsvex.config.js'
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
   extensions: ['.svelte', ...mdsvexConfig.extensions],
 
-  preprocess: [
-    vitePreprocess({
-      postcss: true // Enable PostCSS (for Tailwind)
-    }),
-    mdsvex(mdsvexConfig)
-  ],
+  preprocess: [preprocess(), mdsvex(mdsvexConfig)],
 
   kit: {
-    adapter: adapter(),
-
-    // Prerender for static generation
-    prerender: {
-      entries: ['*', '/sitemap.xml', '/rss.xml']
-    }
+    adapter: adapter({
+      strict: false
+    })
   }
 }
 

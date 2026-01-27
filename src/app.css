@@ -1,158 +1,115 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 @import 'tailwindcss';
-@plugin '@tailwindcss/typography';
+@plugin "@tailwindcss/typography";
 
 @theme {
-  /* System font stack as fallback for better performance and accessibility */
-  --font-inter: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --color-brand-primary: #065f46; /* emerald-800 for AAA */
+  --color-brand-secondary: #075985; /* sky-800 for AAA */
+  
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-serif: 'Georgia', serif;
 
-  /* Primary Blue Scale */
-  --color-primary-50: #eff6ff;
-  --color-primary-100: #dbeafe;
-  --color-primary-200: #bfdbfe;
-  --color-primary-300: #93c5fd;
-  --color-primary-400: #60a5fa;
-  --color-primary-500: #3b82f6;
-  --color-primary-600: #2563eb;
-  --color-primary-700: #1d4ed8;
-  --color-primary-800: #1e40af;
-  --color-primary-900: #1e3a8a;
+  --font-size-xs: 0.8125rem;
+  --font-size-xs--line-height: 1.5rem;
+  --font-size-sm: 0.875rem;
+  --font-size-sm--line-height: 1.5rem;
+  --font-size-base: 1rem;
+  --font-size-base--line-height: 1.75rem;
+  
+  --animate-fade-in: fade-in 0.5s ease-out;
+  --animate-slide-up: slide-up 0.6s ease-out;
 
-  /* Global Semantic Colors */
-  --color-secondary: #2563eb;
-  --color-accent: #059669;
-  --color-foreground: #111827;
-  --color-background: #ffffff;
-  --color-border: #d1d5db;
-
-  /* Custom Background Image / Gradient */
-  --image-custom-background: linear-gradient(to bottom, #f8fafc, #ffffff);
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes slide-up {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 }
-
-/* Dark mode strategy using the standard SvelteKit/Tailwind approach */
 
 @custom-variant dark (&:where(.dark, .dark *));
+
 @layer base {
-  * {
-    box-sizing: border-box;
-  }
-
-  html {
+  :root {
     scroll-behavior: smooth;
-    /* Ensuring base font size for accessibility */
-    font-size: 16px;
+    --background: 0 0% 100%;
+    --foreground: 224 71.4% 4.1%;
+    --card: 0 0% 100%;
+    --card-foreground: 224 71.4% 4.1%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 71.4% 4.1%;
+    --primary: 220.9 39.3% 11%;
+    --primary-foreground: 210 20% 98%;
+    --secondary: 220 14.3% 95.9%;
+    --secondary-foreground: 220.9 39.3% 11%;
+    --muted: 220 14.3% 95.9%;
+    --muted-foreground: 220 8.9% 46.1%;
+    --accent: 220 14.3% 95.9%;
+    --accent-foreground: 220.9 39.3% 11%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 224 71.4% 4.1%;
+    --radius: 0.5rem;
   }
 
-  body {
-    font-family: var(--font-inter);
-    line-height: 1.6;
-    color: #171717;
-    background-color: var(--color-background);
-    /* Prevent layout shift on hydration */
-    min-height: 100vh;
-    text-rendering: optimizeSpeed;
-  }
-
-  /* Focus styles: High contrast for Screen Reader/Keyboard users */
-  *:focus-visible {
-    outline: 3px solid #020617;
-    outline-offset: 2px;
-  }
-
-  /* Custom scrollbar styling for a clean modern look */
-  ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
-
-  ::-webkit-scrollbar-track {
-    background: #f1f5f9;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 4px;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
-  }
-
-  /* Dark mode scrollbar overrides */
-  .dark ::-webkit-scrollbar-track {
-    background: #1e293b;
-  }
-
-  .dark ::-webkit-scrollbar-thumb {
-    background: #475569;
-  }
-
-  .dark ::-webkit-scrollbar-thumb:hover {
-    background: #64748b;
+  .dark {
+    --background: 224 71.4% 4.1%;
+    --foreground: 210 20% 98%;
+    --card: 224 71.4% 4.1%;
+    --card-foreground: 210 20% 98%;
+    --popover: 224 71.4% 4.1%;
+    --popover-foreground: 210 20% 98%;
+    --primary: 210 20% 98%;
+    --primary-foreground: 220.9 39.3% 11%;
+    --secondary: 215 27.9% 16.9%;
+    --secondary-foreground: 210 20% 98%;
+    --muted: 215 27.9% 16.9%;
+    --muted-foreground: 217.9 10.6% 64.9%;
+    --accent: 215 27.9% 16.9%;
+    --accent-foreground: 210 20% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 215 27.9% 16.9%;
+    --input: 215 27.9% 16.9%;
+    --ring: 216 34% 17%;
   }
 }
 
-@layer components {
-  /* Typography utilities for Markdown content */
-  .prose {
-    @apply max-w-none;
+@layer base {
+  body {
+    @apply bg-white dark:bg-gray-950 text-gray-950 dark:text-white antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    /* Use Inter if available, fallback to system sans */
+    font-family: var(--font-sans);
   }
 
-  .prose h1 {
-    @apply border-b border-gray-200 pb-2 dark:border-gray-700;
+  /* AAA Typography */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold tracking-tight text-gray-950 dark:text-white text-balance;
+  }
+  
+  p {
+    @apply leading-relaxed text-gray-800 dark:text-gray-200;
   }
 }
 
 @layer utilities {
-  /* Smooth motion animations */
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-
-  @keyframes slideUp {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .animate-fade-in {
-    animation: fadeIn 0.5s ease-out forwards;
-  }
-
-  .animate-slide-up {
-    animation: slideUp 0.5s ease-out forwards;
-  }
-
-  /* Organic shape trends 2026 */
-  .shape-organic-1 {
-    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
-  }
-
-  .shape-organic-2 {
-    border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
-  }
-
-  .smooth-transition {
-    @apply transition-all duration-500 ease-in-out;
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-700 dark:focus-visible:ring-sky-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-950;
   }
 }
 
-/* Reduced motion preference for better accessibility */
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
+@layer base {
+  ::-webkit-scrollbar {
+    @apply w-2;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 dark:bg-gray-700 rounded-full;
   }
 }

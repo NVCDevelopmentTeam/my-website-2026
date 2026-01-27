@@ -8,6 +8,8 @@ faqs:
     answer: 'Bạn có thể sử dụng phím Tab để di chuyển qua các thành phần tương tác và phím Enter để kích hoạt chúng. Ngoài ra, phím nhảy nhanh (Skip Link) có sẵn ở đầu trang để giúp bạn đến thẳng nội dung chính.'
 ---
 
+# Tuyên bố về Khả năng tiếp cận
+
 Tôi tin rằng Internet là tài nguyên chung dành cho tất cả mọi người. Website này được thiết kế và phát triển với nỗ lực cao nhất nhằm đảm bảo người dùng, bất kể điều kiện về thể chất hay kỹ thuật, đều có thể tiếp cận nội dung một cách bình đẳng.
 
 ## 1. Cam kết tiêu chuẩn

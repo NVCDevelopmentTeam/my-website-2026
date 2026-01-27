@@ -5,27 +5,32 @@ import { building } from '$app/environment'
 
 export const prerender = true
 
-/** @type {import('./$types').EntryGenerator} */
 export async function entries() {
   const categories = getAllCategories()
-  return categories.map((c) => ({
-    category: c.name
-  }))
+  return categories.map((cat) => ({ category: cat.slug }))
 }
 
-/** @type {import('./$types').PageServerLoad} */
 export async function load({ params, url, depends }) {
-  // Mark data to reload when navigating
   depends('blog:category')
 
-  const category = params.category
-  if (!category) {
+  const categorySlug = params.category
+  if (!categorySlug) {
     error(400, 'Danh mục không hợp lệ.')
+  }
+
+  // Get all categories
+  const categories = getAllCategories()
+
+  // Find category by slug
+  const categoryData = categories.find((c) => c.slug === categorySlug)
+
+  if (!categoryData) {
+    error(404, `Không tìm thấy danh mục "${categorySlug}".`)
   }
 
   const perPage = siteConfig.pagination.postsPerPage
 
-  // Get page from query - avoid accessing during prerender
+  // Get page from query
   const pageParam = building ? null : url.searchParams.get('page')
   let currentPage = Number(pageParam)
   if (!currentPage || currentPage < 1) currentPage = 1
@@ -33,36 +38,49 @@ export async function load({ params, url, depends }) {
   const offset = (currentPage - 1) * perPage
 
   try {
-    // Get data
+    // Get filtered posts by category title
     const result = await getFilteredPosts({
       offset,
       limit: perPage,
-      category
+      category: categoryData.title
     })
 
-    // Fallback to avoid undefined errors
     const posts = result?.posts ?? []
     const total = result?.total ?? 0
-    const totalPages = result?.totalPages ?? 1
+    const totalPages = Math.max(1, result?.totalPages ?? 1)
+
+    // Check if category has no posts
+    if (total === 0) {
+      return {
+        category: categoryData,
+        posts: [],
+        // Metadata for Pagination component
+        metadata: {
+          page: 1,
+          total: 0
+          // baseUrl auto-detected: /blog/category/{slug}
+        }
+      }
+    }
 
     // Check if page exceeds limits
-    if (currentPage > totalPages && totalPages > 0) {
-      error(404, `Trang ${currentPage} không tồn tại trong danh mục "${category}".`)
+    if (currentPage > totalPages) {
+      error(404, `Trang ${currentPage} không tồn tại trong danh mục "${categoryData.title}".`)
     }
 
     return {
-      category,
+      category: categoryData,
       posts,
-      pagination: {
-        currentPage,
-        totalPages,
-        totalPosts: total,
-        hasPrev: currentPage > 1,
-        hasNext: currentPage < totalPages
+      // Metadata for Pagination component - clean & simple
+      metadata: {
+        page: currentPage,
+        total: total
+        // baseUrl will be auto-detected from URL: /blog/category/{categorySlug}
+        // No need to pass slug or baseUrl - Pagination component handles it!
       }
     }
   } catch (err) {
     console.error('Error loading category page:', err)
-    error(500, 'Không thể tải bài viết trong danh mục này.')
+    error(500, 'Không thể tải posts trong danh mục này.')
   }
 }

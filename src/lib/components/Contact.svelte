@@ -35,20 +35,20 @@
   };
 </script>
 
-<form onsubmit={handleSubmit} class="flex flex-col w-full max-w-lg mx-auto space-y-6 bg-white dark:bg-gray-800/50 p-8 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-xl transition-colors">
+<form onsubmit={handleSubmit} class="flex flex-col w-full max-w-lg mx-auto space-y-6 bg-white dark:bg-gray-900 p-8 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-xl transition-colors">
   <div class="space-y-2">
-    <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Gửi lời nhắn cho mình</h2>
-    <p class="text-sm text-gray-500 dark:text-gray-400">Mình sẽ cố gắng phản hồi bạn sớm nhất có thể.</p>
+    <h2 class="text-2xl font-bold text-gray-950 dark:text-white">Gửi lời nhắn cho mình</h2>
+    <p class="text-sm text-gray-800 dark:text-gray-400 font-medium">Mình sẽ cố gắng phản hồi bạn sớm nhất có thể.</p>
   </div>
 
   <input type="hidden" name="access_key" value={siteConfig.author.accessKey} />
 
   <div class="space-y-2">
-    <label for="name" class="text-sm font-semibold text-gray-700 dark:text-gray-300">
-      Họ và tên <span class="text-red-500" aria-hidden="true">*</span>
+    <label for="name" class="text-sm font-bold text-gray-800 dark:text-gray-200">
+      Họ và tên <span class="text-red-700 dark:text-red-400" aria-hidden="true">*</span>
     </label>
     <input
-      class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-sky-500 transition-all"
+      class="w-full border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-sky-800 dark:focus:ring-sky-400 transition-all"
       type="text"
       id="name"
       name="name"
@@ -58,11 +58,11 @@
   </div>
 
   <div class="space-y-2">
-    <label for="email" class="text-sm font-semibold text-gray-700 dark:text-gray-300">
-      Địa chỉ email <span class="text-red-500" aria-hidden="true">*</span>
+    <label for="email" class="text-sm font-bold text-gray-800 dark:text-gray-200">
+      Địa chỉ email <span class="text-red-700 dark:text-red-400" aria-hidden="true">*</span>
     </label>
     <input
-      class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-sky-500 transition-all"
+      class="w-full border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-sky-800 dark:focus:ring-sky-400 transition-all"
       type="email"
       id="email"
       name="email"
@@ -72,11 +72,11 @@
   </div>
 
   <div class="space-y-2">
-    <label for="title" class="text-sm font-semibold text-gray-700 dark:text-gray-300">
-      Tiêu đề <span class="text-red-500" aria-hidden="true">*</span>
+    <label for="title" class="text-sm font-bold text-gray-800 dark:text-gray-200">
+      Tiêu đề <span class="text-red-700 dark:text-red-400" aria-hidden="true">*</span>
     </label>
     <input
-      class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-sky-500 transition-all"
+      class="w-full border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-sky-800 dark:focus:ring-sky-400 transition-all"
       type="text"
       id="title"
       name="title"
@@ -86,11 +86,11 @@
   </div>
 
   <div class="space-y-2">
-    <label for="message" class="text-sm font-semibold text-gray-700 dark:text-gray-300">
-      Nội dung <span class="text-red-500" aria-hidden="true">*</span>
+    <label for="message" class="text-sm font-bold text-gray-800 dark:text-gray-200">
+      Nội dung <span class="text-red-700 dark:text-red-400" aria-hidden="true">*</span>
     </label>
     <textarea
-      class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-sky-500 transition-all"
+      class="w-full border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-sky-800 dark:focus:ring-sky-400 transition-all"
       id="message"
       name="message"
       placeholder="Nhập nội dung tin nhắn của bạn ở đây..."
@@ -101,14 +101,14 @@
 
   <button
     type="submit"
-    class="w-full bg-gradient-to-r from-sky-600 to-blue-700 text-white font-bold rounded-xl py-4 shadow-lg hover:shadow-sky-500/20 hover:from-sky-700 hover:to-blue-800 transition-all duration-300 focus:ring-4 focus:ring-sky-300 active:scale-[0.98]"
+    class="w-full bg-sky-800 dark:bg-sky-400 text-white dark:text-gray-950 font-bold rounded-xl py-4 shadow-lg hover:bg-sky-900 dark:hover:bg-sky-300 transition-all duration-300 focus:ring-4 focus:ring-sky-500/50 active:scale-[0.98]"
   >
     {status === 'Đang gửi...' ? 'Đang gửi tín hiệu...' : 'Gửi lời nhắn'}
   </button>
 </form>
 
 {#if status}
-  <div class="text-center mt-6 p-4 rounded-xl font-medium animate-fade-in {status.includes('thành công') ? 'bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-300' : 'bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-300'}">
+  <div class="text-center mt-6 p-4 rounded-xl font-bold animate-fade-in {status.includes('thành công') ? 'bg-emerald-50 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-amber-50 text-amber-900 dark:bg-amber-950 dark:text-amber-300'}">
     {status}
   </div>
 {/if}

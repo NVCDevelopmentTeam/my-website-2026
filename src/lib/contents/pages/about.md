@@ -3,7 +3,7 @@ title: Giới thiệu
 menu: 'nav'
 ---
 
-# **Hế lô anh em, mình là Coding Nguyễn! 👋**
+# Hế lô anh em, mình là Coding Nguyễn! 👋
 
 Rất vui vì anh em đã tò mò (hoặc lỡ tay) nhấn vào cái mục giới thiệu này.
 

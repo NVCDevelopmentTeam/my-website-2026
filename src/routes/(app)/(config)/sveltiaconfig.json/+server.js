@@ -106,16 +106,16 @@ export async function GET() {
           {
             label: 'Categories',
             name: 'categories',
-            widget: 'string',
+            widget: 'list',
             required: false,
-            hint: 'Separate values with commas (,)'
+            hint: 'Add categories one by one'
           },
           {
             label: 'Tags',
             name: 'tags',
-            widget: 'string',
+            widget: 'list',
             required: false,
-            hint: 'Separate values with commas (,)'
+            hint: 'Add tags one by one'
           },
           {
             label: 'Content',

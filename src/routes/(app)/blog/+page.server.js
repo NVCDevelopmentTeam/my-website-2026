@@ -13,7 +13,6 @@ export async function load({ url, depends }) {
   // Get query params - avoid accessing during prerender
   const pageParam = building ? null : url.searchParams.get('page')
   const category = building ? null : url.searchParams.get('category')
-  const author = building ? null : url.searchParams.get('author')
   const tag = building ? null : url.searchParams.get('tag')
 
   // Process page
@@ -29,7 +28,6 @@ export async function load({ url, depends }) {
       offset,
       limit: perPage,
       category,
-      author,
       tag
     })
 
@@ -40,22 +38,21 @@ export async function load({ url, depends }) {
 
     return {
       posts,
-      pagination: {
-        currentPage,
-        totalPages,
-        totalPosts: total,
-        hasPrev: currentPage > 1,
-        hasNext: currentPage < totalPages
+      // Metadata for Pagination component - clean & simple
+      metadata: {
+        page: currentPage,
+        total: total
+        // baseUrl will be auto-detected from URL path by Pagination component
+        // No need to pass it here!
       },
       filters: {
         category,
-        author,
         tag
       },
       site: siteConfig
     }
   } catch (err) {
     console.error('Error loading post list:', err)
-    error(500, 'Không thể tải danh sách bài viết.')
+    error(500, 'Không thể tải danh sách posts.')
   }
 }

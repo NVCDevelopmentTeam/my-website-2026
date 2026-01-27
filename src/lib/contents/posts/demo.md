@@ -1,13 +1,8 @@
 ---
 title: TƯƠNG LAI NÀO CHO NGÀNH LẬP TRÌNH 2025?
 date: 2025-03-20
-categories:
-  - Công nghệ
-  - Nghề nghiệp
-tags:
-  - AI
-  - Lập trình
-  - Tương lai
+categories: Công nghệ, Nghề nghiệp
+tags: AI, Lập trình, Tương lai
 description: Chia sẻ về góc nhìn "u ám" nhưng thực tế về tương lai ngành lập trình trước làn sóng AI và biến động thị trường năm 2025.
 ---
 
@@ -23,8 +18,7 @@ Cái điểm đầu tiên khiến mình thấy hơi rén, đó là thị trườ
 • Cung vượt cầu?: Lượng developer ra thị trường ngày càng đông, trong khi nhu cầu tuyển dụng có vẻ đang chững lại hoặc giảm đi. Điều này dẫn đến việc cạnh tranh khốc liệt hơn, lương lậu cũng không còn “trên trời” như trước.
 • Junior khó tìm việc: Mấy bạn mới ra trường, fresher giờ tìm việc khó khăn hơn hẳn. Cạnh tranh thì đông, có khi cả chục người tranh một suất fresher, thậm chí phải chấp nhận thực tập không lương.
 Nói chung là cái thời hoàng kim “ngồi chơi xơi nước” lương nghìn đô có vẻ đang dần qua rồi anh em ạ.
-images
-Không biết ông em 96 Bách Khoa giờ ra sao
+![Thị trường lao động ngành lập trình đang gặp nhiều khó khăn với làn sóng layoff và cạnh tranh khốc liệt](https://images.unsplash.com/photo-1580894732230-2867e632dd75?auto=format&fit=crop&q=80&w=800)
 
 ## 2. AI đang “lăm le” chén cơm của anh em?
 
@@ -36,8 +30,7 @@ Chừng nào đưa requirement mà AI tự viết code, tự giải bài toán �
 • Năng suất tăng vọt: Mấy tool như Copilot giúp dev code nhanh hơn, tăng năng suất đáng kể. Mà năng suất tăng thì, ờm, công ty cần ít người hơn để làm cùng một lượng việc.
 • Dân tay ngang cũng “code” được: Giờ mấy người không biết gì về code cũng có thể nhờ AI viết script tự động hóa công việc, làm app demo nho nhỏ để gọi vốn hoặc mấy job freelance trên Upwork. Stack Overflow lượng truy cập cũng giảm vì người ta hỏi AI cho lẹ.
 Nghe tới đây chắc nhiều anh em, nhất là mấy bạn junior, thấy hơi “toang” rồi đúng không?
-vibe
-Anh em ai cũng Vibe Code ra cái app nho nhỏ rồi, cần gì code nữa
+![Cảm giác khi AI có thể viết code và làm app một cách nhanh chóng](https://images.unsplash.com/photo-1675271591211-126ad94e495d?auto=format&fit=crop&q=80&w=800)
 
 ## 3. Thế hệ Junior biết đi đâu về đâu?
 
@@ -45,8 +38,7 @@ Anh em ai cũng Vibe Code ra cái app nho nhỏ rồi, cần gì code nữa
 • AI làm tốt hơn Junior?: Nhiều task đơn giản, AI làm còn ngon hơn cả junior mới vào nghề (ít lỗi hơn, code có khi còn chuẩn hơn). Vậy công ty việc gì phải tuyển junior về đào tạo cho tốn công?
 • Cơ hội học hỏi ít đi: Khi công ty ưu tiên senior + AI, các bạn junior sẽ ít có cơ hội cọ xát, làm việc thực tế, học hỏi kinh nghiệm để mà leo lên senior được.
 • Nguy cơ “nghiện” AI: Giống như ngày xưa anh em mình quá phụ thuộc Google, Stack Overflow, giờ các bạn trẻ có nguy cơ quá lệ thuộc vào AI. Cứ prompt cho AI viết code mà không hiểu bản chất, không tự debug được. Tới lúc AI “ngáo” hoặc gặp bài toán khó AI bó tay là các bạn cũng… bó luôn!
-question
-Cứ cái đà này, không có lứa junior kế cận chất lượng thì lấy đâu ra senior trong tương lai? Nghe hơi chua ha!
+![Những câu hỏi lớn về tương lai của thế hệ lập trình viên trẻ](https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=800)
 Nhưng khoan! Đừng vội vứt bàn phím!
 Nghe mình than thở nãy giờ chắc anh em tụt mood lắm rồi. Nhưng mà thôi, bình tĩnh, cái gì cũng có hai mặt. Bên cạnh mấy cái đáng lo thì cũng còn vài điểm sáng và hi vọng le lói:
 
@@ -56,8 +48,7 @@ Công nhận AI giờ khôn thật, nhưng nó vẫn chưa hoàn hảo 100%.
 • Hay “tự chế” thông tin: AI, đặc biệt là LLM, vẫn còn tình trạng “hallucinate” – bịa thông tin như thật. Code nó viết ra vẫn cần người kiểm tra, sửa lỗi, đảm bảo chạy đúng.
 • Thiếu sót nhiều kỹ năng: AI chưa thể thay thế con người ở các mảng cần tư duy phức tạp, sáng tạo, và đặc biệt là kỹ năng mềm: giao tiếp với khách hàng, làm việc nhóm, thiết kế hệ thống, giải quyết vấn đề phức tạp…
 • Nó chỉ là công cụ: Ít nhất là trong vài năm tới, AI vẫn đóng vai trò là trợ thủ đắc lực giúp tăng năng suất, chứ chưa thay thế hoàn toàn được developer đâu.
-bug
-Anh em Vibe Code ra app rồi thì… thuê dev để code thêm với fix bug nữa 5. Doanh nghiệp còn “rén” chưa dám xài AI thả ga
+![Mặc dù AI rất mạnh nhưng vẫn còn nhiều lỗi và cần con người kiểm soát](https://images.unsplash.com/photo-1542831371-29b0f74f9713?auto=format&fit=crop&q=80&w=800)
 Nhiều công ty, nhất là mấy ông lớn hoặc mấy ngành đặc thù (tài chính, y tế), vẫn còn e dè trong việc tích hợp AI sâu vào hệ thống. Lý do là vì:
 • Lo ngại bảo mật, riêng tư: Dữ liệu code, dữ liệu khách hàng mà đưa cho bên thứ ba như OpenAI thì cũng hơi ghê răng.
 • Cần hệ thống ổn định, đáng tin cậy: AI dù sao vẫn còn mới, độ ổn định và chính xác chưa thể đảm bảo 100% cho các hệ thống quan trọng.

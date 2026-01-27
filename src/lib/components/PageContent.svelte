@@ -12,22 +12,6 @@
   // FAQs array (may be undefined)
   const faqs = Array.isArray(metadata?.faqs) ? metadata.faqs : [];
 
-  // JSON-LD structured data (defensive)
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'WebPage',
-    name: metadata?.title || siteConfig.title,
-    description: metadata?.description || siteConfig.description,
-    url: `${siteConfig.siteUrl}${page?.url?.pathname ?? ''}`,
-    publisher: {
-      '@type': 'Organization',
-      name: siteConfig.title,
-      logo: {
-        '@type': 'ImageObject',
-        url: `${siteConfig.siteUrl}/favicon.ico`
-      }
-    }
-  };
 </script>
 
 <svelte:head>
@@ -39,10 +23,8 @@
     {/if}
   </title>
   <meta name="description" content={metadata?.description ?? siteConfig.description} />
-
-  <!-- Structured Data -->
-  {@html '<script type="application/ld+json">' + JSON.stringify(jsonLd) + '</script>'}
 </svelte:head>
+
 
 <section class="prose max-w-3xl mx-auto px-4 py-10 dark:prose-invert">
   {#if PageContent}
@@ -54,6 +36,9 @@
       {@html metadata.html}
     {/if}
   {/if}
+<section class="prose prose-gray dark:prose-invert max-w-3xl mx-auto px-4 py-10 prose-headings:text-gray-950 dark:prose-headings:text-white prose-p:text-gray-800 dark:prose-p:text-gray-200">
+  <PageContent />
+>>>>>>> Stashed changes
   
   {#if faqs.length > 0}
     <div class="not-prose mt-16">

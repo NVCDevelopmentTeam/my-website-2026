@@ -26,35 +26,35 @@
     description.trim().length > 0 && 
     !description.startsWith('title:') && // Not frontmatter YAML
     !description.startsWith('---') && // Not frontmatter delimiter
-    description !== 'Bài viết chưa có mô tả.'
+    description !== 'Chưa có mô tả.'
   );
   
-  // ✅ FIX: Add parentheses for $derived
   const postUrl = $derived(`/blog/${post?.slug}`);
 </script>
 
 <div class="mb-4">
   {#if hasValidExcerpt}
-    <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
+    <p class="text-gray-800 dark:text-gray-200 leading-relaxed">
       {description}
       <a
         href={postUrl}
-        class="ml-2 text-blue-600 dark:text-blue-400 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 rounded transition-colors"
-        aria-label={`Đọc toàn bộ bài viết ${post?.metadata?.title || post?.slug}`}
+        class="ml-2 text-sky-800 dark:text-sky-400 font-bold hover:underline focus:outline-none focus:ring-2 focus:ring-sky-700 dark:focus:ring-sky-400 focus:ring-offset-2 dark:focus:ring-offset-gray-950 rounded transition-colors"
+        aria-label={`Đọc toàn bộ bài viết: ${post?.metadata?.title || post?.slug}`}
       >
         Đọc thêm →
       </a>
     </p>
   {:else}
-    <p class="text-gray-500 dark:text-gray-400 italic leading-relaxed">
-      Bài viết chưa có mô tả.
+    <p class="text-gray-800 dark:text-gray-400 italic leading-relaxed">
+      Chưa có mô tả.
       <a
         href={postUrl}
-        class="ml-2 text-blue-600 dark:text-blue-400 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 rounded transition-colors"
-        aria-label={`Đọc bài viết ${post?.metadata?.title || post?.slug}`}
+        class="ml-2 text-sky-800 dark:text-sky-400 font-bold hover:underline focus:outline-none focus:ring-2 focus:ring-sky-700 dark:focus:ring-sky-400 focus:ring-offset-2 dark:focus:ring-offset-gray-950 rounded transition-colors"
+        aria-label={`Xem bài viết: ${post?.metadata?.title || post?.slug}`}
       >
-        Xem bài viết →
+        Xem bài →
       </a>
     </p>
   {/if}
 </div>
+

@@ -1,5 +1,4 @@
 <script>
-  import { onMount, tick } from 'svelte';
   import { siteConfig } from '$lib/config';
   import PostDate from '$lib/components/PostDate.svelte';
   import PostAuthor from '$lib/components/PostAuthor.svelte';
@@ -8,153 +7,89 @@
   import LikeAndShare from '$lib/components/LikeAndShare.svelte';
   import ToC from '$lib/components/ToC.svelte';
   import FAQ from '$lib/components/FAQ.svelte';
+  import PostNavigation from '$lib/components/PostNavigation.svelte';
+  import Seo from 'sk-seo';
+  import { getSeoConfig } from '$lib/utils/seo';
+  import { page } from '$app/state';
 
   const { data } = $props();
   const { content: PostContent, metadata } = $derived.by(() => data);
 
   const faqs = $derived(metadata?.faqs || []);
 
-  // JSON-LD structured data for SEO/GEO
-  const jsonLd = $derived({
-    '@context': 'https://schema.org',
-    '@type': 'BlogPosting',
-    headline: metadata?.title,
-    description: metadata?.description || siteConfig.description,
-    author: {
-      '@type': 'Person',
-      name: metadata?.author || siteConfig.author.name,
-      url: `${siteConfig.siteUrl}/about`,
-      jobTitle: 'Tác giả'
-    },
-    datePublished: metadata?.date,
-    dateModified: metadata?.updated || metadata?.date,
-    image: metadata?.image ? `${siteConfig.siteUrl}${metadata.image}` : undefined,
-    keywords: metadata?.tags?.join(', '),
-    wordCount: metadata?._wordsCount,
-    mainEntityOfPage: {
-      '@type': 'WebPage',
-      '@id': `${siteConfig.siteUrl}/blog/${metadata?.slug}`
-    },
-    publisher: {
-      '@type': 'Organization',
-      name: siteConfig.title,
-      logo: {
-        '@type': 'ImageObject',
-        url: `${siteConfig.siteUrl}/favicon.ico`
-      }
-    }
-  });
-  
-  let articleRef = $state();
-  let tocRef = $state();
-  
-  // 🎯 Auto-position TOC after intro or before first heading
-  onMount(async () => {
-    await tick();
-    
-    if (!articleRef || !tocRef || !metadata?.toc || metadata.toc.length === 0) return;
-    
-    const firstHeading = articleRef.querySelector('h1, h2, h3, h4, h5, h6');
-    if (!firstHeading) return;
-    
-    let currentElement = articleRef.firstElementChild;
-    let hasIntroContent = false;
-    let lastIntroElement = null;
-    
-    while (currentElement && currentElement !== firstHeading) {
-      const text = currentElement.textContent?.trim() || '';
-      
-      if (currentElement.contains(tocRef)) {
-        currentElement = currentElement.nextElementSibling;
-        continue;
-      }
-      
-      if (text.length > 30) {
-        hasIntroContent = true;
-        lastIntroElement = currentElement;
-      }
-      
-      currentElement = currentElement.nextElementSibling;
-    }
-    
-    if (hasIntroContent && lastIntroElement) {
-      lastIntroElement.after(tocRef);
-    } else {
-      firstHeading.before(tocRef);
-    }
-  });
+  const seoConfig = $derived(getSeoConfig({
+    title: metadata?.title,
+    description: metadata?.description,
+    url: page.url.pathname,
+    image: metadata?.image
+  }));
 </script>
 
 <svelte:head>
   {#if metadata}
-    <title>
-      {metadata.title ? `${metadata.title} — ${siteConfig.title}` : siteConfig.title}
-    </title>
-    <meta name="description" content={metadata.description ?? siteConfig.description} />
-    
-    <!-- Structured Data -->
-    {@html '<script type="application/ld+json">' + JSON.stringify(jsonLd) + '</script>'}
+    <Seo {...seoConfig} />
   {/if}
 </svelte:head>
 
-<div class="max-w-2xl mx-auto lg:max-w-none px-4 sm:px-6">
-  <div class="w-full mx-auto overflow-x-hidden">
-    {#if metadata}
-      <article class="max-w-3xl mx-auto px-4 py-10">
+<div class="max-w-4xl mx-auto px-4 sm:px-6">
+  {#if metadata}
+    <article class="py-10 animate-fade-in">
+      <header class="mb-10 space-y-6">
         <!-- Title -->
-        <h1 class="text-4xl font-bold mb-4 text-gray-900 dark:text-gray-100 leading-tight tracking-tight">
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black text-gray-950 dark:text-white leading-tight tracking-tight text-balance">
           {metadata.title}
         </h1>
 
-        <!-- Meta (date, author, category) -->
-        <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 dark:text-gray-400 mb-6">
+        <!-- Meta info -->
+        <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-gray-600 dark:text-gray-400">
           <PostAuthor post={{ metadata }} />
-          <span aria-hidden="true">•</span>
+          <span aria-hidden="true" class="text-gray-300 dark:text-gray-700">|</span>
           <PostDate post={{ metadata }} />
-          <span aria-hidden="true">•</span>
+          <span aria-hidden="true" class="text-gray-300 dark:text-gray-700">|</span>
           <PostCategories post={{ metadata }} />
-        </div>
-        <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">
-          Đọc trong {metadata.readingTime} phút
-        </p>
-
-        <!-- Like & Share -->
-        <div class="mt-8 flex justify-between items-center">
-          <LikeAndShare />
+          <span aria-hidden="true" class="text-gray-300 dark:text-gray-700">|</span>
+          <span class="font-bold text-gray-950 dark:text-gray-200">{metadata.readingTime} phút đọc</span>
         </div>
 
         {#if metadata.description}
-          <div class="mt-8 p-6 bg-amber-50 dark:bg-amber-900/20 border-l-4 border-amber-500 rounded-r-lg shadow-sm">
-            <h2 class="text-lg font-bold text-amber-900 dark:text-amber-200 mb-2 flex items-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
-              Tóm tắt bài viết
-            </h2>
-            <p class="text-amber-800 dark:text-amber-100 italic leading-relaxed">
+          <div class="p-8 bg-sky-50/50 dark:bg-sky-900/10 border-l-4 border-sky-800 dark:border-sky-400 rounded-r-[2rem] shadow-sm">
+            <p class="text-sky-950 dark:text-sky-100 italic leading-relaxed font-bold text-lg">
               {metadata.description}
             </p>
           </div>
         {/if}
+        
+        <div class="flex items-center pt-2">
+          <LikeAndShare />
+        </div>
+      </header>
 
-        <!-- Post content -->
-        <section bind:this={articleRef} class="prose prose-gray dark:prose-invert max-w-none prose-headings:font-semibold prose-a:text-sky-600 dark:prose-a:text-sky-400 prose-img:rounded-lg prose-img:shadow-md">
-          <!-- ✅ ToC will auto-insert into article content -->
-          <div bind:this={tocRef}>
-            <ToC post={{ metadata }} />
-          </div>
-          <PostContent />
-        </section>
+      <!-- Fixed TOC position to prevent Layout Shift -->
+      {#if metadata.toc && metadata.toc.length > 0}
+        <div class="not-prose mb-10">
+          <ToC post={{ metadata }} />
+        </div>
+      {/if}
 
-        {#if faqs.length > 0}
-          <div class="mt-16">
-            <FAQ items={faqs} />
-          </div>
-        {/if}
+      <!-- Post content -->
+      <section class="prose prose-gray dark:prose-invert max-w-none prose-headings:font-black prose-headings:text-gray-950 dark:prose-headings:text-white prose-p:text-gray-800 dark:prose-p:text-gray-200 prose-a:text-sky-800 dark:prose-a:text-sky-400 prose-a:font-bold prose-img:rounded-[2rem] prose-img:shadow-2xl">
+        <PostContent />
+      </section>
 
+      {#if faqs.length > 0}
+        <div class="mt-20 not-prose">
+          <FAQ items={faqs} />
+        </div>
+      {/if}
+
+      <footer class="mt-16 space-y-10">
         <!-- Tags -->
-        <div class="mt-10 border-t border-gray-200 dark:border-gray-700 pt-6">
+        <div class="pt-8 border-t border-gray-100 dark:border-gray-800">
           <PostTags post={{ metadata }} />
         </div>
-      </article>
-    {/if}
-  </div>
+        
+        <PostNavigation post={{ metadata }} />
+      </footer>
+    </article>
+  {/if}
 </div>

@@ -5,20 +5,24 @@ import { building } from '$app/environment'
 
 export const prerender = true
 
-/** @type {import('./$types').EntryGenerator} */
 export async function entries() {
   const tags = getAllTags()
-  return tags.map((t) => ({
-    tag: t.name
-  }))
+  return tags.map((tag) => ({ tag: tag.slug }))
 }
 
-/** @type {import('./$types').PageServerLoad} */
 export async function load({ params, url }) {
-  const tag = params.tag
+  const tagSlug = params.tag
 
-  if (!tag) {
-    error(400, 'Thẻ không hợp lệ.')
+  if (!tagSlug) {
+    error(400, 'Tag không hợp lệ.')
+  }
+
+  // Get all tags to find matching slug
+  const tags = getAllTags()
+  const tagData = tags.find((t) => t.slug === tagSlug)
+
+  if (!tagData) {
+    error(404, `Không tìm thấy tag "${tagSlug}".`)
   }
 
   // Current page - avoid accessing during prerender
@@ -30,31 +34,47 @@ export async function load({ params, url }) {
   const offset = (currentPage - 1) * perPage
 
   try {
+    // Get filtered posts by tag title
     const { posts, total, totalPages } = getFilteredPosts({
       offset,
       limit: perPage,
-      tag
+      tag: tagData.title
     })
+
+    // Handle empty tag case
+    if (total === 0) {
+      return {
+        tag: tagData,
+        posts: [],
+        // Metadata for Pagination component
+        metadata: {
+          page: 1,
+          total: 0
+          // baseUrl auto-detected: /blog/tag/{slug}
+        },
+        site: siteConfig
+      }
+    }
 
     // Check for page overflow
     if (currentPage > totalPages && totalPages > 0) {
-      error(404, `Trang ${currentPage} không tồn tại trong tag "${tag}".`)
+      error(404, `Trang ${currentPage} không tồn tại trong tag "${tagData.title}".`)
     }
 
     return {
-      tag,
+      tag: tagData,
       posts,
-      pagination: {
-        currentPage,
-        totalPages,
-        totalPosts: total,
-        hasPrev: currentPage > 1,
-        hasNext: currentPage < totalPages
+      // Metadata for Pagination component - clean & simple
+      metadata: {
+        page: currentPage,
+        total: total
+        // baseUrl will be auto-detected from URL: /blog/tag/{tagSlug}
+        // No need to pass slug or baseUrl - Pagination component handles it!
       },
       site: siteConfig
     }
   } catch (err) {
     console.error('Error loading Tag page:', err)
-    error(500, 'Không thể tải bài viết theo thẻ này.')
+    error(500, 'Không thể tải posts theo tag này.')
   }
 }

@@ -4,11 +4,11 @@
 	const { data } = $props();
 	const { uniqueCategories, totalCategories } = $derived.by(() => data);
 
-	// SEO metadata
-	const metadata = {
+	// SEO metadata - using $derived for reactivity
+	const metadata = $derived.by(() => ({
 		title: 'Danh mục bài viết',
-		description: siteConfig.description
-	};
+		description: `Khám phá ${totalCategories || 0} danh mục cho bài viết trên ${siteConfig.title}`
+	}));
 </script>
 
 <svelte:head>
@@ -30,33 +30,26 @@
 		<!-- Title -->
 		<h1 class="text-4xl font-bold text-center mb-10 text-gray-900 dark:text-white">
 			Tất cả danh mục 
-			<span class="text-gray-500 dark:text-gray-400 text-2xl">
-				({totalCategories})
+			<span class="text-gray-700 dark:text-gray-400 text-2xl">
+				({totalCategories || 0})
 			</span>
 		</h1>
 
 		<!-- Category list -->
-		{#if uniqueCategories.length > 0}
+		{#if uniqueCategories?.length > 0}
 			<ul class="divide-y divide-gray-200 dark:divide-gray-700">
 
-				{#each uniqueCategories as category (category.title)}
+				{#each uniqueCategories as category (category.slug)}
 					<li class="py-4">
 						<a
-							href={`/blog/category/${category.title}`}
-							class="flex items-center justify-between group"
+							href={`/blog/category/${category.slug}`}
+							class="flex items-center justify-between group hover:bg-gray-50 dark:hover:bg-gray-800/50 px-4 py-2 rounded-lg transition-colors"
 						>
-							<!-- Category name -->
+							<!-- Category name with count (WordPress style) -->
 							<span
-								class="text-lg font-medium text-blue-600 dark:text-blue-400 group-hover:underline capitalize"
+								class="text-lg font-medium text-sky-800 dark:text-blue-400 group-hover:underline"
 							>
-								{category.title}
-							</span>
-
-							<!-- Number of posts on the same line (WordPress standard) -->
-							<span
-								class="text-sm text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-full"
-							>
-								{category.count}
+								{category.title} ({category.count})
 							</span>
 						</a>
 					</li>
@@ -65,7 +58,7 @@
 			</ul>
 
 		{:else}
-			<p class="text-center text-gray-600 dark:text-gray-400 text-lg italic">
+			<p class="text-center text-gray-800 dark:text-gray-400 text-lg italic">
 				Chưa có danh mục nào được gắn cho bài viết.
 			</p>
 		{/if}

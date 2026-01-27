@@ -36,7 +36,7 @@
 
 <button
   onclick={toggleTheme}
-  class="p-2 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 hover:ring-2 hover:ring-orange-400 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-amber-400"
+  class="p-2.5 rounded-xl bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 hover:text-sky-800 dark:hover:text-sky-400 border border-gray-200 dark:border-gray-800 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-sky-800 dark:focus:ring-sky-400 shadow-sm"
   aria-label={theme === 'light' ? 'Chuyển sang chế độ tối' : 'Chuyển sang chế độ sáng'}
   title={theme === 'light' ? 'Bật chế độ tối' : 'Bật chế độ sáng'}
 >
@@ -58,3 +58,4 @@
     </svg>
   {/if}
 </button>
+

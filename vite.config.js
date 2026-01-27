@@ -13,7 +13,6 @@ export default defineConfig({
           }
         }
       }
-    },
-    chunkSizeWarningLimit: 2000 // Increase limit to suppress CMS chunk warning
+    }
   }
 })

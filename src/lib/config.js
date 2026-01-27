@@ -1,5 +1,5 @@
 export const siteConfig = {
-  title: 'GÓc thư dãn',
+  title: 'Góc thư giãn',
   description: 'Lan tỏa nguồn năng lượng tích cực mỗi ngày',
   author: {
     name: 'Coding Nguyễn',

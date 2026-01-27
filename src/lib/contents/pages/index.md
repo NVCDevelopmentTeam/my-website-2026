@@ -3,15 +3,15 @@ title: Trang chủ
 menu: 'nav'
 ---
 
-# **Hế lô anh em, mình là Coding Nguyễn! 👋**
+# Hế lô anh em, mình là Coding Nguyễn! 👋
 
-Rất vui vì anh em đã vô tình (hoặc hữu ý) ghé chơi cái góc nhỏ này của mình.
+Rất vui vì anh em đã vô tình (hoặc hữu ý) ghé chơi cái blog nhỏ này của mình.
 
 Như cái tên, mình là một thằng **Dev**, suốt ngày cắm mặt vào màn hình và mấy dòng code khô khan. Nhưng nói trước để anh em đỡ kỳ vọng nhé: cái blog này không phải là nơi mình dạy về _Design Pattern_ hay mấy cái thuật toán hack não – mấy thứ đó trên Google thiếu gì, mà thú thật là ngồi viết về chúng cũng mệt lắm, để thời gian đó đi làm ly cà phê cho sướng.
 
 Đây đơn giản là nơi mình **"ghi log" lại mấy chuyện linh tinh** giữa dòng đời:
 
-- Có hôm cuộc đời **build** mượt không tì vết, nhưng cũng có hôm dính **bug** tình cảm, **bug** tài chính làm mình xỉu ngang xỉu dọc.
+- Có hôm cuộc đời mượt không tì vết, nhưng cũng có hôm dính **bug** tình cảm, **bug** tài chính làm mình xỉu ngang xỉu dọc.
 - Có những suy nghĩ vụn vặt về đủ thứ trên đời, nếu không gõ ra cho nhẹ máy, mình sợ đầu mình sớm muộn cũng bị "tràn bộ nhớ".
 
 ## **Mấy cái "cam kết" nhà làm:**

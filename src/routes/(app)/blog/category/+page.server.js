@@ -1,29 +1,12 @@
-import { getFilteredPosts } from '$lib/data/posts.server'
+import { getAllCategories } from '$lib/data/posts.server'
 import { error } from '@sveltejs/kit'
+
+export const prerender = true
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load() {
   try {
-    // Get all posts (no pagination)
-    const { posts } = getFilteredPosts()
-
-    // Group categories and count posts in each category
-    const categoryMap = new Map()
-    for (const post of posts) {
-      const categories = post.metadata.categories || []
-      for (const cat of categories) {
-        if (!cat) continue
-        categoryMap.set(cat, (categoryMap.get(cat) || 0) + 1)
-      }
-    }
-
-    const uniqueCategories = Array.from(categoryMap.entries()).map(([title, count]) => ({
-      title,
-      count
-    }))
-
-    // Sort alphabetically
-    uniqueCategories.sort((a, b) => a.title.localeCompare(b.title))
+    const uniqueCategories = getAllCategories()
 
     return {
       uniqueCategories,

@@ -93,17 +93,17 @@
 
 {#if toc.length > 0}
   <nav 
-    class="my-8 p-6 bg-blue-50 dark:bg-gray-800 border-l-4 border-blue-600 dark:border-blue-400 rounded-lg shadow-sm transition-all duration-300"
+    class="my-8 p-6 bg-blue-50/50 dark:bg-gray-900 border-l-4 border-blue-800 dark:border-blue-400 rounded-r-2xl shadow-sm transition-all duration-300"
     aria-labelledby="toc-heading"
   >
     
     <div class="flex items-center justify-between mb-4">
       <p 
         id="toc-heading" 
-        class="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2"
+        class="text-lg font-bold text-gray-950 dark:text-white flex items-center gap-2"
       >
         <svg 
-          class="w-5 h-5 text-blue-600 dark:text-blue-400" 
+          class="w-5 h-5 text-blue-800 dark:text-blue-400" 
           fill="none" 
           stroke="currentColor" 
           viewBox="0 0 24 24"
@@ -116,12 +116,12 @@
 
       <button 
         onclick={() => isExpanded = !isExpanded}
-        class="p-2 rounded-md hover:bg-white dark:hover:bg-gray-700 transition-colors"
+        class="p-2 rounded-xl hover:bg-white dark:hover:bg-gray-800 transition-colors"
         aria-label={isExpanded ? 'Thu gọn' : 'Mở rộng'}
         aria-expanded={isExpanded}
       >
         <svg 
-          class="w-5 h-5 text-gray-600 dark:text-gray-400 transition-transform duration-300 {isExpanded ? 'rotate-180' : ''}"
+          class="w-5 h-5 text-gray-800 dark:text-gray-400 transition-transform duration-300 {isExpanded ? 'rotate-180' : ''}"
           fill="none" 
           stroke="currentColor" 
           viewBox="0 0 24 24"
@@ -145,15 +145,15 @@
               <a 
                 href="#{h.id}" 
                 onclick={(e) => scrollTo(e, h.id)}
-                class="flex items-start gap-2 text-sm px-3 py-2 rounded-md transition-all duration-200 no-underline
+                class="flex items-start gap-2 text-sm px-3 py-2 rounded-xl transition-all duration-200 no-underline
                   {isActive 
-                    ? 'text-blue-600 dark:text-blue-400 bg-white dark:bg-gray-700 font-semibold' 
-                    : 'text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-white dark:hover:bg-gray-700'}"
+                    ? 'text-blue-800 dark:text-blue-400 bg-white dark:bg-gray-800 font-bold' 
+                    : 'text-gray-800 dark:text-gray-300 hover:text-blue-800 dark:hover:text-blue-400 hover:bg-white dark:hover:bg-gray-800'}"
                 aria-label={h.title}
                 aria-current={isActive ? 'location' : undefined}
               >
                 <span 
-                  class="mt-0.5 flex-shrink-0 transition-opacity duration-200 {isActive ? 'text-blue-600 dark:text-blue-400 opacity-100' : 'text-blue-600 dark:text-blue-400 opacity-60'}"
+                  class="mt-0.5 flex-shrink-0 transition-opacity duration-200 {isActive ? 'text-blue-800 dark:text-blue-400 opacity-100' : 'text-blue-800 dark:text-blue-400 opacity-60'}"
                   aria-hidden="true"
                 >
                   {h.level <= 2 ? '•' : '◦'}
@@ -169,3 +169,4 @@
     {/if}
   </nav>
 {/if}
+

@@ -23,7 +23,7 @@ export const pages = Object.entries(modules).map(([filepath, module]) => {
     slug,
     metadata: {
       title: metadata.title ?? slug,
-      description: preview,
+      description: metadata.description ?? preview,
       // Support for Hugo-style menu assignment in Frontmatter
       menu: metadata.menu || ''
     },
