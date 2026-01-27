@@ -25,6 +25,7 @@
   <meta name="description" content={metadata?.description ?? siteConfig.description} />
 </svelte:head>
 
+<<<<<<< Updated upstream
 
 <section class="prose max-w-3xl mx-auto px-4 py-10 dark:prose-invert">
   {#if PageContent}
@@ -36,6 +37,8 @@
       {@html metadata.html}
     {/if}
   {/if}
+=======
+>>>>>>> Stashed changes
 <section class="prose prose-gray dark:prose-invert max-w-3xl mx-auto px-4 py-10 prose-headings:text-gray-950 dark:prose-headings:text-white prose-p:text-gray-800 dark:prose-p:text-gray-200">
   <PageContent />
 >>>>>>> Stashed changes

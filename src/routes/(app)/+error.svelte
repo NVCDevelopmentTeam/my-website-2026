@@ -20,12 +20,15 @@
 >
 	<div class="max-w-md space-y-4">
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     <h1 class="text-3xl font-bold">Không tìm thấy trang</h1>
     <p class="text-gray-600 dark:text-gray-400">Có thể liên kết đã bị di chuyển hoặc không tồn tại.</p>
     <a href={siteConfig.siteUrl} class="text-sky-600 hover:underline">Quay về trang chủ</a>
   </div>
 </section>
 =======
+=======
+>>>>>>> Stashed changes
 		<h1 class="text-7xl font-extrabold text-sky-800 dark:text-sky-400">404</h1>
 
 		<h2 class="text-2xl font-semibold">Ôi, hỏng rồi</h2>
@@ -45,4 +48,7 @@
 	</div>
 </section>
 
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
