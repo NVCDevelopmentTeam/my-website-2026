@@ -12,7 +12,12 @@
     const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     
     theme = savedTheme || systemTheme;
-    applyTheme(theme);
+    
+    // Only apply if the current state doesn't match the desired theme
+    const isDarkMode = document.documentElement.classList.contains('dark');
+    if ((theme === 'dark' && !isDarkMode) || (theme === 'light' && isDarkMode)) {
+      applyTheme(theme);
+    }
   });
 
   function applyTheme(newTheme) {
@@ -36,7 +41,7 @@
 
 <button
   onclick={toggleTheme}
-  class="p-2.5 rounded-xl bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 hover:text-sky-800 dark:hover:text-sky-400 border border-gray-200 dark:border-gray-800 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-sky-800 dark:focus:ring-sky-400 shadow-sm"
+  class="p-3 min-h-[48px] min-w-[48px] flex items-center justify-center rounded-xl bg-gray-50 dark:bg-gray-900 text-gray-950 dark:text-gray-50 hover:text-sky-800 dark:hover:text-sky-400 border border-gray-200 dark:border-gray-800 transition-[background-color,color,border-color,box-shadow] duration-200 focus:outline-none focus:ring-2 focus:ring-sky-800 dark:focus:ring-sky-400 shadow-sm"
   aria-label={theme === 'light' ? 'Chuyển sang chế độ tối' : 'Chuyển sang chế độ sáng'}
   title={theme === 'light' ? 'Bật chế độ tối' : 'Bật chế độ sáng'}
 >

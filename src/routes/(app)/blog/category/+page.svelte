@@ -4,10 +4,10 @@
 	const { data } = $props();
 	const { uniqueCategories, totalCategories } = $derived.by(() => data);
 
-	// SEO metadata - using $derived for reactivity
+	// SEO metadata - use $derived for reactivity
 	const metadata = $derived.by(() => ({
 		title: 'Danh mục bài viết',
-		description: `Khám phá ${totalCategories || 0} danh mục cho bài viết trên ${siteConfig.title}`
+		description: `Khám phá ${totalCategories || 0} danh mục bài viết trên ${siteConfig.title}`
 	}));
 </script>
 
@@ -28,10 +28,9 @@
 	<div class="max-w-3xl mx-auto">
 
 		<!-- Title -->
-		<h1 class="text-4xl font-bold text-center mb-10 text-gray-900 dark:text-white">
+		<h1 class="text-4xl font-black text-center mb-10 text-gray-950 dark:text-gray-50">
 			Tất cả danh mục 
-			<span class="text-gray-700 dark:text-gray-400 text-2xl">
-				({totalCategories || 0})
+			            <span class="text-gray-950 dark:text-gray-50 text-2xl">				({totalCategories || 0})
 			</span>
 		</h1>
 
@@ -47,7 +46,7 @@
 						>
 							<!-- Category name with count (WordPress style) -->
 							<span
-								class="text-lg font-medium text-sky-800 dark:text-blue-400 group-hover:underline"
+								class="text-lg font-black text-blue-800 dark:text-blue-300 group-hover:underline"
 							>
 								{category.title} ({category.count})
 							</span>
@@ -58,7 +57,7 @@
 			</ul>
 
 		{:else}
-			<p class="text-center text-gray-800 dark:text-gray-400 text-lg italic">
+			<p class="text-center text-gray-950 dark:text-gray-50 text-lg font-bold italic">
 				Chưa có danh mục nào được gắn cho bài viết.
 			</p>
 		{/if}

@@ -1,9 +1,9 @@
-export const ssr = true
+export const ssr = false
 export const prerender = true
 
 export const load = async ({ fetch }) => {
   try {
-    const response = await fetch('/sveltiaconfig.json')
+    const response = await fetch('/cmsConfig.json')
     if (!response.ok) {
       throw new Error('Không thể tải cấu hình CMS')
     }

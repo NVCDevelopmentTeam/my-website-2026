@@ -1,20 +1,27 @@
-import { getFilteredPosts, getAllTags } from '$lib/data/posts.server'
+import { getFilteredPosts, getAllTags } from '$lib/data/posts'
 import { siteConfig } from '$lib/config'
 import { error } from '@sveltejs/kit'
 import { building } from '$app/environment'
 
 export const prerender = true
 
+/** @type {import('./$types').EntryGenerator} */
 export async function entries() {
   const tags = getAllTags()
-  return tags.map((tag) => ({ tag: tag.slug }))
+
+  return tags
+    .filter((t) => t)
+    .map((t) => ({
+      tag: t.slug
+    }))
 }
 
+/** @type {import('./$types').PageLoad} */
 export async function load({ params, url }) {
   const tagSlug = params.tag
 
   if (!tagSlug) {
-    error(400, 'Tag không hợp lệ.')
+    error(400, 'Thẻ không hợp lệ.')
   }
 
   // Get all tags to find matching slug
@@ -22,7 +29,15 @@ export async function load({ params, url }) {
   const tagData = tags.find((t) => t.slug === tagSlug)
 
   if (!tagData) {
-    error(404, `Không tìm thấy tag "${tagSlug}".`)
+    error(404, `Không tìm thấy thẻ "${tagSlug}".`)
+  }
+
+  // Prepare tag metadata
+  const tagMetadata = {
+    title: tagData.name,
+    slug: tagData.slug,
+    count: tagData.count,
+    description: `Có ${tagData.count} bài viết với thẻ "${tagData.name}"`
   }
 
   // Current page - avoid accessing during prerender
@@ -34,47 +49,32 @@ export async function load({ params, url }) {
   const offset = (currentPage - 1) * perPage
 
   try {
-    // Get filtered posts by tag title
+    // Get filtered posts by tag name (posts store tag names)
     const { posts, total, totalPages } = getFilteredPosts({
       offset,
       limit: perPage,
-      tag: tagData.title
+      tag: tagMetadata.title
     })
-
-    // Handle empty tag case
-    if (total === 0) {
-      return {
-        tag: tagData,
-        posts: [],
-        // Metadata for Pagination component
-        metadata: {
-          page: 1,
-          total: 0
-          // baseUrl auto-detected: /blog/tag/{slug}
-        },
-        site: siteConfig
-      }
-    }
 
     // Check for page overflow
     if (currentPage > totalPages && totalPages > 0) {
-      error(404, `Trang ${currentPage} không tồn tại trong tag "${tagData.title}".`)
+      error(404, `Trang ${currentPage} không tồn tại trong thẻ "${tagMetadata.title}".`)
     }
 
     return {
-      tag: tagData,
+      tag: tagMetadata,
       posts,
-      // Metadata for Pagination component - clean & simple
-      metadata: {
-        page: currentPage,
-        total: total
-        // baseUrl will be auto-detected from URL: /blog/tag/{tagSlug}
-        // No need to pass slug or baseUrl - Pagination component handles it!
+      pagination: {
+        currentPage,
+        totalPages,
+        totalPosts: total,
+        hasPrev: currentPage > 1,
+        hasNext: currentPage < totalPages
       },
       site: siteConfig
     }
   } catch (err) {
     console.error('Error loading Tag page:', err)
-    error(500, 'Không thể tải posts theo tag này.')
+    error(500, 'Không thể tải bài viết theo thẻ này.')
   }
 }

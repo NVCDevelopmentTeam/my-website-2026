@@ -1,12 +1,13 @@
-import { getAllPages } from '$lib/data/pages.server'
-import { getFilteredPosts } from '$lib/data/posts.server'
+import { getAllPages } from '$lib/data/pages'
+import { getFilteredPosts, getAllCategories, getAllTags } from '$lib/data/posts'
 import { siteConfig } from '$lib/config'
 
 export const prerender = true
+export const trailingSlash = 'never'
 
 /**
  * Generate sitemap.xml for SEO
- * Includes: static pages, blog posts
+ * Includes: static pages, blog posts, categories, and tags
  */
 export async function GET({ setHeaders }) {
   setHeaders({
@@ -18,6 +19,8 @@ export async function GET({ setHeaders }) {
     // Fetch all content
     const { pages = [] } = (await getAllPages({ limit: -1 })) || {}
     const { posts = [] } = (await getFilteredPosts({ limit: -1 })) || {}
+    const categories = (await getAllCategories()) || []
+    const tags = (await getAllTags()) || []
 
     // Homepage entry
     const homepage = `
@@ -56,10 +59,34 @@ export async function GET({ setHeaders }) {
       })
       .join('')
 
+    // Categories
+    const categoriesXml = categories
+      .map(
+        (cat) => `
+  <url>
+    <loc>${siteConfig.siteUrl}/blog/category/${cat.metadata.slug}</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>`
+      )
+      .join('')
+
+    // Tags
+    const tagsXml = tags
+      .map(
+        (tag) => `
+  <url>
+    <loc>${siteConfig.siteUrl}/blog/tag/${tag.slug}</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.4</priority>
+  </url>`
+      )
+      .join('')
+
     // Generate XML
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${homepage}${pagesXml}${postsXml}
+${homepage}${pagesXml}${postsXml}${categoriesXml}${tagsXml}
 </urlset>`
 
     return new Response(xml.trim())

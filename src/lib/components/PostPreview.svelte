@@ -1,60 +1,48 @@
 <script>
+  import { truncate } from '$lib/utils/truncate'
+
   /**
-   * PostPreview - Only shows excerpt/description
-   * Other info (title, date, categories, tags) should be in separate components
-   * 
-   * @typedef {Object} Post
-   * @property {string} slug
-   * @property {Object} metadata
-   * @property {string} metadata.title
-   * @property {string} metadata.description
-   * @property {string} metadata.date
-   * @property {string[]} metadata.tags
-   * @property {string[]} metadata.categories
-   * @property {number} metadata.readingTime
+   * PostPreview - Shows preview excerpt for post listings
+   * - post.metadata.preview → Display excerpt (200-265 chars)
    */
   
-  /** @type {{ post: Post }} */
-  let { post } = $props();
+  let { post } = $props()
   
-  // Svelte 5: Use $derived for reactive computations from props
-  const description = $derived(post?.metadata?.description || '');
+  // Computations
+  const preview = $derived(post?.metadata?.preview || post?.metadata?.description || 'Bài viết chưa có đoạn trích.')
+  const hasValidPreview = $derived(
+    preview !== 'Bài viết chưa có đoạn trích.' && 
+    preview.trim().length > 0
+  )
+  const postUrl = $derived(`/blog/${post?.slug}`)
   
-  // Check if valid excerpt (not frontmatter, not empty, not fallback message)
-  const hasValidExcerpt = $derived(
-    description && 
-    description.trim().length > 0 && 
-    !description.startsWith('title:') && // Not frontmatter YAML
-    !description.startsWith('---') && // Not frontmatter delimiter
-    description !== 'Chưa có mô tả.'
-  );
-  
-  const postUrl = $derived(`/blog/${post?.slug}`);
+  // Truncate if too long (max 160 chars for approx 2 lines)
+  // Logic: truncate in JS for SEO/SSR content, but use CSS line-clamp for visual safety
+  const displayPreview = $derived(truncate(preview, 160))
 </script>
 
 <div class="mb-4">
-  {#if hasValidExcerpt}
-    <p class="text-gray-800 dark:text-gray-200 leading-relaxed">
-      {description}
+  {#if hasValidPreview}
+    <div class="text-gray-950 dark:text-gray-50 leading-relaxed line-clamp-2">
+      {displayPreview}
       <a
         href={postUrl}
-        class="ml-2 text-sky-800 dark:text-sky-400 font-bold hover:underline focus:outline-none focus:ring-2 focus:ring-sky-700 dark:focus:ring-sky-400 focus:ring-offset-2 dark:focus:ring-offset-gray-950 rounded transition-colors"
-        aria-label={`Đọc toàn bộ bài viết: ${post?.metadata?.title || post?.slug}`}
+        
+        class="ml-2 text-blue-800 dark:text-blue-300 font-bold hover:underline inline-block"
       >
         Đọc thêm →
       </a>
-    </p>
+    </div>
   {:else}
-    <p class="text-gray-800 dark:text-gray-400 italic leading-relaxed">
-      Chưa có mô tả.
+    <p class="text-gray-800 dark:text-gray-300 italic leading-relaxed">
+      Bài viết chưa có đoạn trích.
       <a
         href={postUrl}
-        class="ml-2 text-sky-800 dark:text-sky-400 font-bold hover:underline focus:outline-none focus:ring-2 focus:ring-sky-700 dark:focus:ring-sky-400 focus:ring-offset-2 dark:focus:ring-offset-gray-950 rounded transition-colors"
-        aria-label={`Xem bài viết: ${post?.metadata?.title || post?.slug}`}
+        
+        class="ml-2 text-blue-800 dark:text-blue-300 font-bold hover:underline"
       >
         Xem bài →
       </a>
     </p>
   {/if}
 </div>
-

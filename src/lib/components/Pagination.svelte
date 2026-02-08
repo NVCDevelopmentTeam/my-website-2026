@@ -1,6 +1,7 @@
 <script>
   import { page } from '$app/state';
   import { siteConfig } from '$lib/config';
+  import { browser } from '$app/environment';
 
   // Props from parent component - flexible naming
   let { 
@@ -13,73 +14,43 @@
   } = $props();
 
   // Auto-extract metadata from multiple sources
-  const extractedMetadata = $derived(() => {
-    const currentPath = page.url.pathname;
-    
+  const meta = $derived.by(() => {
     // Priority: pagination prop > metadata prop > data.pagination > data.metadata > individual props
     const metaSource = pagination || metadata || data?.pagination || data?.metadata || {};
     
-    let pageFromUrl = 1;
-    try {
-      // Only access searchParams if not in a context where it's forbidden
-      // SvelteKit throws when accessing search on a prerendered page
-      const urlParams = new URLSearchParams(page.url.search);
-      pageFromUrl = parseInt(urlParams.get('page') || '1', 10);
-    } catch {
-      // Fallback if search is inaccessible (e.g. during prerendering)
-      pageFromUrl = 1;
-    }
-    
-    // Auto-detect baseUrl from current path if not provided
+    // Auto-detect baseUrl
     let detectedBaseUrl = propBaseUrl || 
                          metaSource.baseUrl || 
                          data?.baseUrl || 
                          page.data?.baseUrl;
     
     if (!detectedBaseUrl) {
-      // Smart detection from URL
-      if (currentPath.includes('/blog/category/')) {
-        const slug = currentPath.split('/blog/category/')[1]?.split('?')[0]?.replace(/\/$/, '');
-        detectedBaseUrl = `/blog/category/${slug}`;
-      } else if (currentPath.includes('/blog/tag/')) {
-        const slug = currentPath.split('/blog/tag/')[1]?.split('?')[0]?.replace(/\/$/, '');
-        detectedBaseUrl = `/blog/tag/${slug}`;
-      } else if (currentPath.startsWith('/blog')) {
-        detectedBaseUrl = '/blog';
-      } else {
-        detectedBaseUrl = currentPath.split('?')[0].replace(/\/$/, '');
-      }
+      detectedBaseUrl = page.url.pathname.split('/page/')[0].replace(/\/$/, '') || '/';
     }
     
-    // Support both old format (currentPage, totalPosts) and new format (page, total)
+    // Extract values with better fallback
     const extractedPage = propCurrentPage || 
                          metaSource.currentPage ||
                          metaSource.page ||
                          data?.currentPage || 
-                         page.data?.metadata?.page ||
                          page.data?.currentPage ||
-                         pageFromUrl ||
                          1;
     
     const extractedTotal = propTotalPosts || 
                           metaSource.totalPosts ||
                           metaSource.total ||
                           data?.totalPosts || 
-                          page.data?.metadata?.total ||
-                          page.data?.totalPosts ||
                           0;
     
     return {
-      currentPage: extractedPage,
-      totalPosts: extractedTotal,
+      currentPage: Number(extractedPage),
+      totalPosts: Number(extractedTotal),
       baseUrl: detectedBaseUrl
     };
   });
 
   // Extract page info from metadata
-  let currentPage = $derived(extractedMetadata().currentPage);
-  let totalPosts = $derived(extractedMetadata().totalPosts);
-  let baseUrl = $derived(extractedMetadata().baseUrl);
+  const { currentPage, totalPosts, baseUrl } = $derived(meta);
 
   // Get config from siteConfig
   const perPage = siteConfig.pagination.postsPerPage;
@@ -90,18 +61,8 @@
   const hasNext = $derived(currentPage < totalPages);
   const hasPrev = $derived(currentPage > 1);
 
-  // Auto scroll to top when page changes (Svelte 5 runes mode)
-  $effect(() => {
-    // Trigger on currentPage change
-    currentPage;
-    // Scroll to top instantly (like page reload)
-    if (typeof window !== 'undefined') {
-      window.scrollTo({ top: 0, behavior: 'instant' });
-    }
-  });
-
   // Generate page numbers array (WordPress style)
-  let pageNumbers = $derived(() => {
+  const pageNumbers = $derived.by(() => {
     const pages = [];
     
     if (totalPages <= maxVisible) {
@@ -136,30 +97,34 @@
     return pages;
   });
 
-  // Build URL
+  // Build URL - Now using query parameters as requested
   function buildUrl(pageNum) {
     if (pageNum === 1) {
       return baseUrl;
     }
-    return `${baseUrl}?page=${pageNum}`;
+    
+    // Always use query parameters for pagination as per requirements
+    // Format: baseUrl?page=X
+    const separator = baseUrl.includes('?') ? '&' : '?';
+    return `${baseUrl}${separator}page=${pageNum}`;
   }
 </script>
 
 {#if totalPages > 1}
-  <nav class="flex justify-center items-center mt-12 mb-8" aria-label="Phân trang">
+  <nav class="flex justify-center items-center mt-8 mb-4">
     
-    <ul class="inline-flex items-center gap-2">
+    <ul class="inline-flex items-center gap-1">
       
       <!-- Previous Button -->
       {#if hasPrev}
         <li>
           <a
             href={buildUrl(currentPage - 1)}
-            class="inline-flex items-center gap-1.5 px-4 py-2.5 text-sm font-bold text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-sky-800 dark:focus:ring-sky-400"
-            aria-label="Trang trước"
+            data-sveltekit-preload-data="hover"
+            class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-bold text-gray-950 dark:text-gray-50 bg-white dark:bg-gray-800 border border-gray-400 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
           >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
             </svg>
             <span>Trước</span>
           </a>
@@ -167,15 +132,15 @@
       {/if}
 
       <!-- Page Numbers -->
-      {#each pageNumbers() as num (typeof num === 'number' ? `page-${num}` : `ellipsis-${Math.random()}`)}
-        <li>
+      {#each pageNumbers as num, i (typeof num === 'number' ? `page-${num}` : `ellipsis-${i}`)}
+        <li class="{typeof num === 'number' && Math.abs(num - currentPage) > 1 && num !== 1 && num !== totalPages ? 'hidden md:block' : ''}">
           {#if num === '...'}
-            <span class="inline-flex items-center justify-center w-10 h-10 text-sm font-bold text-gray-800 dark:text-gray-400">
+            <span class="inline-flex items-center justify-center w-10 h-10 text-sm font-bold text-gray-950 dark:text-gray-400">
               …
             </span>
           {:else if num === currentPage}
             <span
-              class="inline-flex items-center justify-center w-10 h-10 text-sm font-black text-white bg-sky-800 dark:bg-sky-400 dark:text-gray-950 border border-sky-800 dark:border-sky-400 rounded-xl cursor-default shadow-md shadow-sky-500/20"
+              class="inline-flex items-center justify-center w-10 h-10 text-sm font-black text-white bg-sky-950 dark:bg-sky-400 dark:text-gray-950 border border-sky-950 dark:border-sky-400 rounded cursor-default"
               aria-current="page"
               aria-label="Trang {num}"
             >
@@ -184,7 +149,8 @@
           {:else}
             <a
               href={buildUrl(num)}
-              class="inline-flex items-center justify-center w-10 h-10 text-sm font-bold text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 hover:border-sky-800 dark:hover:border-sky-400 transition-colors focus:outline-none focus:ring-2 focus:ring-sky-800 dark:focus:ring-sky-400"
+              data-sveltekit-preload-data="hover"
+              class="inline-flex items-center justify-center w-10 h-10 text-sm font-bold text-gray-950 dark:text-gray-50 bg-white dark:bg-gray-800 border border-gray-400 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-500 dark:hover:border-gray-400 transition-colors"
               aria-label="Trang {num}"
             >
               {num}
@@ -198,12 +164,13 @@
         <li>
           <a
             href={buildUrl(currentPage + 1)}
-            class="inline-flex items-center gap-1.5 px-4 py-2.5 text-sm font-bold text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-sky-800 dark:focus:ring-sky-400"
+            data-sveltekit-preload-data="hover"
+            class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-bold text-gray-950 dark:text-gray-50 bg-white dark:bg-gray-800 border border-gray-400 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
             aria-label="Trang sau"
           >
             <span>Sau</span>
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
             </svg>
           </a>
         </li>
@@ -213,4 +180,3 @@
 
   </nav>
 {/if}
-

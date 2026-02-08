@@ -1,6 +1,8 @@
 import { json } from '@sveltejs/kit'
 import { siteConfig } from '$lib/config'
+
 export const prerender = true
+export const trailingSlash = 'never'
 
 /**
  * Sveltia CMS configuration with WordPress-like slug behavior
@@ -106,16 +108,16 @@ export async function GET() {
           {
             label: 'Categories',
             name: 'categories',
-            widget: 'list',
+            widget: 'string',
             required: false,
-            hint: 'Add categories one by one'
+            hint: 'Enter categories separated by commas (e.g., Tech, News)'
           },
           {
             label: 'Tags',
             name: 'tags',
-            widget: 'list',
+            widget: 'string',
             required: false,
-            hint: 'Add tags one by one'
+            hint: 'Enter tags separated by commas (e.g., svelte, tailwind)'
           },
           {
             label: 'Content',

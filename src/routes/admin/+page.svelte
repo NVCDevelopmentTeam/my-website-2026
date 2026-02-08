@@ -31,12 +31,12 @@
 </svelte:head>
 
 {#if cmsError}
-	<div class="text-red-500 text-center mt-10">
-		<h2 class="text-2xl font-bold">Khởi tạo CMS thất bại</h2>
-		<p class="mt-2">{cmsError.message}</p>
+	<div class="text-red-800 dark:text-red-400 text-center mt-10">
+		<h2 class="text-2xl font-black">Khởi tạo CMS thất bại</h2>
+		<p class="mt-2 font-bold">{cmsError.message}</p>
 	</div>
 {:else if !cmsInitialized}
-	<div class="text-center text-lg mt-10">
+	<div class="text-center text-lg mt-10 text-gray-950 dark:text-gray-50 font-bold">
 		<p>Đang tải Hệ thống quản lý nội dung…</p>
 	</div>
 {:else}

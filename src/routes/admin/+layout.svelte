@@ -16,7 +16,7 @@
 		<div class="max-w-7xl mx-auto px-4 flex items-center justify-between py-4">
 			<a href="/admin" class="flex items-center gap-3">
 				<img src={logo} alt="Logo Coding Nguyễn" class="h-10 w-auto rounded-full" loading="lazy" decoding="async" />
-				<span class="text-xl font-semibold text-gray-900 dark:text-gray-100 tracking-wide">
+				<span class="text-xl font-black text-gray-950 dark:text-gray-50 tracking-wide">
 					Bảng quản trị
 				</span>
 			</a>
@@ -35,11 +35,11 @@
 		<div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm">
 			<a
 				href="/"
-				class="text-sky-800 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300 font-medium transition-colors"
+				class="text-sky-800 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300 font-bold transition-colors"
 			>
 				← Quay về trang chủ
 			</a>
-			<p class="text-gray-800 dark:text-gray-400">
+			<p class="text-gray-950 dark:text-gray-50 font-bold">
 				{siteConfig?.title ?? 'Coding Nguyễn'} Quản trị
 			</p>
 		</div>

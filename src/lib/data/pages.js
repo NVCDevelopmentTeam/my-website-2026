@@ -1,26 +1,32 @@
 // Import all markdown files from the specific directory
 // 'eager: true' ensures the data is loaded immediately for Server Side Rendering
-const modules = import.meta.glob('/src/lib/contents/pages/*.md', { eager: true })
+// Optimization: Load only metadata for listing pages
+const modules = import.meta.glob('/src/lib/contents/pages/*.md', {
+  eager: true,
+  import: 'metadata'
+})
+// Separate glob for full content loading (lazy loaded when needed via dynamic import would be ideal, but for static site generation eager is fine, or we keep it this way for getPageBySlug)
+// Actually, for getPageBySlug with dynamic imports in the load function, we might not need this here if we change getPageBySlug to dynamic import.
+// But sticking to the current pattern:
+const contentModules = import.meta.glob('/src/lib/contents/pages/*.md', { eager: true })
 
 /**
  * Global constant 'pages': Parsed list of all markdown pages.
  * This array is generated once when the server starts.
  */
-export const pages = Object.entries(modules).map(([filepath, module]) => {
-  // Extract slug from filename (e.g., /path/to/about.md -> about)
-  const slug = filepath.split('/').pop().replace('.md', '')
-  const metadata = module.metadata ?? {}
+export const pages = Object.entries(modules).map(([filepath, metadata]) => {
+  // Extract default slug from filename
+  const filename = filepath.split('/').pop().replace('.md', '')
+
+  // Priority: 1. metadata.slug (custom) 2. filename (default)
+  const slug = metadata.slug || filename
 
   // Generate a brief preview for SEO description or UI cards
-  const preview =
-    metadata.description ||
-    (module.default
-      ?.toString()
-      ?.slice(0, 150)
-      .replace(/<[^>]+>/g, '') ?? '') + '…'
+  const preview = metadata.description || '...'
 
   return {
     slug,
+    filename,
     metadata: {
       title: metadata.title ?? slug,
       description: metadata.description ?? preview,
@@ -37,11 +43,12 @@ export const pages = Object.entries(modules).map(([filepath, module]) => {
  * * IMPORTANT: We use the Spread operator [...] to create shallow copies
  * before sorting. This prevents "Hydration Mismatch" errors in SvelteKit
  * by ensuring the global 'pages' array remains in its original order.
- * * @param {Object} options
- * @param {number} options.limit - Max number of items to return (-1 for all)
- * @param {string} options.menu - Filter by menu location key (e.g., 'nav')
+ * * @param {Object} [options]
+ * @param {number} [options.limit] - Max number of items to return (-1 for all)
+ * @param {string} [options.menu] - Filter by menu location key (e.g., 'nav')
  */
-export function getAllPages({ limit = -1, menu = '' } = {}) {
+export function getAllPages(options = {}) {
+  const { limit = -1, menu = '' } = options
   // 1. Create a working copy of the global pages array
   let resultPages = [...pages]
 
@@ -70,7 +77,10 @@ export function getAllPages({ limit = -1, menu = '' } = {}) {
  * @param {string} slug - The filename/slug of the markdown file.
  */
 export function getPageBySlug(slug) {
-  const match = Object.entries(modules).find(([path]) => path.endsWith(`${slug}.md`))
+  const match = Object.entries(contentModules).find(([path, module]) => {
+    const filename = path.split('/').pop().replace('.md', '')
+    return module.metadata?.slug === slug || filename === slug
+  })
   if (!match) throw new Error(`Page not found: ${slug}`)
 
   const [, module] = match

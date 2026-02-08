@@ -1,4 +1,4 @@
-import { getPageBySlug, getAllPages } from '$lib/data/pages.server'
+import { getPageBySlug, getAllPages } from '$lib/data/pages'
 import { error } from '@sveltejs/kit'
 
 export const prerender = true

@@ -1,26 +1,47 @@
+import { dev } from '$app/environment'
+
 export const siteConfig = {
+  // Site metadata
   title: 'Góc thư giãn',
   description: 'Lan tỏa nguồn năng lượng tích cực mỗi ngày',
+  siteDomain: 'nhatkyanhsang.vn',
+  siteUrl: dev ? 'http://localhost:5173' : 'https://nhatkyanhsang.vn',
+  language: 'vi',
+  // Geo metadata for SEO
+  geo: {
+    region: 'VN',
+    placename: 'Ho Chi Minh City',
+    position: '10.762622;106.660172',
+    icbm: '10.762622, 106.660172'
+  },
+
+  // Author info
   author: {
     name: 'Coding Nguyễn',
     email: 'contact@codingnguyen.dev',
+    // Public Access Key for Web3Forms (https://web3forms.com/)
+    // DO NOT put private/secret keys here as this file is exposed to the client.
     accessKey: ''
   },
 
-  siteDomain: 'nhatkyanhsang.vn',
-  siteUrl: 'https://nhatkyanhsang.vn',
-  language: 'vi',
+  // Blog configuration
+  blog: {
+    basePath: '/blog',
+    postsPerPage: 10
+  },
 
+  // Theme settings
   theme: {
     color: '#333333',
     background: '#ffffff'
   },
 
-  // Standard pagination for the entire site
+  // Pagination (legacy support)
   pagination: {
     postsPerPage: 10
   },
 
+  // Social links
   social: {
     facebook: '/',
     zalo: '/',
@@ -28,10 +49,8 @@ export const siteConfig = {
     viber: '/'
   },
 
-  // Backwards-compatibility alias:
-  // Some older files referenced `siteConfig.url`. Keep an alias so we don't
-  // break runtime immediately. Primary canonical value remains `siteUrl`.
+  // Backwards-compatibility alias
   get url() {
-    return this.siteUrl;
+    return this.siteUrl
   }
 }

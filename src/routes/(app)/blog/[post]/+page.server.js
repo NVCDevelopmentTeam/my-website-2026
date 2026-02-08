@@ -1,4 +1,4 @@
-import { getPostBySlug, getFilteredPosts } from '$lib/data/posts.server'
+import { getPostBySlug, getFilteredPosts } from '$lib/data/posts'
 import { error } from '@sveltejs/kit'
 
 export const prerender = true
@@ -66,7 +66,9 @@ export async function load({ params }) {
       }
     }
   } catch (err) {
-    console.error('Error loading post:', err)
+    if (!err.message?.includes('Invalid slug')) {
+      console.error('Error loading post:', err)
+    }
     error(404, `Post not found: ${slugOrRaw}`)
   }
 }

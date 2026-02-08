@@ -2,46 +2,45 @@
 	import { siteConfig } from '$lib/config';
 	import PostsList from '$lib/components/PostsList.svelte';
 	import Pagination from '$lib/components/Pagination.svelte';
-	import Seo from 'sk-seo';
+	import SEO from '$lib/components/SEO.svelte';
 	import { getSeoConfig } from '$lib/utils/seo';
-	import { page } from '$app/state';
 
-	const { data } = $props();
-	const { category, posts } = $derived.by(() => data);
+  let { data } = $props();
 
-	const seoConfig = $derived(getSeoConfig({
-		title: `Danh mục: ${category?.title || 'Không xác định'}`,
-		description: category?.description || `Các bài viết thuộc danh mục "${category?.title || 'này'}" trên ${siteConfig.title}.`,
-		url: page.url.pathname
-	}));
+  // Reactive in Svelte 5 style - extract category and posts
+  let category = $derived(data.category); // Tag object: { name, slug, count, description, title }
+  let posts = $derived(data.posts);
+
+	const seoConfig = $derived(
+		getSeoConfig({
+			title: `Danh mục: ${category?.title || 'Không xác định'}`,
+			description: category?.description || `Các bài viết thuộc danh mục "${category?.title || 'này'}" trên ${siteConfig.title}.`,
+			url: `/blog/category/${category?.slug}`
+		})
+	);
 </script>
 
-<svelte:head>
-	<Seo {...seoConfig} />
-</svelte:head>
+<SEO {...seoConfig} />
 
-<section class="max-w-4xl mx-auto px-4 py-12">
-	<h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+<section class="px-4 py-12">
+	<h1 class="text-3xl font-black text-gray-950 dark:text-gray-50">
 		{category?.title || 'Danh mục'}
 	</h1>
 	
-	{#if category?.description}
-		<p class="mt-2 text-gray-600 dark:text-gray-400">
-			{category.description}
-		</p>
-	{/if}
+	<p class="mt-2 text-gray-950 dark:text-gray-50 font-bold">
+		Danh mục {category?.title} có {data.pagination?.totalPosts || 0} bài viết
+	</p>
 
-	{#if posts?.length > 0}
-		<!-- Like WordPress: post list -->
+	{#if posts.length > 0}
 		<PostsList {posts} />
 
 		<!-- Pagination - pass data.metadata from server -->
-		<div class="mt-10">
-			<Pagination metadata={data.metadata} />
+		<div class="mt-12">
+			<Pagination pagination={data.pagination} />
 		</div>
 	{:else}
-		<p class="text-center text-gray-600 dark:text-gray-400 italic mt-8">
-			Chưa có bài viết nào trong danh mục này.
+		<p class="text-center text-gray-950 dark:text-gray-50 font-bold italic mt-8">
+			Chưa có posts nào trong danh mục này.
 		</p>
 	{/if}
 </section>

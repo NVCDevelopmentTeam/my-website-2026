@@ -4,19 +4,19 @@
 
 import { siteConfig } from '$lib/config'
 
-// =======================
-// DEFAULT SEO CONFIG
-// =======================
+/**
+ * Default SEO configuration for the site
+ */
 export const defaultSeoConfig = {
   title: siteConfig.title,
   description: siteConfig.description,
   canonical: siteConfig.siteUrl,
-
   openGraph: {
     type: 'website',
     url: siteConfig.siteUrl,
     title: siteConfig.title,
     description: siteConfig.description,
+    site_name: siteConfig.title,
     images: [
       {
         url: `${siteConfig.siteUrl}/og-image.jpg`,
@@ -26,35 +26,53 @@ export const defaultSeoConfig = {
       }
     ]
   },
-
   twitter: {
-    card: 'summary_large_image'
+    cardType: 'summary_large_image',
+    site: siteConfig.social.github,
+    handle: siteConfig.social.github,
+    title: siteConfig.title,
+    description: siteConfig.description,
+    image: `${siteConfig.siteUrl}/og-image.jpg`
   }
 }
 
 /**
- * Get SEO config for a specific page/post
- * @param {Object} options 
- * @param {string} options.title 
- * @param {string} options.description 
- * @param {string} options.url 
- * @param {string} [options.image]
+ * Get SEO configuration for a specific page
  */
 export function getSeoConfig({ title, description, url, image }) {
   const fullTitle = `${title} — ${siteConfig.title}`
   const fullUrl = `${siteConfig.siteUrl}${url}`
-  
+  const seoDescription = description || siteConfig.description
+  const seoImage = image ? `${siteConfig.siteUrl}${image}` : `${siteConfig.siteUrl}/og-image.jpg`
+
   return {
     ...defaultSeoConfig,
     title: fullTitle,
-    description: description || siteConfig.description,
+    description: seoDescription,
     canonical: fullUrl,
     openGraph: {
       ...defaultSeoConfig.openGraph,
       title: fullTitle,
-      description: description || siteConfig.description,
+      description: seoDescription,
       url: fullUrl,
-      images: image ? [{ url: `${siteConfig.siteUrl}${image}`, alt: title }] : defaultSeoConfig.openGraph.images
+      images: [{ url: seoImage, alt: title }]
+    },
+    twitter: {
+      ...defaultSeoConfig.twitter,
+      title: fullTitle,
+      description: seoDescription,
+      image: seoImage
     }
   }
+}
+
+/**
+ * Safely serialize JSON-LD schema for injection into HTML
+ * Prevents XSS by escaping </script> tags
+ * @param {Object} schema
+ * @returns {string|null}
+ */
+export function serializeSchema(schema) {
+  if (!schema) return null
+  return `<script type="application/ld+json">${JSON.stringify(schema).replace(/<\/script>/g, '<\\/script>')}</script>`
 }

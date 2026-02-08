@@ -1,7 +1,8 @@
-import { getFilteredPosts } from '$lib/data/posts.server'
+import { getFilteredPosts } from '$lib/data/posts'
 import { siteConfig } from '$lib/config'
 
 export const prerender = true
+export const trailingSlash = 'never'
 
 /**
  * Generate RSS feed for blog posts

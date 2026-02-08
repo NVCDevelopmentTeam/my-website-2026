@@ -25,16 +25,17 @@
 </script>
 
 {#if footerPages.length > 0}
-  <nav aria-label="Liên kết pháp lý">
-    <ul class="flex flex-col gap-3">
+  <nav>
+    <ul class="flex flex-col gap-1">
       {#each footerPages as p (p.slug)}
         <li>
           <a
             href={getHref(p.slug)}
-            class="text-sm text-gray-700 dark:text-gray-300 hover:text-sky-800 dark:hover:text-sky-400 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-sky-800 dark:focus:ring-sky-400 rounded-sm font-medium"
-            class:font-bold={isCurrentPage(p.slug)}
+            
+            class="inline-block py-2.5 px-1 text-sm text-gray-950 dark:text-gray-50 hover:text-sky-800 dark:hover:text-sky-400 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-sky-800 dark:focus:ring-sky-400 rounded-sm font-bold"
+            class:font-black={isCurrentPage(p.slug)}
             class:text-sky-900={isCurrentPage(p.slug)}
-            class:dark:text-white={isCurrentPage(p.slug)}
+            class:dark:text-sky-300={isCurrentPage(p.slug)}
             aria-current={isCurrentPage(p.slug) ? 'page' : undefined}
           >
             {p.metadata.title}

@@ -4,15 +4,19 @@ import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
   plugins: [sveltekit(), tailwindcss()],
+
   build: {
-    rollupOptions: {
-      output: {
-        manualChunks: (id) => {
-          if (id.includes('@sveltia/cms')) {
-            return 'sveltia-cms'
-          }
-        }
-      }
+    // Minify output
+    minify: true,
+    // Enable css code splitting
+    cssCodeSplit: true,
+    // Report compressed size
+    reportCompressedSize: false
+  },
+
+  server: {
+    fs: {
+      allow: ['.']
     }
   }
 })

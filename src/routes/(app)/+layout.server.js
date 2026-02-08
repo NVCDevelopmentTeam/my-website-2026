@@ -1,10 +1,15 @@
-import { getAllPages } from '$lib/data/pages.server'
-import { getFilteredPosts, getAllCategories, getAllTags } from '$lib/data/posts.server'
+import { getAllPages } from '$lib/data/pages'
+import { getFilteredPosts, getAllCategories, getAllTags } from '$lib/data/posts'
 import { error } from '@sveltejs/kit'
 
 export const prerender = true
 /** @type {import('./$types').LayoutServerLoad} */
-export async function load() {
+export async function load({ setHeaders }) {
+  // Set cache headers for better performance
+  setHeaders({
+    'cache-control': 'public, max-age=3600'
+  })
+
   try {
     // Get all pages to support Logo/Search/Breadcrumbs
     const { pages: allPages } = getAllPages()

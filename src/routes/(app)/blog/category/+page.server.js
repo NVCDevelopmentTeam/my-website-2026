@@ -1,4 +1,4 @@
-import { getAllCategories } from '$lib/data/posts.server'
+import { getAllCategories } from '$lib/data/posts'
 import { error } from '@sveltejs/kit'
 
 export const prerender = true
@@ -6,7 +6,17 @@ export const prerender = true
 /** @type {import('./$types').PageServerLoad} */
 export async function load() {
   try {
-    const uniqueCategories = getAllCategories()
+    const categories = getAllCategories()
+
+    // Flatten metadata for easier use in template
+    const uniqueCategories = categories.map((c) => ({
+      title: c.metadata.title,
+      slug: c.metadata.slug,
+      count: c.metadata.count
+    }))
+
+    // Sort alphabetically by title
+    uniqueCategories.sort((a, b) => a.title.localeCompare(b.title, 'vi'))
 
     return {
       uniqueCategories,

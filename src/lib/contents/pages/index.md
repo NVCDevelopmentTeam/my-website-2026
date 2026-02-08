@@ -3,16 +3,16 @@ title: Trang chủ
 menu: 'nav'
 ---
 
-# Hế lô anh em, mình là Coding Nguyễn! 👋
+# Chào anh em, mình là Coding Nguyễn! 👋
 
 Rất vui vì anh em đã vô tình (hoặc hữu ý) ghé chơi cái blog nhỏ này của mình.
 
-Như cái tên, mình là một thằng **Dev**, suốt ngày cắm mặt vào màn hình và mấy dòng code khô khan. Nhưng nói trước để anh em đỡ kỳ vọng nhé: cái blog này không phải là nơi mình dạy về _Design Pattern_ hay mấy cái thuật toán hack não – mấy thứ đó trên Google thiếu gì, mà thú thật là ngồi viết về chúng cũng mệt lắm, để thời gian đó đi làm ly cà phê cho sướng.
+Như cái tên, mình là một thằng **A11y Tester**, suốt ngày cắm mặt vào màn hình để đi "soi" xem cái web, cái app có thân thiện với tất cả mọi người hay không. Nhưng đừng kỳ vọng ở đây có những bài hướng dẫn kỹ thuật khô khan hay Design Pattern hack não nhé. Mấy thứ đó trên Google thiếu gì, mà thú thật là ngồi viết về chúng cũng mệt lắm, để thời gian đó đi làm ly cà phê cho sướng.
 
-Đây đơn giản là nơi mình **"ghi log" lại mấy chuyện linh tinh** giữa dòng đời:
+Nơi này đơn giản là cuốn nhật ký **"ghi log"** lại hành trình mình đi code dạo, đi test dạo và cả những mẩu chuyện vụn vặt giữa dòng đời:
 
-- Có hôm cuộc đời mượt không tì vết, nhưng cũng có hôm dính **bug** tình cảm, **bug** tài chính làm mình xỉu ngang xỉu dọc.
-- Có những suy nghĩ vụn vặt về đủ thứ trên đời, nếu không gõ ra cho nhẹ máy, mình sợ đầu mình sớm muộn cũng bị "tràn bộ nhớ".
+- Có hôm công việc mượt không tì vết, nhưng cũng có hôm dính **bug** tình cảm, **bug** tài chính làm mình xỉu ngang xỉu dọc.
+- Có những suy nghĩ vụn vặt về đủ thứ trên đời, từ việc hôm nay ăn gì đến việc làm sao để cân bằng giữa "deadline" và "đi ngủ".
 
 ## **Mấy cái "cam kết" nhà làm:**
 
