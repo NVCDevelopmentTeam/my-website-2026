@@ -17,6 +17,9 @@ const config = {
   kit: {
     // Use the static adapter for building a static site
     adapter: adapter({
+      pages: 'build',
+      assets: 'build',
+      precompress: true,
       strict: true,
       fallback: '404.html'
     }),

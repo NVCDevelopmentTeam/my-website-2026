@@ -123,7 +123,13 @@
     text-rendering: optimizeLegibility;
     -webkit-tap-highlight-color: transparent;
     /* Use Inter with fallback that has matched metrics */
-    font-family: 'Inter', 'Inter Fallback', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    font-family:
+      'Inter',
+      'Inter Fallback',
+      ui-sans-serif,
+      system-ui,
+      -apple-system,
+      sans-serif;
     min-height: 100vh;
     overflow-x: hidden;
   }
@@ -143,7 +149,7 @@
   }
 
   p {
-    @apply leading-relaxed text-gray-950 dark:text-gray-50 font-medium;
+    @apply leading-relaxed font-medium text-gray-950 dark:text-gray-50;
   }
 
   img {
@@ -157,7 +163,7 @@
   .focus-ring {
     @apply focus-visible:ring-2 focus-visible:ring-sky-700 focus-visible:ring-offset-2 focus-visible:outline-none dark:focus-visible:ring-sky-400 dark:focus-visible:ring-offset-gray-950;
   }
-  
+
   /* Prevent CLS for common elements */
   .stable-grid {
     display: grid;

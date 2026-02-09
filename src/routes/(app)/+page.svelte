@@ -1,6 +1,6 @@
 <script>
   import PageContent from '$lib/components/PageContent.svelte';
-  import RecentPosts from '$lib/components/RecentPosts.svelte';
+	import PostsList from '$lib/components/PostsList.svelte';
   import SEO from '$lib/components/SEO.svelte';
   import { siteConfig } from '$lib/config';
   import { serializeSchema } from '$lib/utils/seo';
@@ -63,11 +63,11 @@
         <div class="h-px flex-grow bg-gray-100 dark:bg-gray-800"></div>
       </div>
       
-      <RecentPosts recentPosts={recentPosts} />
+  PostsList recentPosts={recentPosts} />
       
       <div class="pt-8">
         <a href="/blog" data-sveltekit-preload-data="hover" class="inline-flex px-8 py-4 rounded-full bg-gray-950 dark:bg-white text-white dark:text-gray-950 font-black text-sm hover:scale-105 transition-transform shadow-xl">
-          Khám phá toàn bộ bài viết
+          Xem tất cả bài viết
         </a>
       </div>
     </section>
