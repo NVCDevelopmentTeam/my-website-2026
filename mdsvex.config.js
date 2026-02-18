@@ -1,7 +1,5 @@
 // mdsvex.config.js
 import { visit } from 'unist-util-visit'
-import remarktoc from 'remark-toc'
-import rehypeSlug from 'rehype-slug'
 import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import remarkHeadings from '@vcarl/remark-headings'
 import { slugify } from './src/lib/utils/slugify.js'
@@ -105,18 +103,21 @@ function remarkSlug() {
 }
 
 /* -----------------------------------------------------
-   🧩 Rehype Plugin - Lazy Load Images
+   🧩 Rehype Plugin - Lazy Load Images (excluding first image)
 ----------------------------------------------------- */
 function rehypeLazyLoadImages() {
   return function transformer(tree) {
+    let imgCount = 0
     visit(tree, 'element', (node) => {
       if (node.tagName === 'img') {
+        imgCount++
         if (!node.properties) {
           node.properties = {}
         }
 
-        // Always add loading="lazy" for performance
-        if (!node.properties.loading) {
+        // Only add loading="lazy" for images after the first one
+        // to avoid delaying LCP if the first image is above the fold
+        if (imgCount > 1 && !node.properties.loading) {
           node.properties.loading = 'lazy'
         }
 
@@ -182,12 +183,7 @@ function rehypeExternalLinks() {
 
 const config = {
   extensions: ['.svx', '.md'],
-  remarkPlugins: [
-    remarkExtractContent,
-    remarkSlug,
-    remarkHeadings,
-    [remarktoc, { heading: 'mục lục|table of contents|nội dung', tight: true, maxDepth: 3 }]
-  ],
+  remarkPlugins: [remarkExtractContent, remarkSlug, remarkHeadings],
   rehypePlugins: [
     rehypeExtractToc,
     [rehypeAutolinkHeadings, { behavior: 'wrap' }],

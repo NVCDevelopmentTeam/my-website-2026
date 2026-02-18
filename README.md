@@ -15,7 +15,7 @@ To recreate this project with the same configuration:
 
 ```sh
 # recreate this project
-bun x sv create --template minimal --no-types --install bun a
+npx sv create --template demo --no-types --no-install my website
 ```
 
 ## Developing
