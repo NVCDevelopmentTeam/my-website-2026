@@ -1,1 +1,0 @@
-function f(t,r,e="..."){if(!t||t.length<=r)return t;let n=t.substring(0,r);const c=Math.floor(r*.2),s=Math.max(n.lastIndexOf("."),n.lastIndexOf("!"),n.lastIndexOf("?"));if(s>r-c)return n.substring(0,s+1);const a=n.lastIndexOf(" ");return a===-1?n+e:n.slice(0,a).trim()+e}export{f as t};
