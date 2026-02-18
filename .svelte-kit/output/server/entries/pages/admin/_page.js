@@ -1,0 +1,1 @@
+const t=!1,s=!0,c=async({fetch:n})=>{try{const r=await n("/cmsConfig.json");if(!r.ok)throw new Error("Không thể tải cấu hình CMS");return{config:await r.json()}}catch(r){return console.error("Error loading configuration:",r),{config:null,error:"Không thể kết nối với hệ thống quản trị. Vui lòng thử lại sau."}}};export{c as load,s as prerender,t as ssr};

@@ -1,0 +1,1 @@
+import{b as t}from"../../../../../chunks/posts.js";import{error as o}from"@sveltejs/kit";const a=!0;async function s(){try{const r=t();return{tags:r,totalTags:r.length}}catch(r){console.error("Error loading tags:",r),o(500,"Không thể tải danh sách thẻ.")}}export{s as load,a as prerender};

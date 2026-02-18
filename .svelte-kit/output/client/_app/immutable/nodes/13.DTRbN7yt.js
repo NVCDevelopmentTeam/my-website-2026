@@ -1,0 +1,1 @@
+import{l as t,P as o}from"../chunks/gyzqOnso.js";import"../chunks/DN1fDwAb.js";async function n({params:a}){const e=a.page;return await t(e)}const g=Object.freeze(Object.defineProperty({__proto__:null,load:n},Symbol.toStringTag,{value:"Module"}));function p(a,e){o(a,{get data(){return e.data}})}export{p as component,g as universal};

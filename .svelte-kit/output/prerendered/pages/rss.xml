@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" 
+     xmlns:atom="http://www.w3.org/2005/Atom"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Góc thư giãn</title>
+    <link>https://nhatkyanhsang.vn</link>
+    <description>Lan tỏa nguồn năng lượng tích cực mỗi ngày</description>
+    <language>vi</language>
+    <lastBuildDate>Fri, 13 Feb 2026 14:12:34 GMT</lastBuildDate>
+    <atom:link href="https://nhatkyanhsang.vn/rss.xml" rel="self" type="application/rss+xml" />
+    
+  </channel>
+</rss>
