@@ -1,6 +1,0 @@
-ignoredBuiltDependencies:
-  - svelte-preprocess
-
-onlyBuiltDependencies:
-  - esbuild
-  - '@tailwindcss/oxide'

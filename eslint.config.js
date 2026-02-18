@@ -1,63 +1,42 @@
-import { defineConfig } from 'eslint/config'
-import { includeIgnoreFile } from '@eslint/compat'
-import js from '@eslint/js'
-import eslintPluginSvelte from 'eslint-plugin-svelte'
-import prettierConfig from 'eslint-config-prettier'
-import globals from 'globals'
-import svelteParser from 'svelte-eslint-parser'
-import svelteConfig from './svelte.config.js'
-import { fileURLToPath } from 'node:url'
-import { dirname, resolve } from 'node:path'
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
-// Resolve full absolute path to `.gitignore`
-const gitignorePath = resolve(__dirname, '.gitignore')
-
-/** @type {import('eslint').Linter.FlatConfig[]} */
-export default defineConfig([
-  // 1. Load ignore patterns from .gitignore using absolute path
-  includeIgnoreFile(gitignorePath),
-
-  // 2. JS + Svelte + Prettier recommended configs
+import globals from "globals";
+import js from "@eslint/js";
+// I hate TS only using js
+export default [
   js.configs.recommended,
-  ...eslintPluginSvelte.configs['flat/recommended'],
-  prettierConfig,
-  ...eslintPluginSvelte.configs['flat/prettier'],
-
-  // 3. Set global browser + node globals
   {
     languageOptions: {
       globals: {
         ...globals.browser,
         ...globals.node,
-        client: 'readonly',
-        gtag: 'readonly'
+        App: "readonly",
+        Page: "readonly",
+        AppSideService: "readonly",
+        GestureHandler: "readonly",
+        __DEV__: "readonly",
+        Speech: "readonly",
+        hmUI: "readonly",
+        DEVICE_CAPABILITIES: "readonly",
+        createWidget: "readonly",
+        widget: "readonly",
+        DEVICE_WIDTH: "readonly",
+        GestureManager: "readonly",
+        gettext: "readonly",
+        EventManager: "readonly",
+        getDeviceInfo: "readonly",
+        settingsManager: "readonly",
+        logger: "readonly",
+        accessibility: "readonly",
       },
-      ecmaVersion: 'latest',
-      sourceType: 'module'
-    }
-  },
-
-  // 4. Specific overrides for `.svelte` files
-  {
-    files: ['**/*.svelte', '**/*.svelte.js'],
-    languageOptions: {
-      parser: svelteParser,
-      parserOptions: {
-        svelteConfig
-      }
     },
-    rules: {
-      'svelte/no-parsing-error': 'off',
-      'svelte/no-navigation-without-resolve': 'off',
-      'svelte/prefer-svelte-reactivity': 'off'
-    }
   },
-
-  // 5. Additional ignore patterns
-
   {
-    ignores: ['dist/**', '**/*.config.js']
-  }
-])
+    files: ["**/*.js", "**/*.jsx"],
+    languageOptions: {
+      parser: js.parser,
+      parserOptions: {
+        ecmaVersion: 2020,
+        sourceType: "module",
+      },
+    },
+  },
+];
