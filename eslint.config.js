@@ -1,10 +1,9 @@
-import { defineConfig } from 'eslint/config'
+import { defineConfig, globalIgnores } from 'eslint/config'
 import { includeIgnoreFile } from '@eslint/compat'
 import js from '@eslint/js'
-import eslintPluginSvelte from 'eslint-plugin-svelte'
+import svelte from 'eslint-plugin-svelte'
 import prettierConfig from 'eslint-config-prettier'
 import globals from 'globals'
-import svelteParser from 'svelte-eslint-parser'
 import svelteConfig from './svelte.config.js'
 import { fileURLToPath } from 'node:url'
 import { dirname, resolve } from 'node:path'
@@ -14,18 +13,23 @@ const __dirname = dirname(__filename)
 // Resolve full absolute path to `.gitignore`
 const gitignorePath = resolve(__dirname, '.gitignore')
 
-/** @type {import('eslint').Linter.FlatConfig[]} */
+/** @type {import('eslint').Linter.Config[]} */
 export default defineConfig([
   // 1. Load ignore patterns from .gitignore using absolute path
   includeIgnoreFile(gitignorePath),
 
-  // 2. JS + Svelte + Prettier recommended configs
-  js.configs.recommended,
-  ...eslintPluginSvelte.configs['flat/recommended'],
-  prettierConfig,
-  ...eslintPluginSvelte.configs['flat/prettier'],
+  // 2. Global ignores (ESLint 10 uses globalIgnores() helper)
+  globalIgnores(['dist/**', '**/*.config.js']),
 
-  // 3. Set global browser + node globals
+  // 3. JS recommended
+  js.configs.recommended,
+
+  // 4. Svelte + Prettier recommended configs
+  ...svelte.configs.recommended,
+  prettierConfig,
+  ...svelte.configs.prettier,
+
+  // 5. Set global browser + node globals
   {
     languageOptions: {
       globals: {
@@ -39,11 +43,10 @@ export default defineConfig([
     }
   },
 
-  // 4. Specific overrides for `.svelte` files
+  // 6. Specific overrides for `.svelte` files
   {
     files: ['**/*.svelte', '**/*.svelte.js'],
     languageOptions: {
-      parser: svelteParser,
       parserOptions: {
         svelteConfig
       }
@@ -53,11 +56,5 @@ export default defineConfig([
       'svelte/no-navigation-without-resolve': 'off',
       'svelte/prefer-svelte-reactivity': 'off'
     }
-  },
-
-  // 5. Additional ignore patterns
-
-  {
-    ignores: ['dist/**', '**/*.config.js']
   }
 ])

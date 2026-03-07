@@ -1,131 +1,125 @@
 @import 'tailwindcss';
 @plugin '@tailwindcss/typography';
-@import '@fontsource/fira-mono';
+
+/* Only import weight 400 — avoids loading all weights/subsets from the full package */
+@import '@fontsource/fira-mono/400.css';
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-@layer base {
-  :root {
-    scroll-behavior: smooth;
-    --background: 0 0% 100%;
-    --foreground: 224 71.4% 4.1%;
-    --card: 0 0% 100%;
-    --card-foreground: 224 71.4% 4.1%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 224 71.4% 4.1%;
-    --primary: 220.9 39.3% 11%;
-    --primary-foreground: 210 20% 98%;
-    --secondary: 220 14.3% 95.9%;
-    --secondary-foreground: 220.9 39.3% 11%;
-    --muted: 220 14.3% 95.9%;
-    --muted-foreground: 220 8.9% 46.1%;
-    --accent: 220 14.3% 95.9%;
-    --accent-foreground: 220.9 39.3% 11%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 20% 98%;
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 224 71.4% 4.1%;
-    --radius: 0.5rem;
-  }
+@theme {
+  /* Declaring --font-mono here lets Tailwind's `font-mono` utility use Fira Mono */
+  --font-body:
+    Arial, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
+    'Open Sans', 'Helvetica Neue', sans-serif;
+  --font-mono: 'Fira Mono', monospace;
 
-  .dark {
-    --background: 224 71.4% 4.1%;
-    --foreground: 210 20% 98%;
-    --card: 224 71.4% 4.1%;
-    --card-foreground: 210 20% 98%;
-    --popover: 224 71.4% 4.1%;
-    --popover-foreground: 210 20% 98%;
-    --primary: 210 20% 98%;
-    --primary-foreground: 220.9 39.3% 11%;
-    --secondary: 215 27.9% 16.9%;
-    --secondary-foreground: 210 20% 98%;
-    --muted: 215 27.9% 16.9%;
-    --muted-foreground: 217.9 10.6% 64.9%;
-    --accent: 215 27.9% 16.9%;
-    --accent-foreground: 210 20% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 20% 98%;
-    --border: 215 27.9% 16.9%;
-    --input: 215 27.9% 16.9%;
-    --ring: 216 34% 17%;
-  }
+  --color-bg-0: rgb(202 216 228);
+  --color-bg-1: hsl(209 36% 86%);
+  --color-bg-2: hsl(224 44% 95%);
+  --color-theme-1: #ff3e00;
+  --color-theme-2: #4075a6;
+  --color-text: rgb(0 0 0 / 0.7);
+
+  --column-width: 42rem;
+  --column-margin-top: 4rem;
 }
 
 @layer base {
+  :root {
+    font-family: var(--font-body);
+    color: var(--color-text);
+  }
+
   body {
-    @apply bg-white text-gray-950 antialiased dark:bg-gray-950 dark:text-white;
-    font-feature-settings:
-      'rlig' 1,
-      'calt' 1;
-    text-rendering: optimizeLegibility;
-    -webkit-tap-highlight-color: transparent;
-    /* Use Inter with fallback that has matched metrics */
-    font-family:
-      'Inter',
-      'Inter Fallback',
-      ui-sans-serif,
-      system-ui,
-      -apple-system,
-      sans-serif;
     min-height: 100vh;
-    overflow-x: hidden;
+    margin: 0;
+    background-color: var(--color-bg-1);
+
+    /*
+		  `background-attachment: fixed` removed — disables GPU compositing on mobile,
+		  causing full-page repaints on every scroll frame (TBT spikes, unstable scores).
+
+		  `background-size: cover` instead of `100vw 100vh` — the 100vh unit recalculates
+		  whenever the mobile browser chrome shows/hides, triggering layout thrashing (CLS).
+		  `cover` resolves once at paint time with no recalculation.
+		*/
+    background-size: cover;
+    background-image:
+      radial-gradient(50% 50% at 50% 50%, rgb(255 255 255 / 0.75) 0%, transparent 100%),
+      linear-gradient(180deg, var(--color-bg-0) 0%, var(--color-bg-1) 15%, var(--color-bg-2) 50%);
   }
 
-  html {
-    scroll-padding-top: 4rem; /* Adjust based on header height */
-  }
-
-  /* AAA Typography */
   h1,
   h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    @apply scroll-mt-24 font-black tracking-tight text-gray-950 dark:text-gray-50;
+  p {
+    font-weight: 400;
   }
 
   p {
-    @apply leading-relaxed font-medium text-gray-950 dark:text-gray-50;
+    line-height: 1.5;
   }
 
-  img {
-    @apply h-auto max-w-full;
-    font-style: italic;
-    shape-margin: 1rem;
+  a {
+    color: var(--color-theme-1);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  h1 {
+    font-size: 2rem;
+    text-align: center;
+
+    @media (width >= 720px) {
+      font-size: 2.4rem;
+    }
+  }
+
+  h2 {
+    font-size: 1rem;
+  }
+
+  pre {
+    font-size: 16px;
+    font-family: var(--font-mono);
+    background-color: rgb(255 255 255 / 0.45);
+    border-radius: 3px;
+    box-shadow: 2px 2px 6px rgb(255 255 255 / 0.25);
+    padding: 0.5em;
+    overflow-x: auto;
+    color: var(--color-text);
+  }
+
+  input,
+  button {
+    font-size: inherit;
+    font-family: inherit;
+  }
+
+  button:focus:not(:focus-visible) {
+    outline: none;
   }
 }
 
-@layer utilities {
-  .focus-ring {
-    @apply focus-visible:ring-2 focus-visible:ring-sky-700 focus-visible:ring-offset-2 focus-visible:outline-none dark:focus-visible:ring-sky-400 dark:focus-visible:ring-offset-gray-950;
-  }
-
-  /* Prevent CLS for common elements */
-  .stable-grid {
-    display: grid;
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    align-items: start;
-  }
+@utility text-column {
+  display: flex;
+  max-width: 48rem;
+  flex: 0.6;
+  flex-direction: column;
+  justify-content: center;
+  margin: 0 auto;
 }
 
-@layer base {
-  ::-webkit-scrollbar {
-    @apply w-2;
-  }
-  ::-webkit-scrollbar-track {
-    @apply bg-transparent;
-  }
-  ::-webkit-scrollbar-thumb {
-    @apply rounded-full bg-gray-300 dark:bg-gray-700;
-  }
-}
-
-/* View Transitions */
-@layer base {
-  :root::view-transition-old(root),
-  :root::view-transition-new(root) {
-    animation-duration: 0.5s;
-  }
+@utility visually-hidden {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: auto;
+  margin: 0;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+  white-space: nowrap;
 }

@@ -1,6 +1,6 @@
 <script>
   import { siteConfig } from '$lib/config';
-  import '../app.css';
+	import '../app.css';
   import { onMount } from 'svelte';
   import { browser } from '$app/environment';
   import { pushState } from '$app/navigation';

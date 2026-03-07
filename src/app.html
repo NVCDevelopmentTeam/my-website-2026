@@ -2,25 +2,29 @@
 <html lang="vi">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="referrer" content="strict-origin-when-cross-origin" />
-    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#030712" media="(prefers-color-scheme: dark)" />
-    <link rel="manifest" href="%sveltekit.assets%/manifest.json" />
-    <link rel="icon" href="%sveltekit.assets%/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <script>
       ;(function () {
         try {
-          var theme = localStorage.getItem('theme')
-          var supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true
-          if (!theme && supportDarkMode) theme = 'dark'
-          if (theme === 'dark') document.documentElement.classList.add('dark')
-        } catch (e) {}
+          var t = localStorage.getItem('theme')
+          if (!t && window.matchMedia('(prefers-color-scheme: dark)').matches) t = 'dark'
+          if (t === 'dark') document.documentElement.classList.add('dark')
+        } catch (_) {}
       })()
     </script>
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#030712" media="(prefers-color-scheme: dark)" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <link rel="manifest" href="%sveltekit.assets%/manifest.json" />
+    <link rel="icon" href="%sveltekit.assets%/favicon.svg" type="image/svg+xml" />
     %sveltekit.head%
   </head>
-  <body data-sveltekit-preload-data="hover" class="bg-white dark:bg-gray-950">
+
+  <body
+    data-sveltekit-preload-data="hover"
+    data-sveltekit-preload-code="eager"
+    class="bg-white dark:bg-gray-950"
+  >
     <div style="display: contents">%sveltekit.body%</div>
   </body>
 </html>
