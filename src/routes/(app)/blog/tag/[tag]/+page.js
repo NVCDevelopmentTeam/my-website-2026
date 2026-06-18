@@ -1,6 +1,6 @@
 import { getFilteredPosts, getAllTags } from '$lib/data/posts'
 import { siteConfig } from '$lib/config'
-import { error } from '@sveltejs/kit'
+import { error, isHttpError } from '@sveltejs/kit'
 import { building } from '$app/environment'
 
 export const prerender = true
@@ -74,6 +74,7 @@ export async function load({ params, url }) {
       site: siteConfig
     }
   } catch (err) {
+    if (isHttpError(err)) throw err
     console.error('Error loading Tag page:', err)
     error(500, 'Không thể tải bài viết theo thẻ này.')
   }

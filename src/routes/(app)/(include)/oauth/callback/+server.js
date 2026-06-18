@@ -55,7 +55,7 @@ export const GET = async ({ url }) => {
       headers: { 'Content-Type': 'text/html' }
     })
   } catch (err) {
-    console.log(err)
+    console.error('OAuth callback error:', err)
     redirect(302, '/?error=😡')
   }
 }
