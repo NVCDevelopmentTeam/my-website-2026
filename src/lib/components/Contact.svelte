@@ -27,6 +27,12 @@
         body: json
       })
 
+      if (!response.ok) {
+        console.error(`Web3Forms API error: ${response.status} ${response.statusText}`)
+        status = 'Máy chủ phản hồi lỗi, vui lòng thử lại sau.'
+        return
+      }
+
       const result = await response.json()
 
       if (result.success) {

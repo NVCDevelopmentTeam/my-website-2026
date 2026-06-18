@@ -1,6 +1,6 @@
 import { getFilteredPosts, getAllCategories } from '$lib/data/posts'
 import { siteConfig } from '$lib/config'
-import { error } from '@sveltejs/kit'
+import { error, isHttpError } from '@sveltejs/kit'
 import { building } from '$app/environment'
 
 export const prerender = true
@@ -89,6 +89,7 @@ export async function load({ params, url, depends }) {
       }
     }
   } catch (err) {
+    if (isHttpError(err)) throw err
     console.error('Error loading category page:', err)
     error(500, 'Không thể tải bài viết trong danh mục này.')
   }
