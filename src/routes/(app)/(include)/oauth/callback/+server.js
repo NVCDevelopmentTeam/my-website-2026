@@ -1,10 +1,17 @@
 import { error, redirect } from '@sveltejs/kit'
-import { OAUTH_GITHUB_CLIENT_ID, OAUTH_GITHUB_CLIENT_SECRET } from '$env/static/private'
+import { env } from '$env/dynamic/private'
 import { siteConfig } from '$lib/config'
 
 export const prerender = false
 
 export const GET = async ({ url, cookies }) => {
+  const clientId = env.OAUTH_GITHUB_CLIENT_ID
+  const clientSecret = env.OAUTH_GITHUB_CLIENT_SECRET
+
+  if (!clientId || !clientSecret) {
+    error(500, 'OAuth is not configured.')
+  }
+
   const code = url.searchParams.get('code')
   const returnedState = url.searchParams.get('state')
   const savedState = cookies.get('oauth_state')
@@ -17,8 +24,8 @@ export const GET = async ({ url, cookies }) => {
 
   const data = {
     code,
-    client_id: OAUTH_GITHUB_CLIENT_ID,
-    client_secret: OAUTH_GITHUB_CLIENT_SECRET
+    client_id: clientId,
+    client_secret: clientSecret
   }
 
   try {
