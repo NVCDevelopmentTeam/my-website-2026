@@ -1,7 +1,3 @@
-// =======================
-// SEO CONFIG
-// =======================
-
 import { siteConfig } from '$lib/config'
 
 /**
@@ -19,7 +15,7 @@ export const defaultSeoConfig = {
     site_name: siteConfig.title,
     images: [
       {
-        url: `${siteConfig.siteUrl}/og-image.jpg`,
+        url: siteConfig.siteUrl + '/og-image.jpg',
         width: 1200,
         height: 630,
         alt: siteConfig.title
@@ -32,18 +28,18 @@ export const defaultSeoConfig = {
     handle: siteConfig.social.github,
     title: siteConfig.title,
     description: siteConfig.description,
-    image: `${siteConfig.siteUrl}/og-image.jpg`
+    image: siteConfig.siteUrl + '/og-image.jpg'
   }
 }
 
 /**
- * Get SEO configuration for a specific page
+ * Build SEO configuration for a specific page
  */
 export function getSeoConfig({ title, description, url, image }) {
-  const fullTitle = `${title} — ${siteConfig.title}`
-  const fullUrl = `${siteConfig.siteUrl}${url}`
-  const seoDescription = description || siteConfig.description
-  const seoImage = image ? `${siteConfig.siteUrl}${image}` : `${siteConfig.siteUrl}/og-image.jpg`
+  var fullTitle = title + ' — ' + siteConfig.title
+  var fullUrl = siteConfig.siteUrl + url
+  var seoDescription = description || siteConfig.description
+  var seoImage = image ? siteConfig.siteUrl + image : siteConfig.siteUrl + '/og-image.jpg'
 
   return {
     ...defaultSeoConfig,
@@ -67,12 +63,16 @@ export function getSeoConfig({ title, description, url, image }) {
 }
 
 /**
- * Safely serialize JSON-LD schema for injection into HTML
- * Prevents XSS by escaping </script> tags
+ * Safely serialize JSON-LD schema for injection into HTML.
+ * Escapes </script> to prevent XSS.
  * @param {Object} schema
  * @returns {string|null}
  */
 export function serializeSchema(schema) {
   if (!schema) return null
-  return `<script type="application/ld+json">${JSON.stringify(schema).replace(/<\/script>/g, '<\\/script>')}</script>`
+  return (
+    '<script type="application/ld+json">' +
+    JSON.stringify(schema).replace(/<\/script>/g, '<\\/script>') +
+    '</script>'
+  )
 }

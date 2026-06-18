@@ -5,7 +5,7 @@
 
   let { allPages = [], recentPosts = [], categories = [], tags = [] } = $props()
 
-  // Mapping for fixed segment names (Vietnamese)
+  // Fixed segment name mapping
   const NAME_MAPPING = {
     home: 'Trang chủ',
     blog: 'Blog',
@@ -18,12 +18,12 @@
   }
 
   /**
-   * Find post/page by slug - search in ALL data sources
+   * Find content title by slug across all data sources
    */
   function findContentBySlug(segment, currentPath) {
     const fullPath = currentPath.substring(1) // Remove leading slash
 
-    // Helper function to check slug match
+    // Check slug match across multiple formats
     const isSlugMatch = (itemSlug) => {
       if (!itemSlug) return false
 
@@ -51,7 +51,7 @@
       return false
     }
 
-    // 1. Search in recentPosts (blog posts)
+    // Search in recent posts
     if (recentPosts && recentPosts.length > 0) {
       const matchedPost = recentPosts.find((p) => isSlugMatch(p.slug || p.path))
       if (matchedPost?.metadata?.title) {
@@ -59,7 +59,7 @@
       }
     }
 
-    // 2. Search in allPages (static pages)
+    // Search in static pages
     if (allPages && allPages.length > 0) {
       const matchedPage = allPages.find((p) => isSlugMatch(p.slug || p.path))
       if (matchedPage?.metadata?.title) {
@@ -67,7 +67,7 @@
       }
     }
 
-    // 3. Search in categories
+    // Search in categories
     if (categories && categories.length > 0) {
       const matchedCategory = categories.find((cat) => {
         const cSlug = cat.metadata?.slug || cat.slug || cat.title?.toLowerCase()
@@ -78,7 +78,7 @@
       }
     }
 
-    // 4. Search in tags
+    // Search in tags
     if (tags && tags.length > 0) {
       const matchedTag = tags.find((tag) => {
         const tSlug = tag.slug || tag.name?.toLowerCase() || tag.title?.toLowerCase()
@@ -93,7 +93,7 @@
   }
 
   /**
-   * Beautify Vietnamese slug to readable text
+   * Convert slug to readable text
    */
   function beautifySlug(slug) {
     try {
@@ -120,7 +120,7 @@
   }
 
   /**
-   * Find display name for a segment - prioritize Vietnamese titles
+   * Resolve display name for a URL segment
    */
   function getSegmentName(segment, currentPath, isLastSegment) {
     // 1. Check fixed mapping first (highest priority)
@@ -155,21 +155,21 @@
       return foundTitle
     }
 
-    // 4. Final fallback: Beautify the slug for Vietnamese readability
+    // Final fallback: beautify the slug
     return beautifySlug(segment)
   }
 
   /**
-   * Build breadcrumb items from pathname
+   * Build breadcrumb items from current pathname
    */
   const crumbs = $derived.by(() => {
     const path = page.url.pathname
 
-    // Home page doesn't need breadcrumbs
+    // No breadcrumbs on homepage
     if (path === '/') return []
 
     const segments = path.split('/').filter(Boolean)
-    const result = [{ name: 'Trang chủ', href: '/' }] // Vietnamese "Home"
+    const result = [{ name: 'Trang chủ', href: '/' }]
 
     let currentPath = ''
 
@@ -194,7 +194,7 @@
   })
 
   /**
-   * Generate JSON-LD schema for breadcrumbs (SEO)
+   * Generate JSON-LD structured data for breadcrumbs
    */
   const breadcrumbJsonLd = $derived.by(() => {
     if (crumbs.length === 0) return null

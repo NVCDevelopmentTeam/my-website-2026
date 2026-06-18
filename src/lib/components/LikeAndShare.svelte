@@ -9,110 +9,103 @@
   const storageKey = $derived(`likes_${page.url.pathname}`)
   const userKey = $derived(`hasLiked_${page.url.pathname}`)
 
-  // Increase the number of likes
-  const toggleLike = async () => {
-    if (hasLiked) {
-      likes = Math.max(0, likes - 1)
-      hasLiked = false
-    } else {
-      likes += 1
-      hasLiked = true
-    }
+  /**
+   * Get cookie value by name
+   * @param {string} name
+   * @returns {string|null}
+   */
+  function getCookie(name) {
+    const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'))
+    return match ? match[2] : null
+  }
+
+  /**
+   * Handle like action — each visitor can only like once per page.
+   * Uses localStorage + cookie for persistence.
+   */
+  function toggleLike() {
+    if (hasLiked) return
+
+    likes += 1
+    hasLiked = true
 
     try {
-      // Fetch user IP
-      const res = await fetch('https://api.ipify.org?format=json')
-      const data = await res.json()
-      const ip = data.ip
-      localStorage.setItem('user_ip', ip)
-
-      document.cookie = `${userKey}=${hasLiked}; max-age=31536000; path=/`
-      localStorage.setItem(userKey, hasLiked.toString())
+      document.cookie = `${userKey}=true; max-age=31536000; path=/; SameSite=Lax`
+      localStorage.setItem(userKey, 'true')
+      localStorage.setItem(storageKey, likes.toString())
     } catch (error) {
-      console.error('Error with IP API:', error)
-      document.cookie = `${userKey}=${hasLiked}; max-age=31536000; path=/`
-      localStorage.setItem(userKey, hasLiked.toString())
+      console.error('Failed to persist like state:', error)
     }
   }
 
-  // Save likes to localStorage whenever 'likes' changes
-  $effect(() => {
-    const debounceTimer = setTimeout(() => {
-      if (likes >= 0) {
-        try {
-          localStorage.setItem(storageKey, likes.toString())
-        } catch (error) {
-          console.error('Error saving to localStorage:', error)
-        }
-      }
-    }, 500)
-
-    return () => clearTimeout(debounceTimer)
-  })
-
-  // Open the sharing dialog box
-  const openDialog = () => {
+  // Open the sharing dialog
+  function openDialog() {
     dialog.showModal()
   }
 
   // Close the sharing dialog
-  const closeDialog = () => {
+  function closeDialog() {
     dialog.close()
   }
 
   // Share on Facebook
-  const shareOnFacebook = () => {
-    const url = encodeURIComponent(window.location.href)
-    window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank')
+  function shareOnFacebook() {
+    var url = encodeURIComponent(window.location.href)
+    window.open('https://www.facebook.com/sharer/sharer.php?u=' + url, '_blank')
     closeDialog()
   }
 
   // Share on Zalo
-  const shareOnZalo = () => {
-    const url = encodeURIComponent(window.location.href)
-    window.open(`https://chat.zalo.me/share/url?url=${url}`, '_blank')
+  function shareOnZalo() {
+    var url = encodeURIComponent(window.location.href)
+    window.open('https://chat.zalo.me/share/url?url=' + url, '_blank')
     closeDialog()
   }
 
   // Share on Twitter
-  const shareOnTwitter = () => {
-    const url = encodeURIComponent(window.location.href)
-    const text = encodeURIComponent('Xem ngay nội dung thú vị này!')
-    window.open(`https://twitter.com/intent/tweet?url=${url}&text=${text}`, '_blank')
+  function shareOnTwitter() {
+    var url = encodeURIComponent(window.location.href)
+    var text = encodeURIComponent(document.title)
+    window.open('https://twitter.com/intent/tweet?url=' + url + '&text=' + text, '_blank')
     closeDialog()
   }
 
   // Share on LinkedIn
-  const shareOnLinkedIn = () => {
-    const url = encodeURIComponent(window.location.href)
-    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}`, '_blank')
+  function shareOnLinkedIn() {
+    var url = encodeURIComponent(window.location.href)
+    window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + url, '_blank')
     closeDialog()
   }
 
-  // Copy link
-  const copyLink = () => {
+  // Copy link to clipboard
+  function copyLink() {
     navigator.clipboard
       .writeText(window.location.href)
-      .then(() => alert('Đã sao chép liên kết thành công!'))
-      .catch((err) => console.error('Lỗi khi sao chép liên kết:', err))
+      .then(function () {
+        alert('Link copied successfully!')
+      })
+      .catch(function (err) {
+        console.error('Failed to copy link:', err)
+      })
     closeDialog()
   }
 
-  // Initialize likes from localStorage on page load
-  onMount(() => {
+  // Restore like state from localStorage/cookie on mount
+  onMount(function () {
     try {
-      const savedLikes = localStorage.getItem(storageKey)
+      var savedLikes = localStorage.getItem(storageKey)
       if (savedLikes) {
         likes = parseInt(savedLikes, 10) || 0
       }
-      const savedHasLiked =
-        localStorage.getItem(userKey) ||
-        (document.cookie.includes(`${userKey}=true`) ? 'true' : 'false')
-      if (savedHasLiked === 'true') {
+
+      var likedInStorage = localStorage.getItem(userKey) === 'true'
+      var likedInCookie = getCookie(userKey) === 'true'
+
+      if (likedInStorage || likedInCookie) {
         hasLiked = true
       }
     } catch (error) {
-      console.error('Error reading from localStorage:', error)
+      console.error('Failed to restore like state:', error)
     }
   })
 </script>
@@ -123,10 +116,11 @@
   <div class="flex items-center gap-3">
     <button
       onclick={toggleLike}
-      class="flex items-center gap-2 px-6 py-2.5 font-bold rounded-2xl transition-all active:scale-95 shadow-sm border {hasLiked
-        ? 'bg-[#0866FF]/10 text-[#0866FF] border-[#0866FF]/20 dark:bg-[#0866FF]/20 dark:text-blue-400 dark:border-[#0866FF]/30'
-        : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700'}"
-      aria-label="Thích bài viết này, hiện có {likes} lượt thích"
+      disabled={hasLiked}
+      class="flex items-center gap-2 px-6 py-2.5 font-bold rounded-lg transition-all active:scale-95 shadow-sm border {hasLiked
+        ? 'bg-[#0866FF] text-white border-[#0866FF] dark:bg-[#0866FF] dark:text-white dark:border-[#0866FF] cursor-default'
+        : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-[#0866FF]/10 hover:text-[#0866FF] hover:border-[#0866FF]/30 dark:hover:bg-[#0866FF]/20 dark:hover:text-blue-400 dark:hover:border-[#0866FF]/30'}"
+      aria-label="Like this post, currently {likes} likes"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -143,7 +137,7 @@
           d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"
         ></path>
       </svg>
-      <span>{hasLiked ? 'Đã thích' : 'Thích'} ({likes})</span>
+      <span>{hasLiked ? 'Liked' : 'Like'} ({likes})</span>
     </button>
   </div>
 
@@ -151,7 +145,7 @@
 
   <button
     onclick={openDialog}
-    class="flex items-center gap-2 px-6 py-2.5 bg-sky-50 dark:bg-sky-950/30 text-sky-800 dark:text-sky-400 font-bold rounded-2xl hover:bg-sky-100 dark:hover:bg-sky-900/40 transition-all active:scale-95 shadow-sm border border-sky-100 dark:border-sky-900/50"
+    class="flex items-center gap-2 px-6 py-2.5 bg-sky-50 dark:bg-sky-950/30 text-sky-800 dark:text-sky-400 font-bold rounded-lg hover:bg-sky-100 dark:hover:bg-sky-900/40 transition-all active:scale-95 shadow-sm border border-sky-100 dark:border-sky-900/50"
   >
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -174,7 +168,7 @@
         y2="10.49"
       ></line></svg
     >
-    Chia sẻ
+    Share
   </button>
 
   <dialog
@@ -189,11 +183,11 @@
           id="dialog-title"
           class="text-2xl font-bold text-gray-950 dark:text-white tracking-tight"
         >
-          Chia sẻ bài viết
+          Share this post
         </h2>
         <button
           onclick={closeDialog}
-          aria-label="Đóng hộp thoại"
+          aria-label="Close dialog"
           class="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-950 dark:text-gray-50"
         >
           <svg
@@ -277,7 +271,7 @@
               d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
             ></path></svg
           >
-          Sao chép liên kết
+          Copy link
         </button>
       </div>
     </div>

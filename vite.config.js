@@ -2,11 +2,9 @@ import { sveltekit } from '@sveltejs/kit/vite'
 import { defineConfig } from 'vite'
 import tailwindcss from '@tailwindcss/vite'
 import { compression } from 'vite-plugin-compression2'
-import { enhancedImages } from '@sveltejs/enhanced-img'
 
 export default defineConfig({
   plugins: [
-    enhancedImages(),
     sveltekit(),
     compression({
       algorithm: 'brotliCompress'
@@ -25,15 +23,13 @@ export default defineConfig({
   },
 
   build: {
-    // Minify output
-    minify: true,
-    // Enable css code splitting
     cssCodeSplit: true,
-    // Report compressed size
     reportCompressedSize: false,
+    // Inline small assets to reduce HTTP requests
+    assetsInlineLimit: 4096,
     rollupOptions: {
       output: {
-        manualChunks: (id) => {
+        manualChunks: function (id) {
           if (id.includes('node_modules')) {
             if (id.includes('sveltia')) {
               return 'cms'
@@ -42,12 +38,6 @@ export default defineConfig({
           }
         }
       }
-    }
-  },
-
-  server: {
-    fs: {
-      allow: ['.']
     }
   }
 })
