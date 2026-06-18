@@ -14,6 +14,16 @@ export default defineConfig({
     tailwindcss()
   ],
 
+  test: {
+    include: ['src/**/*.{test,spec}.{js,ts}'],
+    environment: 'jsdom',
+    globals: true,
+    alias: {
+      $lib: '/src/lib',
+      '$app/environment': '/src/tests/mocks/app-environment.js'
+    }
+  },
+
   build: {
     // Minify output
     minify: true,
