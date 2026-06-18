@@ -1,10 +1,6 @@
 import { siteConfig } from '$lib/config'
-import { dev } from '$app/environment'
 import { slugify } from '$lib/utils/slugify'
 import { truncate } from '$lib/utils/truncate'
-
-// Post preview auto rendering and generate
-// Server & Client compatible logic for SSG
 
 // Load only metadata for all markdown files to keep the bundle small
 const modules = import.meta.glob('/src/lib/contents/posts/*.md', {
@@ -12,39 +8,35 @@ const modules = import.meta.glob('/src/lib/contents/posts/*.md', {
   import: 'metadata'
 })
 
-/* -----------------------------------------------------
-   🧩 Cache Layer with Auto Reload
------------------------------------------------------ */
-let cachedPosts = null
-let cachedCategories = null
-let cachedTags = null
-let cacheTimestamp = null
-const CACHE_TTL = 3600000 // 1 hour - long cache for static site performance
+/* Cache layer with auto reload */
+var cachedPosts = null
+var cachedCategories = null
+var cachedTags = null
+var cacheTimestamp = null
+var CACHE_TTL = 3600000 // 1 hour
 
 function shouldReloadCache() {
   if (!cacheTimestamp) return true
   return Date.now() - cacheTimestamp > CACHE_TTL
 }
 
-/* -----------------------------------------------------
-   🧩 Get All Posts with Metadata
------------------------------------------------------ */
+/* Get all posts with metadata */
 function getAllPosts() {
   if (cachedPosts && !shouldReloadCache()) return cachedPosts
 
-  const posts = Object.entries(modules)
-    .map(([path, metadata]) => {
-      const filename = path.split('/').pop()?.replace('.md', '') || 'untitled'
-      const meta = metadata || {}
+  var posts = Object.entries(modules)
+    .map(function ([path, metadata]) {
+      var filename = path.split('/').pop()?.replace('.md', '') || 'untitled'
+      var meta = metadata || {}
 
-      const slug = meta.slug || slugify(filename)
-      const title = meta.title || filename
-      const author = meta.author || siteConfig?.author?.name || 'Ẩn danh'
+      var slug = meta.slug || slugify(filename)
+      var title = meta.title || filename
+      var author = meta.author || siteConfig?.author?.name || 'Anonymous'
 
       // Validate date
-      let date = meta.date
+      var date = meta.date
       try {
-        const parsedDate = new Date(date)
+        var parsedDate = new Date(date)
         if (isNaN(parsedDate.getTime())) {
           date = new Date().toISOString()
         } else {
@@ -55,11 +47,13 @@ function getAllPosts() {
       }
 
       // Parse categories from comma-separated string
-      let categories = []
+      var categories = []
       if (typeof meta.categories === 'string') {
         categories = meta.categories
           .split(',')
-          .map((c) => c.trim())
+          .map(function (c) {
+            return c.trim()
+          })
           .filter(Boolean)
       } else if (Array.isArray(meta.categories)) {
         categories = meta.categories.filter(Boolean)
@@ -70,11 +64,13 @@ function getAllPosts() {
       }
 
       // Parse tags from comma-separated string
-      let tags = []
+      var tags = []
       if (typeof meta.tags === 'string') {
         tags = meta.tags
           .split(',')
-          .map((t) => t.trim())
+          .map(function (t) {
+            return t.trim()
+          })
           .filter(Boolean)
       } else if (Array.isArray(meta.tags)) {
         tags = meta.tags.filter(Boolean)
@@ -84,26 +80,26 @@ function getAllPosts() {
         tags = ['chưa phân loại']
       }
 
-      // Meta description - short for SEO (4-10 words)
-      const hasValidMetaDescription =
+      // Meta description - short for SEO (150-160 chars)
+      var hasValidMetaDescription =
         meta.description &&
         typeof meta.description === 'string' &&
         meta.description.trim().length > 0 &&
         !meta.description.startsWith('title:') &&
         !meta.description.startsWith('---')
 
-      const metaDescription = hasValidMetaDescription
-        ? truncate(meta.description.trim(), 160) // SEO standard limit
+      var metaDescription = hasValidMetaDescription
+        ? truncate(meta.description.trim(), 160)
         : truncate(title, 60)
 
-      // Preview - longer excerpt for post listings (200-265 characters)
-      const hasValidPreview =
+      // Preview - longer excerpt for post listings
+      var hasValidPreview =
         meta.preview && typeof meta.preview === 'string' && meta.preview.trim().length > 0
 
-      const preview = hasValidPreview ? meta.preview.trim() : meta.excerpt || metaDescription
+      var preview = hasValidPreview ? meta.preview.trim() : meta.excerpt || metaDescription
 
-      // Reading time
-      const readingTime =
+      // Reading time estimate
+      var readingTime =
         typeof meta.readingTime === 'number' && meta.readingTime > 0 ? meta.readingTime : 5
 
       return {
@@ -118,8 +114,8 @@ function getAllPosts() {
           updated: meta.updated || date,
           categories,
           tags,
-          description: metaDescription, // Short SEO description
-          preview, // Longer excerpt for listings
+          description: metaDescription,
+          preview,
           readingTime,
           draft: meta.draft === true || meta.draft === 'true',
           image: meta.image || null,
@@ -128,23 +124,24 @@ function getAllPosts() {
         }
       }
     })
-    .filter((post) => {
-      if (!dev && post.metadata.draft) {
+    .filter(function (post) {
+      // Exclude draft posts in production
+      if (post.metadata.draft) {
         return false
       }
       return true
     })
 
-  // Sort by date descending using pre-calculated timestamp
-  cachedPosts = posts.sort((a, b) => b.timestamp - a.timestamp)
+  // Sort by date descending
+  cachedPosts = posts.sort(function (a, b) {
+    return b.timestamp - a.timestamp
+  })
 
   cacheTimestamp = Date.now()
   return cachedPosts
 }
 
-/* -----------------------------------------------------
-   🧩 Get Filtered Posts with Pagination
------------------------------------------------------ */
+/* Get filtered posts with pagination */
 export function getFilteredPosts({
   offset = 0,
   limit = siteConfig?.pagination?.postsPerPage || 10,
@@ -154,54 +151,60 @@ export function getFilteredPosts({
   year = null,
   month = null
 } = {}) {
-  let posts = getAllPosts()
+  var posts = getAllPosts()
 
-  // Filter by category - handle both slug and title
+  // Filter by category
   if (category && category.trim()) {
-    const catNormalized = slugify(category.trim())
-    posts = posts.filter((p) =>
-      p.metadata.categories.some((c) => {
-        const cSlug = slugify(c)
-        return cSlug === catNormalized
+    var catNormalized = slugify(category.trim())
+    posts = posts.filter(function (p) {
+      return p.metadata.categories.some(function (c) {
+        return slugify(c) === catNormalized
       })
-    )
+    })
   }
 
   if (author && author.trim()) {
-    const authorLower = author.trim().toLowerCase()
-    posts = posts.filter((p) => p.metadata.author.toLowerCase() === authorLower)
+    var authorLower = author.trim().toLowerCase()
+    posts = posts.filter(function (p) {
+      return p.metadata.author.toLowerCase() === authorLower
+    })
   }
 
   if (tag && tag.trim()) {
-    const tagNormalized = slugify(tag.trim())
-    posts = posts.filter((p) => p.metadata.tags.some((t) => slugify(t) === tagNormalized))
+    var tagNormalized = slugify(tag.trim())
+    posts = posts.filter(function (p) {
+      return p.metadata.tags.some(function (t) {
+        return slugify(t) === tagNormalized
+      })
+    })
   }
 
   if (year) {
-    const targetYear = parseInt(year)
+    var targetYear = parseInt(year)
     if (!isNaN(targetYear)) {
-      posts = posts.filter((p) => {
-        const postYear = new Date(p.metadata.date).getFullYear()
-        return postYear === targetYear
+      posts = posts.filter(function (p) {
+        return new Date(p.metadata.date).getFullYear() === targetYear
       })
     }
   }
 
   if (month && year) {
-    const targetMonth = parseInt(month)
-    const targetYear = parseInt(year)
-    if (!isNaN(targetMonth) && !isNaN(targetYear)) {
-      posts = posts.filter((p) => {
-        const postDate = new Date(p.metadata.date)
-        return postDate.getFullYear() === targetYear && postDate.getMonth() + 1 === targetMonth
+    var targetMonth = parseInt(month)
+    var targetYearForMonth = parseInt(year)
+    if (!isNaN(targetMonth) && !isNaN(targetYearForMonth)) {
+      posts = posts.filter(function (p) {
+        var postDate = new Date(p.metadata.date)
+        return (
+          postDate.getFullYear() === targetYearForMonth && postDate.getMonth() + 1 === targetMonth
+        )
       })
     }
   }
 
-  const total = posts.length
-  const totalPages = Math.ceil(total / limit)
-  const currentPage = Math.floor(offset / limit) + 1
-  const paginated = posts.slice(offset, offset + limit)
+  var total = posts.length
+  var totalPages = Math.ceil(total / limit)
+  var currentPage = Math.floor(offset / limit) + 1
+  var paginated = posts.slice(offset, offset + limit)
 
   return {
     posts: paginated,
@@ -212,58 +215,60 @@ export function getFilteredPosts({
     offset,
     hasNext: offset + limit < total,
     hasPrev: offset > 0,
-    pages: Array.from({ length: totalPages }, (_, i) => ({
-      number: i + 1,
-      offset: i * limit,
-      isActive: i + 1 === currentPage
-    })),
+    pages: Array.from({ length: totalPages }, function (_, i) {
+      return {
+        number: i + 1,
+        offset: i * limit,
+        isActive: i + 1 === currentPage
+      }
+    }),
     filters: { category, author, tag, year, month }
   }
 }
 
-/* -----------------------------------------------------
-   🧩 Get Single Post by Slug
------------------------------------------------------ */
+/* Get single post by slug */
 export function getPostBySlug(slug) {
   if (!slug) {
     throw new Error('Slug is required')
   }
 
-  // Ignore static assets that might hit this route
-  const ignoredExtensions = ['.json', '.xml', '.png', '.jpg', '.jpeg', '.webp', '.ico', '.txt']
-  if (ignoredExtensions.some((ext) => slug.toLowerCase().endsWith(ext))) {
-    throw new Error(`Invalid slug (static file): ${slug}`)
+  // Ignore static asset paths
+  var ignoredExtensions = ['.json', '.xml', '.png', '.jpg', '.jpeg', '.webp', '.ico', '.txt']
+  if (
+    ignoredExtensions.some(function (ext) {
+      return slug.toLowerCase().endsWith(ext)
+    })
+  ) {
+    throw new Error('Invalid slug (static file): ' + slug)
   }
 
-  const posts = getAllPosts()
-  const normalizedSlug = slugify(slug)
-  const post = posts.find((p) => p.slug === normalizedSlug || slugify(p.rawName) === normalizedSlug)
+  var posts = getAllPosts()
+  var normalizedSlug = slugify(slug)
+  var post = posts.find(function (p) {
+    return p.slug === normalizedSlug || slugify(p.rawName) === normalizedSlug
+  })
 
   if (!post) {
-    throw new Error(`Post not found: ${slug}`)
+    throw new Error('Post not found: ' + slug)
   }
 
   return post
 }
 
-/* -----------------------------------------------------
-   🧩 Get All Categories - Vietnamese Slug Format
------------------------------------------------------ */
+/* Get all categories */
 export function getAllCategories() {
   if (cachedCategories && !shouldReloadCache()) return cachedCategories
 
-  const posts = getAllPosts()
-  const map = new Map()
+  var posts = getAllPosts()
+  var map = new Map()
 
-  posts.forEach((post) => {
-    post.metadata.categories.forEach((cat) => {
-      const title = cat.trim()
+  posts.forEach(function (post) {
+    post.metadata.categories.forEach(function (cat) {
+      var title = cat.trim()
       if (!title) return
 
-      const slug = slugify(title)
-
-      // Use slug as key to avoid duplicates
-      const existing = map.get(slug)
+      var slug = slugify(title)
+      var existing = map.get(slug)
       if (existing) {
         existing.count++
       } else {
@@ -272,37 +277,38 @@ export function getAllCategories() {
     })
   })
 
-  // Convert to array with metadata structure
   cachedCategories = Array.from(map.values())
-    .map(({ title, slug, count }) => ({
-      metadata: {
-        title,
-        slug,
-        description: `Danh mục ${title} có ${count} bài viết`,
-        count
+    .map(function ({ title, slug, count }) {
+      return {
+        metadata: {
+          title,
+          slug,
+          description: 'Category ' + title + ' has ' + count + ' posts',
+          count
+        }
       }
-    }))
-    .sort((a, b) => b.metadata.count - a.metadata.count)
+    })
+    .sort(function (a, b) {
+      return b.metadata.count - a.metadata.count
+    })
 
   cacheTimestamp = Date.now()
   return cachedCategories
 }
 
-/* -----------------------------------------------------
-   🧩 Get All Tags - Vietnamese Slug Format
------------------------------------------------------ */
+/* Get all tags */
 export function getAllTags() {
   if (cachedTags && !shouldReloadCache()) return cachedTags
 
-  const posts = getAllPosts()
-  const map = new Map()
+  var posts = getAllPosts()
+  var map = new Map()
 
-  posts.forEach((post) => {
-    post.metadata.tags.forEach((tag) => {
-      const normalized = tag.trim()
+  posts.forEach(function (post) {
+    post.metadata.tags.forEach(function (tag) {
+      var normalized = tag.trim()
       if (normalized) {
-        const slug = slugify(normalized)
-        const existing = map.get(slug)
+        var slug = slugify(normalized)
+        var existing = map.get(slug)
         if (existing) {
           existing.count++
         } else {
@@ -313,45 +319,28 @@ export function getAllTags() {
   })
 
   cachedTags = Array.from(map.values())
-    .map(({ name, slug, count }) => ({
-      name,
-      count,
-      slug
-    }))
-    .sort((a, b) => b.count - a.count)
+    .map(function ({ name, slug, count }) {
+      return { name, count, slug }
+    })
+    .sort(function (a, b) {
+      return b.count - a.count
+    })
 
   cacheTimestamp = Date.now()
   return cachedTags
 }
 
-/* -----------------------------------------------------
-   🧩 Get Recent Posts
------------------------------------------------------ */
+/* Get recent posts */
 export function getRecentPosts(limit = 5) {
-  const posts = getAllPosts()
+  var posts = getAllPosts()
   return posts.slice(0, limit)
 }
 
-/* -----------------------------------------------------
-   🧩 Force Reload Cache (for page navigation)
------------------------------------------------------ */
+/* Force reload cache */
 export function reloadCache() {
   cachedPosts = null
   cachedCategories = null
   cachedTags = null
   cacheTimestamp = null
-  // Trigger fresh load
   getAllPosts()
-  getAllCategories()
-  getAllTags()
-}
-
-/* -----------------------------------------------------
-   🧩 Clear All Caches
------------------------------------------------------ */
-export function clearCache() {
-  cachedPosts = null
-  cachedCategories = null
-  cachedTags = null
-  cacheTimestamp = null
 }

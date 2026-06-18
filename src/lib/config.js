@@ -1,11 +1,9 @@
-import { dev } from '$app/environment'
-
 export const siteConfig = {
   // Site metadata
   title: 'Góc thư giãn',
   description: 'Lan tỏa nguồn năng lượng tích cực mỗi ngày',
   siteDomain: 'nhatkyanhsang.vn',
-  siteUrl: dev ? 'http://localhost:5173' : 'https://nhatkyanhsang.vn',
+  siteUrl: 'https://nhatkyanhsang.vn',
   language: 'vi',
   // Geo metadata for SEO
   geo: {

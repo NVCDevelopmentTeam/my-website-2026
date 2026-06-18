@@ -6,17 +6,16 @@
   import Footer from '$lib/components/Footer.svelte'
   import Breadcrumbs from '$lib/components/Breadcrumbs.svelte'
 
-  /** @type {Object} Props */
   let { children, data } = $props()
 
   const isLoading = $derived(!!navigating)
 
   // View Transitions API
-  onNavigate((navigation) => {
+  onNavigate(function (navigation) {
     if (!document.startViewTransition) return
 
-    return new Promise((resolve) => {
-      document.startViewTransition(async () => {
+    return new Promise(function (resolve) {
+      document.startViewTransition(async function () {
         resolve()
         await navigation.completed
       })
@@ -27,7 +26,7 @@
 <div
   class="flex flex-col min-h-screen bg-white dark:bg-gray-950 transition-colors duration-300 relative"
 >
-  <!-- Progress Bar - Enhanced for "Vue-like" feel -->
+  <!-- Navigation progress bar -->
   {#if isLoading}
     <div class="fixed top-0 left-0 right-0 h-1 bg-sky-600 dark:bg-sky-400 z-[9999]">
       <div

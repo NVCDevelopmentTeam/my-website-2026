@@ -14,7 +14,9 @@
   import { browser } from '$app/environment'
 
   const { data } = $props()
-  const { content: PostContent, metadata } = $derived.by(() => data)
+  const { content: PostContent, metadata } = $derived.by(function () {
+    return data
+  })
 
   const faqs = $derived(metadata?.faqs || [])
   const hasToc = $derived(metadata?.toc && metadata.toc.length > 0)
@@ -23,57 +25,61 @@
   let tocRef = $state()
   let views = $state(0)
 
-  onMount(() => {
-    if (browser && metadata) {
-      const viewKey = `views_${metadata.slug || 'unknown'}`
-      const currentViews = parseInt(localStorage.getItem(viewKey) || '0', 10)
-      views = currentViews + 1
-      localStorage.setItem(viewKey, views.toString())
+  // Track page views per post using localStorage
+  onMount(function () {
+    if (!browser || !metadata) return
+
+    var viewKey = 'views_' + (metadata.slug || 'unknown')
+    var sessionKey = 'viewed_' + (metadata.slug || 'unknown')
+
+    var currentViews = parseInt(localStorage.getItem(viewKey) || '0', 10)
+
+    // Only increment if not already viewed in this session
+    var alreadyViewed = sessionStorage.getItem(sessionKey)
+    if (!alreadyViewed) {
+      currentViews += 1
+      sessionStorage.setItem(sessionKey, 'true')
     }
+
+    views = currentViews
+    localStorage.setItem(viewKey, views.toString())
   })
 
-  // 🎯 Inject TOC between intro and first heading
-  // Using $effect to ensure it runs on navigation when metadata changes
-  $effect(() => {
-    if (metadata && contentRef && tocRef && hasToc) {
-      const firstHeading = contentRef.querySelector('h2, h3, h4, h5, h6')
+  // Inject TOC between intro and first heading
+  $effect(function () {
+    if (!metadata || !contentRef || !tocRef || !hasToc) return
 
-      if (firstHeading) {
-        // Find all paragraphs before first heading (intro section)
-        let introParas = []
-        let currentElement = contentRef.firstElementChild
+    var firstHeading = contentRef.querySelector('h2, h3, h4, h5, h6')
 
-        while (currentElement && currentElement !== firstHeading) {
-          if (currentElement.tagName === 'P') {
-            introParas.push(currentElement)
-          }
-          currentElement = currentElement.nextElementSibling
+    if (firstHeading) {
+      var introParas = []
+      var currentElement = contentRef.firstElementChild
+
+      while (currentElement && currentElement !== firstHeading) {
+        if (currentElement.tagName === 'P') {
+          introParas.push(currentElement)
         }
-
-        // Insert TOC after last intro paragraph, before first heading
-        if (introParas.length > 0) {
-          const lastIntroPara = introParas[introParas.length - 1]
-          lastIntroPara.after(tocRef)
-        } else {
-          // No intro, insert before first heading
-          firstHeading.before(tocRef)
-        }
-      } else {
-        // No heading found, just put it at the end of the content section or keep at top
-        // eslint-disable-next-line svelte/no-dom-manipulating
-        contentRef.prepend(tocRef)
+        currentElement = currentElement.nextElementSibling
       }
 
-      // Make TOC visible immediately
-      tocRef.classList.remove('hidden')
+      if (introParas.length > 0) {
+        introParas[introParas.length - 1].after(tocRef)
+      } else {
+        firstHeading.before(tocRef)
+      }
+    } else {
+      // eslint-disable-next-line svelte/no-dom-manipulating
+      contentRef.prepend(tocRef)
     }
+
+    tocRef.classList.remove('hidden')
   })
 
   const seoConfig = $derived(
     getSeoConfig({
       title: metadata?.title,
       description: metadata?.description,
-      url: `/blog/${metadata?.slug}`,
+      url: '/blog/' + metadata?.slug,
       image: metadata?.image,
       type: 'article',
       article: {
@@ -87,52 +93,53 @@
 
   const jsonLdString = $derived(
     metadata
-      ? `<script type="application/ld+json">${JSON.stringify({
-          '@context': 'https://schema.org',
-          '@type': 'BlogPosting',
-          headline: metadata.title,
-          description: metadata.description,
-          image: metadata.image
-            ? `${siteConfig.url}${metadata.image}`
-            : `${siteConfig.url}/og-image.png`,
-          datePublished: metadata.date,
-          dateModified: metadata.updated || metadata.date,
-          author: {
-            '@type': 'Person',
-            name: metadata.author || siteConfig.author.name,
-            url: siteConfig.url
-          },
-          publisher: {
-            '@type': 'Organization',
-            name: siteConfig.title,
-            logo: {
-              '@type': 'ImageObject',
-              url: `${siteConfig.url}/logo.png`
-            }
-          },
-          mainEntityOfPage: {
-            '@type': 'WebPage',
-            '@id': `${siteConfig.url}/blog/${metadata.slug}`
-          },
-          keywords: metadata.tags?.join(', ') || '',
-          articleSection: metadata.categories?.[0] || 'Blog',
-          wordCount: metadata.wordCount || 0,
-          timeRequired: `PT${metadata.readingTime || 5}M`
-        })}</' + 'script>'`
+      ? '<script type="application/ld+json">' +
+          JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'BlogPosting',
+            headline: metadata.title,
+            description: metadata.description,
+            image: metadata.image
+              ? siteConfig.siteUrl + metadata.image
+              : siteConfig.siteUrl + '/og-image.png',
+            datePublished: metadata.date,
+            dateModified: metadata.updated || metadata.date,
+            author: {
+              '@type': 'Person',
+              name: metadata.author || siteConfig.author.name,
+              url: siteConfig.siteUrl
+            },
+            publisher: {
+              '@type': 'Organization',
+              name: siteConfig.title,
+              logo: {
+                '@type': 'ImageObject',
+                url: siteConfig.siteUrl + '/logo.png'
+              }
+            },
+            mainEntityOfPage: {
+              '@type': 'WebPage',
+              '@id': siteConfig.siteUrl + '/blog/' + metadata.slug
+            },
+            keywords: metadata.tags?.join(', ') || '',
+            articleSection: metadata.categories?.[0] || 'Blog',
+            wordCount: metadata.wordCount || 0,
+            timeRequired: 'PT' + (metadata.readingTime || 5) + 'M'
+          }) +
+          '</' +
+          'script>'
       : ''
   )
 </script>
 
 <SEO {...seoConfig} />
 
-<!-- Structured Data for Article -->
+<!-- Structured data for article -->
 <svelte:head>
   {#if metadata}
     <!-- eslint-disable-next-line svelte/no-at-html-tags -->
     {@html jsonLdString}
-
-    <!-- Canonical URL -->
-    <link rel="canonical" href="{siteConfig.url}/blog/{metadata.slug}" />
+    <link rel="canonical" href="{siteConfig.siteUrl}/blog/{metadata.slug}" />
   {/if}
 </svelte:head>
 
@@ -140,7 +147,6 @@
   {#if metadata}
     <article class="py-10 animate-fade-in" itemscope itemtype="https://schema.org/BlogPosting">
       <header class="mb-10 space-y-6">
-        <!-- Title -->
         <h1
           class="text-3xl sm:text-4xl lg:text-5xl font-black text-gray-950 dark:text-white leading-tight tracking-tight"
           itemprop="headline"
@@ -168,12 +174,12 @@
           <span aria-hidden="true" class="text-gray-300 dark:text-gray-700">|</span>
           <span class="font-bold text-gray-950 dark:text-gray-200">
             <span itemprop="timeRequired" content="PT{metadata.readingTime}M">
-              {metadata.readingTime} phút đọc
+              {metadata.readingTime} min read
             </span>
           </span>
           <span aria-hidden="true" class="text-gray-300 dark:text-gray-700">|</span>
           <span class="font-bold text-gray-950 dark:text-gray-200">
-            {views} lượt đọc
+            {views} views
           </span>
         </div>
 
@@ -195,9 +201,9 @@
         <PostContent />
       </section>
 
-      <!-- TOC placeholder - will be injected into content -->
+      <!-- TOC placeholder -->
       {#if hasToc}
-        <nav bind:this={tocRef} class="my-10 not-prose hidden" aria-label="Mục lục bài viết">
+        <nav bind:this={tocRef} class="my-10 not-prose hidden" aria-label="Table of contents">
           <ToC post={{ metadata }} />
         </nav>
       {/if}
@@ -209,7 +215,6 @@
       {/if}
 
       <footer class="mt-16 space-y-10">
-        <!-- Tags -->
         <div class="pt-8 border-t border-gray-100 dark:border-gray-800">
           <PostTags post={{ metadata }} />
         </div>
