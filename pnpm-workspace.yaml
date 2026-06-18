@@ -1,7 +1,5 @@
-ignoredBuiltDependencies:
-  - svelte-preprocess
-
-onlyBuiltDependencies:
-  - '@tailwindcss/oxide'
-  - esbuild
-  - sharp
+allowBuilds:
+  sharp: true
+minimumReleaseAgeExclude:
+  - '@sveltejs/kit@2.65.2'
+  - '@sveltia/cms@0.167.2'

@@ -1,19 +1,19 @@
 <script>
   import { siteConfig } from '$lib/config'
   import { onMount } from 'svelte'
-  
+
   // Props - Vue.js/Nuxt.js style with reactive state
-  let { 
+  let {
     post = undefined,
-    prevPost: propPrevPost = undefined, 
-    nextPost: propNextPost = undefined 
+    prevPost: propPrevPost = undefined,
+    nextPost: propNextPost = undefined
   } = $props()
 
   // Reactive state - similar to data() in Vue
   let prevPost = $state(null)
   let nextPost = $state(null)
   let isLoading = $state(true)
-  
+
   // Site metadata from config
   const blogBasePath = siteConfig?.blog?.basePath || '/blog'
   const prefetchEnabled = siteConfig?.prefetch?.enabled ?? true
@@ -27,16 +27,10 @@
   // Reactive effect - similar to watch in Vue
   $effect(() => {
     // Auto-extract from post object or use direct props
-    prevPost = propPrevPost || 
-                post?.prevPost || 
-                post?.metadata?.prevPost || 
-                null
-    
-    nextPost = propNextPost || 
-                post?.nextPost || 
-                post?.metadata?.nextPost || 
-                null
-    
+    prevPost = propPrevPost || post?.prevPost || post?.metadata?.prevPost || null
+
+    nextPost = propNextPost || post?.nextPost || post?.metadata?.nextPost || null
+
     isLoading = false
   })
 
@@ -44,13 +38,13 @@
   const hasPrevPost = $derived(prevPost !== null && prevPost !== undefined)
   const hasNextPost = $derived(nextPost !== null && nextPost !== undefined)
   const hasNavigation = $derived(hasPrevPost || hasNextPost)
-  
+
   // Helper function - similar to methods in Vue
   function getPostUrl(slug) {
     if (!slug) return '#'
     return `${blogBasePath}/${slug}`
   }
-  
+
   function getPostTitle(post) {
     return post?.metadata?.title || post?.title || 'Không có tiêu đề'
   }
@@ -63,7 +57,7 @@
         const prevLink = document.querySelector(`a[href="${getPostUrl(prevPost.slug)}"]`)
         if (prevLink) prevLink.setAttribute('data-sveltekit-preload-data', 'hover')
       }
-      
+
       if (hasNextPost) {
         const nextLink = document.querySelector(`a[href="${getPostUrl(nextPost.slug)}"]`)
         if (nextLink) nextLink.setAttribute('data-sveltekit-preload-data', 'hover')
@@ -77,19 +71,19 @@
   <nav
     class="border-t border-gray-100 dark:border-gray-800 mt-12 pt-8 transition-opacity duration-300 ease-in-out animate-in fade-in slide-in-from-bottom-3"
   >
-    <h2 class="sr-only">{labels.srOnly}</h2>    
+    <h2 class="sr-only">{labels.srOnly}</h2>
     <div class="flex flex-col sm:flex-row justify-between items-stretch gap-6">
-      
       <!-- Previous Post -->
       <div class="flex-1">
         {#if hasPrevPost}
-          <div class="text-xs font-black uppercase tracking-widest text-gray-950 dark:text-gray-50 mb-2">
+          <div
+            class="text-xs font-black uppercase tracking-widest text-gray-950 dark:text-gray-50 mb-2"
+          >
             ← {labels.previous}
           </div>
-          <a 
+          <a
             href={getPostUrl(prevPost.slug)}
             data-sveltekit-preload-data="hover"
-            
             class="block text-lg font-black text-sky-800 dark:text-sky-400 hover:text-sky-600 dark:hover:text-sky-300 hover:underline decoration-2 underline-offset-2 line-clamp-2 leading-snug transition-all duration-200"
             rel="prev"
             aria-label={`${labels.previous}: ${getPostTitle(prevPost)}`}
@@ -107,13 +101,14 @@
       <!-- Next Post -->
       <div class="flex-1 sm:text-right">
         {#if hasNextPost}
-          <div class="text-xs font-black uppercase tracking-widest text-gray-950 dark:text-gray-50 mb-2">
+          <div
+            class="text-xs font-black uppercase tracking-widest text-gray-950 dark:text-gray-50 mb-2"
+          >
             {labels.next} →
           </div>
-          <a 
+          <a
             href={getPostUrl(nextPost.slug)}
             data-sveltekit-preload-data="hover"
-            
             class="block text-lg font-black text-sky-800 dark:text-sky-400 hover:text-sky-600 dark:hover:text-sky-300 hover:underline decoration-2 underline-offset-2 line-clamp-2 leading-snug transition-all duration-200"
             rel="next"
             aria-label={`${labels.next}: ${getPostTitle(nextPost)}`}
@@ -127,7 +122,6 @@
           </div>
         {/if}
       </div>
-
     </div>
   </nav>
 {/if}

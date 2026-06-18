@@ -1,35 +1,35 @@
 <script>
-  import PageContent from '$lib/components/PageContent.svelte';
-	import PostsList from '$lib/components/PostsList.svelte';
-  import SEO from '$lib/components/SEO.svelte';
-  import { siteConfig } from '$lib/config';
-  import { serializeSchema } from '$lib/utils/seo';
+  import PageContent from '$lib/components/PageContent.svelte'
+  import PostsList from '$lib/components/PostsList.svelte'
+  import SEO from '$lib/components/SEO.svelte'
+  import { siteConfig } from '$lib/config'
+  import { serializeSchema } from '$lib/utils/seo'
 
-  let { data } = $props();
-  
+  let { data } = $props()
+
   // Logic: Just use posts from data. Home posts are fetched at build time (static)
-  const recentPosts = $derived(data?.recentPosts || []);
+  const recentPosts = $derived(data?.recentPosts || [])
 
   // SEO Config
-  const seoTitle = $derived(data.metadata?.title || siteConfig.title);
-  const seoDescription = $derived(data.metadata?.description || siteConfig.description);
+  const seoTitle = $derived(data.metadata?.title || siteConfig.title)
+  const seoDescription = $derived(data.metadata?.description || siteConfig.description)
 
   // Structured Data (JSON-LD)
   const websiteSchema = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    'name': siteConfig.title,
-    'description': siteConfig.description,
-    'url': siteConfig.siteUrl,
-    'author': {
+    name: siteConfig.title,
+    description: siteConfig.description,
+    url: siteConfig.siteUrl,
+    author: {
       '@type': 'Person',
-      'name': siteConfig.author.name
+      name: siteConfig.author.name
     }
-  };
+  }
 </script>
 
-<SEO 
-  title={seoTitle} 
+<SEO
+  title={seoTitle}
   description={seoDescription}
   canonical={siteConfig.siteUrl}
   openGraph={{
@@ -62,11 +62,14 @@
         </h2>
         <div class="h-px flex-grow bg-gray-100 dark:bg-gray-800"></div>
       </div>
-      
-  PostsList recentPosts={recentPosts} />
-      
+      <PostsList {recentPosts} />
+
       <div class="pt-8">
-        <a href="/blog" data-sveltekit-preload-data="hover" class="inline-flex px-8 py-4 rounded-full bg-gray-950 dark:bg-white text-white dark:text-gray-950 font-black text-sm hover:scale-105 transition-transform shadow-xl">
+        <a
+          href="/blog"
+          data-sveltekit-preload-data="hover"
+          class="inline-flex px-8 py-4 rounded-full bg-gray-950 dark:bg-white text-white dark:text-gray-950 font-black text-sm hover:scale-105 transition-transform shadow-xl"
+        >
           Xem tất cả bài viết
         </a>
       </div>

@@ -1,14 +1,8 @@
 <script>
-  import SvelteSeo from 'svelte-seo';
-  import { siteConfig } from '$lib/config';
+  import SvelteSeo from 'svelte-seo'
+  import { siteConfig } from '$lib/config'
 
-  let {
-    title,
-    description,
-    canonical,
-    openGraph = {},
-    twitter = {}
-  } = $props();
+  let { title, description, canonical, openGraph = {}, twitter = {} } = $props()
 
   const og = $derived({
     type: openGraph.type || 'website',
@@ -18,7 +12,7 @@
     site_name: openGraph.site_name,
     images: openGraph.images || [{ url: `${siteConfig.siteUrl}/og-image.jpg` }],
     ...openGraph
-  });
+  })
 
   const tw = $derived({
     card: twitter.card || 'summary_large_image',
@@ -26,19 +20,19 @@
     description: twitter.description || description,
     image: twitter.image,
     ...twitter
-  });
+  })
 
   // Keywords derived from tags if available
   const keywords = $derived(
     twitter.keywords || openGraph.keywords || (openGraph.tags ? openGraph.tags.join(', ') : '')
-  );
+  )
 </script>
 
 <SvelteSeo
   {title}
   {description}
   {canonical}
-  keywords={keywords}
+  {keywords}
   openGraph={{
     title: og.title,
     description: og.description,
@@ -58,11 +52,13 @@
   additionalMetaTags={[
     { name: 'googlebot', content: 'index, follow' },
     // Geo Tags
-    ...(siteConfig.geo ? [
-      { name: 'geo.region', content: siteConfig.geo.region },
-      { name: 'geo.placename', content: siteConfig.geo.placename },
-      { name: 'geo.position', content: siteConfig.geo.position },
-      { name: 'ICBM', content: siteConfig.geo.icbm }
-    ] : [])
+    ...(siteConfig.geo
+      ? [
+          { name: 'geo.region', content: siteConfig.geo.region },
+          { name: 'geo.placename', content: siteConfig.geo.placename },
+          { name: 'geo.position', content: siteConfig.geo.position },
+          { name: 'ICBM', content: siteConfig.geo.icbm }
+        ]
+      : [])
   ]}
 />

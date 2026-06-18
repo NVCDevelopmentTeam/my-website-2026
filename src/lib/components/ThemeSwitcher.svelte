@@ -1,41 +1,41 @@
 <script>
-  import { onMount } from 'svelte';
-  import { browser } from '$app/environment';
+  import { onMount } from 'svelte'
+  import { browser } from '$app/environment'
 
-  let theme = $state('light');
+  let theme = $state('light')
 
   onMount(() => {
-    if (!browser) return;
-    
+    if (!browser) return
+
     // Check for saved theme or system preference
-    const savedTheme = localStorage.getItem('theme');
-    const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    
-    theme = savedTheme || systemTheme;
-    
+    const savedTheme = localStorage.getItem('theme')
+    const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+
+    theme = savedTheme || systemTheme
+
     // Only apply if the current state doesn't match the desired theme
-    const isDarkMode = document.documentElement.classList.contains('dark');
+    const isDarkMode = document.documentElement.classList.contains('dark')
     if ((theme === 'dark' && !isDarkMode) || (theme === 'light' && isDarkMode)) {
-      applyTheme(theme);
+      applyTheme(theme)
     }
-  });
+  })
 
   function applyTheme(newTheme) {
-    if (!browser) return;
-    
+    if (!browser) return
+
     if (newTheme === 'dark') {
-      document.documentElement.classList.add('dark');
+      document.documentElement.classList.add('dark')
     } else {
-      document.documentElement.classList.remove('dark');
+      document.documentElement.classList.remove('dark')
     }
-    
-    localStorage.setItem('theme', newTheme);
-    theme = newTheme;
+
+    localStorage.setItem('theme', newTheme)
+    theme = newTheme
   }
 
   function toggleTheme() {
-    const nextTheme = theme === 'light' ? 'dark' : 'light';
-    applyTheme(nextTheme);
+    const nextTheme = theme === 'light' ? 'dark' : 'light'
+    applyTheme(nextTheme)
   }
 </script>
 
@@ -46,11 +46,33 @@
   title={theme === 'light' ? 'Bật chế độ tối' : 'Bật chế độ sáng'}
 >
   {#if theme === 'light'}
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
       <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
     </svg>
   {:else}
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
       <circle cx="12" cy="12" r="5"></circle>
       <line x1="12" y1="1" x2="12" y2="3"></line>
       <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -63,4 +85,3 @@
     </svg>
   {/if}
 </button>
-

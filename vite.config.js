@@ -1,10 +1,18 @@
 import { sveltekit } from '@sveltejs/kit/vite'
 import { defineConfig } from 'vite'
 import tailwindcss from '@tailwindcss/vite'
+import { compression } from 'vite-plugin-compression2'
 import { enhancedImages } from '@sveltejs/enhanced-img'
 
 export default defineConfig({
-  plugins: [enhancedImages(), sveltekit(), tailwindcss()],
+  plugins: [
+    enhancedImages(),
+    sveltekit(),
+    compression({
+      algorithm: 'brotliCompress'
+    }),
+    tailwindcss()
+  ],
 
   build: {
     // Minify output

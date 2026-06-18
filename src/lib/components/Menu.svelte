@@ -1,90 +1,88 @@
 <script>
-  import { page } from '$app/state';
+  import { page } from '$app/state'
 
   /**
    * @typedef {Object} Props
    * @property {any[]} [navPages] - list of Markdown pages { slug, metadata: { title } }
    */
-  let { navPages = [] } = $props();
-  
-  let isMenuOpen = $state(false);
-  let containerRef = $state(null);
-  let openButtonRef = $state(null);
+  let { navPages = [] } = $props()
+
+  let isMenuOpen = $state(false)
+  let containerRef = $state(null)
+  let openButtonRef = $state(null)
 
   function openMenu() {
-    isMenuOpen = true;
+    isMenuOpen = true
   }
 
   function closeMenu() {
-    isMenuOpen = false;
+    isMenuOpen = false
     if (openButtonRef) {
-      requestAnimationFrame(() => openButtonRef?.focus());
+      requestAnimationFrame(() => openButtonRef?.focus())
     }
   }
 
   function handleMenuKeydown(event) {
     if (event.key === 'Escape' && isMenuOpen) {
-      closeMenu();
+      closeMenu()
     }
   }
 
   function handleMenuFocusout(event) {
-    const container = event.currentTarget;
+    const container = event.currentTarget
     requestAnimationFrame(() => {
       if (container && !container.contains(document.activeElement)) {
-        closeMenu();
+        closeMenu()
       }
-    });
+    })
   }
 
   function handleBackdropClick(event) {
     if (event.target === event.currentTarget) {
-      closeMenu();
+      closeMenu()
     }
   }
 
   function getHref(slug) {
-    return slug === 'index' || slug === '' ? '/' : `/${slug}`;
+    return slug === 'index' || slug === '' ? '/' : `/${slug}`
   }
 
   function isCurrentPage(slug) {
-    const href = getHref(slug);
-    return page.url.pathname === href;
+    const href = getHref(slug)
+    return page.url.pathname === href
   }
 
   $effect(() => {
     if (isMenuOpen) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden'
       requestAnimationFrame(() => {
-        const firstLink = containerRef?.querySelector('a');
-        if (firstLink) firstLink.focus();
-      });
+        const firstLink = containerRef?.querySelector('a')
+        if (firstLink) firstLink.focus()
+      })
     } else {
-      document.body.style.overflow = '';
+      document.body.style.overflow = ''
     }
 
     return () => {
-      document.body.style.overflow = '';
-    };
-  });
+      document.body.style.overflow = ''
+    }
+  })
 </script>
 
 <!-- Mobile Menu -->
-<nav 
-  class="flex items-center justify-end lg:hidden"
->
+<nav class="flex items-center justify-end lg:hidden">
   <button
     bind:this={openButtonRef}
     onclick={openMenu}
     aria-haspopup="dialog"
     class="bg-transparent border-0 cursor-pointer p-3 flex items-center justify-center text-gray-900 dark:text-gray-100 hover:opacity-70 transition-opacity min-w-[48px] min-h-[48px]"
   >
-    <svg 
-      width="24" 
-      height="24" 
-      xmlns="http://www.w3.org/2000/svg" 
-      viewBox="0 0 24 24" 
-      aria-hidden="true" 
+    <svg
+      width="24"
+      height="24"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      aria-hidden="true"
       focusable="false"
     >
       <rect x="4" y="7.5" width="16" height="1.5" fill="currentColor" />
@@ -102,12 +100,12 @@
       onkeydown={handleMenuKeydown}
     >
       <!-- Backdrop -->
-      <div 
+      <div
         class="fixed inset-0 bg-black/60 animate-in fade-in duration-200"
         onclick={handleBackdropClick}
         onkeydown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
-            handleBackdropClick(e);
+            handleBackdropClick(e)
           }
         }}
         role="button"
@@ -123,66 +121,66 @@
         aria-label="Menu điều hướng"
         tabindex="-1"
       >
-          <!-- Close Button -->
-          <button
-            onclick={closeMenu}
-            class="absolute top-5 right-5 bg-transparent border-0 cursor-pointer p-2 flex items-center justify-center text-gray-950 dark:text-white hover:opacity-70 transition-opacity z-10 min-w-[48px] min-h-[48px]"
+        <!-- Close Button -->
+        <button
+          onclick={closeMenu}
+          class="absolute top-5 right-5 bg-transparent border-0 cursor-pointer p-2 flex items-center justify-center text-gray-950 dark:text-white hover:opacity-70 transition-opacity z-10 min-w-[48px] min-h-[48px]"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            width="24"
+            height="24"
+            aria-hidden="true"
+            focusable="false"
+            fill="currentColor"
           >
-            <svg 
-              xmlns="http://www.w3.org/2000/svg" 
-              viewBox="0 0 24 24" 
-              width="24" 
-              height="24" 
-              aria-hidden="true" 
-              focusable="false"
-              fill="currentColor"
-            >
-              <path d="m13.06 12 6.47-6.47-1.06-1.06L12 10.94 5.53 4.47 4.47 5.53 10.94 12l-6.47 6.47 1.06 1.06L12 13.06l6.47 6.47 1.06-1.06L13.06 12Z" />
-            </svg>
-            <span class="sr-only">Đóng</span>
-          </button>
-          
-          <!-- Menu Content -->
-          <div class="p-8 pt-20">
-            <ul 
-              class="list-none m-0 p-0 flex flex-col items-start justify-start w-full space-y-1"
-            >
-              {#each navPages as p (p.slug)}
-                <li class="w-full">
-                  <a 
-                    class="block py-3 px-4 no-underline text-gray-950 dark:text-gray-50 text-lg hover:bg-gray-100 dark:hover:bg-gray-900 rounded-lg transition-colors font-bold -tracking-[0.1px]"
-                    class:font-black={isCurrentPage(p.slug)}
-                    class:bg-gray-100={isCurrentPage(p.slug)}
-                    class:dark:bg-gray-900={isCurrentPage(p.slug)}
-                    href={getHref(p.slug)}
-                    data-sveltekit-preload-data="hover"
-                    aria-current={isCurrentPage(p.slug) ? 'page' : undefined}
-                    onclick={closeMenu}
-                  >
-                    {p.metadata.title}
-                  </a>
-                </li>
-              {/each}
+            <path
+              d="m13.06 12 6.47-6.47-1.06-1.06L12 10.94 5.53 4.47 4.47 5.53 10.94 12l-6.47 6.47 1.06 1.06L12 13.06l6.47 6.47 1.06-1.06L13.06 12Z"
+            />
+          </svg>
+          <span class="sr-only">Đóng</span>
+        </button>
 
+        <!-- Menu Content -->
+        <div class="p-8 pt-20">
+          <ul class="list-none m-0 p-0 flex flex-col items-start justify-start w-full space-y-1">
+            {#each navPages as p (p.slug)}
               <li class="w-full">
-                <a 
+                <a
                   class="block py-3 px-4 no-underline text-gray-950 dark:text-gray-50 text-lg hover:bg-gray-100 dark:hover:bg-gray-900 rounded-lg transition-colors font-bold -tracking-[0.1px]"
-                  class:font-black={page.url.pathname === '/blog'}
-                  class:bg-gray-100={page.url.pathname === '/blog'}
-                  class:dark:bg-gray-900={page.url.pathname === '/blog'}
-                  href="/blog"
+                  class:font-black={isCurrentPage(p.slug)}
+                  class:bg-gray-100={isCurrentPage(p.slug)}
+                  class:dark:bg-gray-900={isCurrentPage(p.slug)}
+                  href={getHref(p.slug)}
                   data-sveltekit-preload-data="hover"
-                  aria-current={page.url.pathname === '/blog' ? 'page' : undefined}
+                  aria-current={isCurrentPage(p.slug) ? 'page' : undefined}
                   onclick={closeMenu}
                 >
-                  Blog
+                  {p.metadata.title}
                 </a>
               </li>
-            </ul>
-          </div>
+            {/each}
+
+            <li class="w-full">
+              <a
+                class="block py-3 px-4 no-underline text-gray-950 dark:text-gray-50 text-lg hover:bg-gray-100 dark:hover:bg-gray-900 rounded-lg transition-colors font-bold -tracking-[0.1px]"
+                class:font-black={page.url.pathname === '/blog'}
+                class:bg-gray-100={page.url.pathname === '/blog'}
+                class:dark:bg-gray-900={page.url.pathname === '/blog'}
+                href="/blog"
+                data-sveltekit-preload-data="hover"
+                aria-current={page.url.pathname === '/blog' ? 'page' : undefined}
+                onclick={closeMenu}
+              >
+                Blog
+              </a>
+            </li>
+          </ul>
         </div>
       </div>
-    {/if}
+    </div>
+  {/if}
 </nav>
 
 <!-- Desktop Menu -->
