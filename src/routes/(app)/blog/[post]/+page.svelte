@@ -9,7 +9,7 @@
   import FAQ from '$lib/components/FAQ.svelte'
   import PostNavigation from '$lib/components/PostNavigation.svelte'
   import SEO from '$lib/components/SEO.svelte'
-  import { getSeoConfig } from '$lib/utils/seo'
+  import { getSeoConfig, serializeSchema } from '$lib/utils/seo'
   import { onMount } from 'svelte'
   import { browser } from '$app/environment'
 
@@ -93,41 +93,38 @@
 
   const jsonLdString = $derived(
     metadata
-      ? '<script type="application/ld+json">' +
-          JSON.stringify({
-            '@context': 'https://schema.org',
-            '@type': 'BlogPosting',
-            headline: metadata.title,
-            description: metadata.description,
-            image: metadata.image
-              ? siteConfig.siteUrl + metadata.image
-              : siteConfig.siteUrl + '/og-image.png',
-            datePublished: metadata.date,
-            dateModified: metadata.updated || metadata.date,
-            author: {
-              '@type': 'Person',
-              name: metadata.author || siteConfig.author.name,
-              url: siteConfig.siteUrl
-            },
-            publisher: {
-              '@type': 'Organization',
-              name: siteConfig.title,
-              logo: {
-                '@type': 'ImageObject',
-                url: siteConfig.siteUrl + '/logo.png'
-              }
-            },
-            mainEntityOfPage: {
-              '@type': 'WebPage',
-              '@id': siteConfig.siteUrl + '/blog/' + metadata.slug
-            },
-            keywords: metadata.tags?.join(', ') || '',
-            articleSection: metadata.categories?.[0] || 'Blog',
-            wordCount: metadata.wordCount || 0,
-            timeRequired: 'PT' + (metadata.readingTime || 5) + 'M'
-          }) +
-          '</' +
-          'script>'
+      ? serializeSchema({
+          '@context': 'https://schema.org',
+          '@type': 'BlogPosting',
+          headline: metadata.title,
+          description: metadata.description,
+          image: metadata.image
+            ? siteConfig.siteUrl + metadata.image
+            : siteConfig.siteUrl + '/og-image.png',
+          datePublished: metadata.date,
+          dateModified: metadata.updated || metadata.date,
+          author: {
+            '@type': 'Person',
+            name: metadata.author || siteConfig.author.name,
+            url: siteConfig.siteUrl
+          },
+          publisher: {
+            '@type': 'Organization',
+            name: siteConfig.title,
+            logo: {
+              '@type': 'ImageObject',
+              url: siteConfig.siteUrl + '/logo.png'
+            }
+          },
+          mainEntityOfPage: {
+            '@type': 'WebPage',
+            '@id': siteConfig.siteUrl + '/blog/' + metadata.slug
+          },
+          keywords: metadata.tags?.join(', ') || '',
+          articleSection: metadata.categories?.[0] || 'Blog',
+          wordCount: metadata.wordCount || 0,
+          timeRequired: 'PT' + (metadata.readingTime || 5) + 'M'
+        })
       : ''
   )
 </script>

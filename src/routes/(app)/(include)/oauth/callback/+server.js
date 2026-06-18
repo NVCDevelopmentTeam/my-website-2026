@@ -1,11 +1,22 @@
-import { redirect } from '@sveltejs/kit'
+import { error, redirect } from '@sveltejs/kit'
 import { OAUTH_GITHUB_CLIENT_ID, OAUTH_GITHUB_CLIENT_SECRET } from '$env/static/private'
+import { siteConfig } from '$lib/config'
 
 export const prerender = false
 
-export const GET = async ({ url }) => {
+export const GET = async ({ url, cookies }) => {
+  const code = url.searchParams.get('code')
+  const returnedState = url.searchParams.get('state')
+  const savedState = cookies.get('oauth_state')
+
+  cookies.delete('oauth_state', { path: '/' })
+
+  if (!code || !returnedState || returnedState !== savedState) {
+    error(403, 'OAuth state mismatch — possible CSRF attack.')
+  }
+
   const data = {
-    code: url.searchParams.get('code'),
+    code,
     client_id: OAUTH_GITHUB_CLIENT_ID,
     client_secret: OAUTH_GITHUB_CLIENT_SECRET
   }
@@ -26,17 +37,19 @@ export const GET = async ({ url }) => {
 
     const body = await response.json()
 
-    const content = {
+    const content = JSON.stringify({
       token: body.access_token,
       provider: 'github'
-    }
+    })
+
+    const targetOrigin = siteConfig.siteUrl
 
     const script = `
       <script>
         const receiveMessage = (message) => {
           if (window.opener) {
             window.opener.postMessage(
-              'authorization:${content.provider}:success:${JSON.stringify(content)}',
+              'authorization:github:success:${content.replace(/'/g, "\\'")}',
               message.origin
             );
 
@@ -46,7 +59,7 @@ export const GET = async ({ url }) => {
         window.addEventListener("message", receiveMessage, false);
 
         if (window.opener) {
-          window.opener.postMessage("authorizing:${content.provider}", "*");
+          window.opener.postMessage("authorizing:github", "${targetOrigin}");
         }
       </script>
     `
@@ -56,6 +69,6 @@ export const GET = async ({ url }) => {
     })
   } catch (err) {
     console.error('OAuth callback error:', err)
-    redirect(302, '/?error=😡')
+    redirect(302, '/?error=auth_failed')
   }
 }
