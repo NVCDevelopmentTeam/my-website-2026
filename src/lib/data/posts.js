@@ -1,6 +1,8 @@
 import { siteConfig } from '$lib/config'
 import { slugify } from '$lib/utils/slugify'
 import { truncate } from '$lib/utils/truncate'
+import { parseList } from '$lib/utils/parseList'
+import { toISODate } from '$lib/utils/date'
 
 // Load only metadata for all markdown files to keep the bundle small
 const modules = import.meta.glob('/src/lib/contents/posts/*.md', {
@@ -34,51 +36,11 @@ function getAllPosts() {
       var author = meta.author || siteConfig?.author?.name || 'Anonymous'
 
       // Validate date
-      var date = meta.date
-      try {
-        var parsedDate = new Date(date)
-        if (isNaN(parsedDate.getTime())) {
-          date = new Date().toISOString()
-        } else {
-          date = parsedDate.toISOString()
-        }
-      } catch {
-        date = new Date().toISOString()
-      }
+      var date = toISODate(meta.date)
 
-      // Parse categories from comma-separated string
-      var categories = []
-      if (typeof meta.categories === 'string') {
-        categories = meta.categories
-          .split(',')
-          .map(function (c) {
-            return c.trim()
-          })
-          .filter(Boolean)
-      } else if (Array.isArray(meta.categories)) {
-        categories = meta.categories.filter(Boolean)
-      }
-
-      if (categories.length === 0) {
-        categories = ['chưa phân loại']
-      }
-
-      // Parse tags from comma-separated string
-      var tags = []
-      if (typeof meta.tags === 'string') {
-        tags = meta.tags
-          .split(',')
-          .map(function (t) {
-            return t.trim()
-          })
-          .filter(Boolean)
-      } else if (Array.isArray(meta.tags)) {
-        tags = meta.tags.filter(Boolean)
-      }
-
-      if (tags.length === 0) {
-        tags = ['chưa phân loại']
-      }
+      // Parse categories and tags from comma-separated strings
+      var categories = parseList(meta.categories, 'chưa phân loại')
+      var tags = parseList(meta.tags, 'chưa phân loại')
 
       // Meta description - short for SEO (150-160 chars)
       var hasValidMetaDescription =
@@ -255,18 +217,25 @@ export function getPostBySlug(slug) {
   return post
 }
 
-/* Get all categories */
-export function getAllCategories() {
-  if (cachedCategories && !shouldReloadCache()) return cachedCategories
+/* Shared aggregation helper */
 
+/**
+ * Aggregate a metadata array field across all posts into a
+ * deduplicated, counted list sorted by count descending.
+ *
+ * @param {string} field      - Metadata array key (e.g. 'categories', 'tags').
+ * @param {function} mapEntry - `(title, slug, count) => object` formatter.
+ * @returns {object[]}
+ */
+function collectByField(field, mapEntry) {
   var posts = getAllPosts()
   var map = new Map()
 
   posts.forEach(function (post) {
-    post.metadata.categories.forEach(function (cat) {
-      var title = cat.trim()
+    var items = post.metadata[field] || []
+    items.forEach(function (item) {
+      var title = typeof item === 'string' ? item.trim() : ''
       if (!title) return
-
       var slug = slugify(title)
       var existing = map.get(slug)
       if (existing) {
@@ -277,20 +246,29 @@ export function getAllCategories() {
     })
   })
 
-  cachedCategories = Array.from(map.values())
+  return Array.from(map.values())
     .map(function ({ title, slug, count }) {
-      return {
-        metadata: {
-          title,
-          slug,
-          description: 'Category ' + title + ' has ' + count + ' posts',
-          count
-        }
-      }
+      return mapEntry(title, slug, count)
     })
     .sort(function (a, b) {
-      return b.metadata.count - a.metadata.count
+      return (b.metadata?.count ?? b.count) - (a.metadata?.count ?? a.count)
     })
+}
+
+/* Get all categories */
+export function getAllCategories() {
+  if (cachedCategories && !shouldReloadCache()) return cachedCategories
+
+  cachedCategories = collectByField('categories', function (title, slug, count) {
+    return {
+      metadata: {
+        title,
+        slug,
+        description: 'Category ' + title + ' has ' + count + ' posts',
+        count
+      }
+    }
+  })
 
   cacheTimestamp = Date.now()
   return cachedCategories
@@ -300,31 +278,9 @@ export function getAllCategories() {
 export function getAllTags() {
   if (cachedTags && !shouldReloadCache()) return cachedTags
 
-  var posts = getAllPosts()
-  var map = new Map()
-
-  posts.forEach(function (post) {
-    post.metadata.tags.forEach(function (tag) {
-      var normalized = tag.trim()
-      if (normalized) {
-        var slug = slugify(normalized)
-        var existing = map.get(slug)
-        if (existing) {
-          existing.count++
-        } else {
-          map.set(slug, { name: normalized, slug, count: 1 })
-        }
-      }
-    })
+  cachedTags = collectByField('tags', function (name, slug, count) {
+    return { name, slug, count }
   })
-
-  cachedTags = Array.from(map.values())
-    .map(function ({ name, slug, count }) {
-      return { name, count, slug }
-    })
-    .sort(function (a, b) {
-      return b.count - a.count
-    })
 
   cacheTimestamp = Date.now()
   return cachedTags

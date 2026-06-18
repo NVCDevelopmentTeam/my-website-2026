@@ -1,23 +1,21 @@
 <script>
   import { siteConfig } from '$lib/config'
+  import SEO from '$lib/components/SEO.svelte'
+  import { getSeoConfig } from '$lib/utils/seo'
 
   const { data } = $props()
   const { uniqueCategories, totalCategories } = $derived.by(() => data)
 
-  // SEO metadata - use $derived for reactivity
-  const metadata = $derived.by(() => ({
-    title: 'Danh mục bài viết',
-    description: `Khám phá ${totalCategories || 0} danh mục bài viết trên ${siteConfig.title}`
-  }))
+  const seoConfig = $derived(
+    getSeoConfig({
+      title: 'Danh mục bài viết',
+      description: `Khám phá ${totalCategories || 0} danh mục bài viết trên ${siteConfig.title}`,
+      url: '/blog/category'
+    })
+  )
 </script>
 
-<svelte:head>
-  <title>
-    {metadata.title ? `${metadata.title} – ${siteConfig.title}` : siteConfig.title}
-  </title>
-
-  <meta name="description" content={metadata.description ?? siteConfig.description} />
-</svelte:head>
+<SEO {...seoConfig} />
 
 <div class="container mx-auto px-4 py-16">
   <div class="max-w-3xl mx-auto">

@@ -1,5 +1,6 @@
 import { getFilteredPosts } from '$lib/data/posts'
 import { siteConfig } from '$lib/config'
+import { escapeXml } from '$lib/utils/escapeXml'
 
 export const prerender = true
 export const trailingSlash = 'never'
@@ -87,17 +88,4 @@ export async function GET({ setHeaders }) {
 
     return new Response(fallbackXml.trim())
   }
-}
-
-/**
- * Escape XML special characters to prevent feed corruption
- */
-function escapeXml(text) {
-  if (!text) return ''
-  return String(text)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&apos;')
 }

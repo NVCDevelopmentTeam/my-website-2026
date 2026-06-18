@@ -1,7 +1,6 @@
 import { getFilteredPosts, getAllCategories } from '$lib/data/posts'
-import { siteConfig } from '$lib/config'
 import { error, isHttpError } from '@sveltejs/kit'
-import { building } from '$app/environment'
+import { loadPaginatedPosts } from '$lib/utils/pagination'
 
 export const prerender = true
 
@@ -36,57 +35,26 @@ export async function load({ params, url, depends }) {
   }
 
   const metadata = categoryData.metadata
-  const perPage = siteConfig.pagination.postsPerPage
-
-  // Get page from query
-  const pageParam = building ? null : url.searchParams.get('page')
-  let currentPage = Number(pageParam)
-  if (!currentPage || currentPage < 1) currentPage = 1
-
-  const offset = (currentPage - 1) * perPage
 
   try {
-    // Get filtered posts by category title
-    const result = await getFilteredPosts({
-      offset,
-      limit: perPage,
-      category: metadata.title
-    })
-
-    const posts = result?.posts ?? []
-    const total = result?.total ?? 0
-    const totalPages = Math.max(1, result?.totalPages ?? 1)
-
-    // Check if category has no posts
-    if (total === 0) {
-      return {
-        category: metadata,
-        posts: [],
-        pagination: {
-          currentPage: 1,
-          totalPages: 1,
-          totalPosts: 0,
-          hasPrev: false,
-          hasNext: false
-        }
-      }
-    }
+    const { posts, pagination } = loadPaginatedPosts(
+      url,
+      { category: metadata.title },
+      getFilteredPosts
+    )
 
     // Check if page exceeds limits
-    if (currentPage > totalPages) {
-      error(404, `Trang ${currentPage} không tồn tại trong danh mục "${metadata.title}".`)
+    if (pagination.currentPage > pagination.totalPages && pagination.totalPages > 0) {
+      error(
+        404,
+        `Trang ${pagination.currentPage} không tồn tại trong danh mục "${metadata.title}".`
+      )
     }
 
     return {
       category: metadata,
       posts,
-      pagination: {
-        currentPage,
-        totalPages,
-        totalPosts: total,
-        hasPrev: currentPage > 1,
-        hasNext: currentPage < totalPages
-      }
+      pagination
     }
   } catch (err) {
     if (isHttpError(err)) throw err
