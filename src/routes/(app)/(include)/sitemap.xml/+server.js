@@ -1,6 +1,7 @@
 import { getAllPages } from '$lib/data/pages'
 import { getFilteredPosts, getAllCategories, getAllTags } from '$lib/data/posts'
 import { siteConfig } from '$lib/config'
+import { escapeXml } from '$lib/utils/escapeXml'
 
 export const prerender = true
 export const trailingSlash = 'never'
@@ -35,7 +36,7 @@ export async function GET({ setHeaders }) {
       .map(
         (page) => `
   <url>
-    <loc>${siteConfig.siteUrl}/${page.slug}</loc>
+    <loc>${escapeXml(`${siteConfig.siteUrl}/${page.slug}`)}</loc>
     <changefreq>monthly</changefreq>
     <priority>${page.priority || 0.7}</priority>
   </url>`
@@ -51,7 +52,7 @@ export async function GET({ setHeaders }) {
 
         return `
   <url>
-    <loc>${siteConfig.siteUrl}/blog/${post.slug}</loc>
+    <loc>${escapeXml(`${siteConfig.siteUrl}/blog/${post.slug}`)}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -64,7 +65,7 @@ export async function GET({ setHeaders }) {
       .map(
         (cat) => `
   <url>
-    <loc>${siteConfig.siteUrl}/blog/category/${cat.metadata.slug}</loc>
+    <loc>${escapeXml(`${siteConfig.siteUrl}/blog/category/${cat.metadata.slug}`)}</loc>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>`
@@ -76,7 +77,7 @@ export async function GET({ setHeaders }) {
       .map(
         (tag) => `
   <url>
-    <loc>${siteConfig.siteUrl}/blog/tag/${tag.slug}</loc>
+    <loc>${escapeXml(`${siteConfig.siteUrl}/blog/tag/${tag.slug}`)}</loc>
     <changefreq>weekly</changefreq>
     <priority>0.4</priority>
   </url>`

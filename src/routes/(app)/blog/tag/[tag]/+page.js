@@ -1,7 +1,7 @@
 import { getFilteredPosts, getAllTags } from '$lib/data/posts'
 import { siteConfig } from '$lib/config'
 import { error, isHttpError } from '@sveltejs/kit'
-import { building } from '$app/environment'
+import { loadPaginatedPosts } from '$lib/utils/pagination'
 
 export const prerender = true
 
@@ -40,37 +40,22 @@ export async function load({ params, url }) {
     description: `Có ${tagData.count} bài viết với thẻ "${tagData.name}"`
   }
 
-  // Current page - avoid accessing during prerender
-  const pageParam = building ? null : url.searchParams.get('page')
-  const currentPage =
-    pageParam && !isNaN(Number(pageParam)) && Number(pageParam) > 0 ? Number(pageParam) : 1
-
-  const perPage = siteConfig.pagination.postsPerPage
-  const offset = (currentPage - 1) * perPage
-
   try {
-    // Get filtered posts by tag name (posts store tag names)
-    const { posts, total, totalPages } = getFilteredPosts({
-      offset,
-      limit: perPage,
-      tag: tagMetadata.title
-    })
+    const { posts, pagination } = loadPaginatedPosts(
+      url,
+      { tag: tagMetadata.title },
+      getFilteredPosts
+    )
 
     // Check for page overflow
-    if (currentPage > totalPages && totalPages > 0) {
-      error(404, `Trang ${currentPage} không tồn tại trong thẻ "${tagMetadata.title}".`)
+    if (pagination.currentPage > pagination.totalPages && pagination.totalPages > 0) {
+      error(404, `Trang ${pagination.currentPage} không tồn tại trong thẻ "${tagMetadata.title}".`)
     }
 
     return {
       tag: tagMetadata,
       posts,
-      pagination: {
-        currentPage,
-        totalPages,
-        totalPosts: total,
-        hasPrev: currentPage > 1,
-        hasNext: currentPage < totalPages
-      },
+      pagination,
       site: siteConfig
     }
   } catch (err) {

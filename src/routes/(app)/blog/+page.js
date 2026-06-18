@@ -1,7 +1,7 @@
 import { getFilteredPosts } from '$lib/data/posts'
 import { siteConfig } from '$lib/config'
 import { error } from '@sveltejs/kit'
-import { building } from '$app/environment'
+import { loadPaginatedPosts } from '$lib/utils/pagination'
 
 export const prerender = true
 
@@ -10,28 +10,11 @@ export async function load({ url, depends }) {
   depends('blog:list')
 
   try {
-    const perPage = siteConfig.pagination.postsPerPage
-    // During building, url.searchParams is not available
-    const pageParam = building ? null : url.searchParams.get('page')
-    let currentPage = parseInt(pageParam || '1')
-    if (isNaN(currentPage) || currentPage < 1) currentPage = 1
-
-    const offset = (currentPage - 1) * perPage
-
-    // Get posts with pagination support
-    const { posts, total, totalPages } = getFilteredPosts({
-      offset,
-      limit: perPage
-    })
+    const { posts, pagination } = loadPaginatedPosts(url, {}, getFilteredPosts)
 
     return {
       posts,
-      pagination: {
-        currentPage,
-        totalPages: totalPages || Math.ceil(total / perPage),
-        totalPosts: total,
-        baseUrl: '/blog'
-      },
+      pagination: { ...pagination, baseUrl: '/blog' },
       site: siteConfig
     }
   } catch (err) {
