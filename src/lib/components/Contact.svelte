@@ -50,11 +50,11 @@
 
 <form
   onsubmit={handleSubmit}
-  class="flex flex-col w-full max-w-lg mx-auto space-y-6 bg-white dark:bg-gray-900 p-6 sm:p-8 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-xl transition-colors"
+  class="mx-auto flex w-full max-w-lg flex-col space-y-6 rounded-2xl border border-gray-100 bg-white p-6 shadow-xl transition-colors sm:p-8 dark:border-gray-800 dark:bg-gray-900"
 >
   <div class="space-y-2">
     <h2 class="text-2xl font-bold text-gray-950 dark:text-white">Gửi lời nhắn cho mình</h2>
-    <p class="text-sm text-gray-950 dark:text-gray-50 font-bold">
+    <p class="text-sm font-bold text-gray-950 dark:text-gray-50">
       Mình sẽ cố gắng phản hồi bạn sớm nhất có thể.
     </p>
   </div>
@@ -66,7 +66,7 @@
       Họ và tên <span class="text-red-700 dark:text-red-400" aria-hidden="true">*</span>
     </label>
     <input
-      class="w-full border border-gray-400 dark:border-gray-600 dark:bg-gray-800 text-gray-950 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-sky-800 dark:focus:ring-sky-400 transition-all"
+      class="w-full rounded-xl border border-gray-400 px-4 py-3 text-gray-950 transition-all focus:ring-2 focus:ring-sky-800 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:focus:ring-sky-400"
       type="text"
       id="name"
       name="name"
@@ -80,7 +80,7 @@
       Địa chỉ email <span class="text-red-700 dark:text-red-400" aria-hidden="true">*</span>
     </label>
     <input
-      class="w-full border border-gray-400 dark:border-gray-600 dark:bg-gray-800 text-gray-950 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-sky-800 dark:focus:ring-sky-400 transition-all"
+      class="w-full rounded-xl border border-gray-400 px-4 py-3 text-gray-950 transition-all focus:ring-2 focus:ring-sky-800 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:focus:ring-sky-400"
       type="email"
       id="email"
       name="email"
@@ -94,7 +94,7 @@
       Tiêu đề <span class="text-red-700 dark:text-red-400" aria-hidden="true">*</span>
     </label>
     <input
-      class="w-full border border-gray-400 dark:border-gray-600 dark:bg-gray-800 text-gray-950 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-sky-800 dark:focus:ring-sky-400 transition-all"
+      class="w-full rounded-xl border border-gray-400 px-4 py-3 text-gray-950 transition-all focus:ring-2 focus:ring-sky-800 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:focus:ring-sky-400"
       type="text"
       id="title"
       name="title"
@@ -108,7 +108,7 @@
       Nội dung <span class="text-red-700 dark:text-red-400" aria-hidden="true">*</span>
     </label>
     <textarea
-      class="w-full border border-gray-400 dark:border-gray-600 dark:bg-gray-800 text-gray-950 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-sky-800 dark:focus:ring-sky-400 transition-all"
+      class="w-full rounded-xl border border-gray-400 px-4 py-3 text-gray-950 transition-all focus:ring-2 focus:ring-sky-800 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:focus:ring-sky-400"
       id="message"
       name="message"
       placeholder="Nhập nội dung tin nhắn của bạn ở đây..."
@@ -118,7 +118,7 @@
 
   <button
     type="submit"
-    class="w-full bg-sky-800 dark:bg-sky-400 text-white dark:text-gray-950 font-bold rounded-xl py-4 shadow-lg hover:bg-sky-900 dark:hover:bg-sky-300 transition-all duration-300 focus:ring-4 focus:ring-sky-500/50 active:scale-[0.98]"
+    class="w-full rounded-xl bg-sky-800 py-4 font-bold text-white shadow-lg transition-all duration-300 hover:bg-sky-900 focus:ring-4 focus:ring-sky-500/50 active:scale-[0.98] dark:bg-sky-400 dark:text-gray-950 dark:hover:bg-sky-300"
   >
     {status === 'Đang gửi...' ? 'Đang gửi tín hiệu...' : 'Gửi lời nhắn'}
   </button>
@@ -126,7 +126,7 @@
   {#if status}
     <div
       aria-live="polite"
-      class="text-center mt-6 p-4 rounded-xl font-bold animate-fade-in {status.includes(
+      class="animate-fade-in mt-6 rounded-xl p-4 text-center font-bold {status.includes(
         'thành công'
       )
         ? 'bg-emerald-50 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-300'

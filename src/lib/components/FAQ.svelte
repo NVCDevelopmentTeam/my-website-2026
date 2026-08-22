@@ -33,12 +33,12 @@
 
 {#if items.length > 0}
   <section
-    class="my-12 p-6 sm:p-8 bg-gray-50 dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm"
+    class="my-12 rounded-3xl border border-gray-100 bg-gray-50 p-6 shadow-sm sm:p-8 dark:border-gray-800 dark:bg-gray-900"
     aria-labelledby="faq-heading"
   >
     <h2
       id="faq-heading"
-      class="text-2xl font-bold mb-8 text-gray-950 dark:text-white flex items-center gap-3"
+      class="mb-8 flex items-center gap-3 text-2xl font-bold text-gray-950 dark:text-white"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -60,11 +60,11 @@
 
     <div class="space-y-6">
       {#each items as item (item.question)}
-        <div class="border-b border-gray-200 dark:border-gray-800 pb-6 last:border-0 last:pb-0">
-          <h3 class="text-lg font-black text-gray-950 dark:text-gray-50 mb-2">
+        <div class="border-b border-gray-200 pb-6 last:border-0 last:pb-0 dark:border-gray-800">
+          <h3 class="mb-2 text-lg font-black text-gray-950 dark:text-gray-50">
             {item.question}
           </h3>
-          <div class="text-gray-950 dark:text-gray-50 leading-relaxed font-bold">
+          <div class="leading-relaxed font-bold text-gray-950 dark:text-gray-50">
             {item.answer}
           </div>
         </div>

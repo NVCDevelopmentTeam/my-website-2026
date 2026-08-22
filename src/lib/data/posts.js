@@ -10,21 +10,14 @@ const modules = import.meta.glob('/src/lib/contents/posts/*.md', {
   import: 'metadata'
 })
 
-/* Cache layer with auto reload */
+/* Cache layer — modules are eagerly loaded once, no TTL needed for static site */
 var cachedPosts = null
 var cachedCategories = null
 var cachedTags = null
-var cacheTimestamp = null
-var CACHE_TTL = 3600000 // 1 hour
-
-function shouldReloadCache() {
-  if (!cacheTimestamp) return true
-  return Date.now() - cacheTimestamp > CACHE_TTL
-}
 
 /* Get all posts with metadata */
 function getAllPosts() {
-  if (cachedPosts && !shouldReloadCache()) return cachedPosts
+  if (cachedPosts) return cachedPosts
 
   var posts = Object.entries(modules)
     .map(function ([path, metadata]) {
@@ -88,10 +81,7 @@ function getAllPosts() {
     })
     .filter(function (post) {
       // Exclude draft posts in production
-      if (post.metadata.draft) {
-        return false
-      }
-      return true
+      return !post.metadata.draft
     })
 
   // Sort by date descending
@@ -99,7 +89,6 @@ function getAllPosts() {
     return b.timestamp - a.timestamp
   })
 
-  cacheTimestamp = Date.now()
   return cachedPosts
 }
 
@@ -113,6 +102,8 @@ export function getFilteredPosts({
   year = null,
   month = null
 } = {}) {
+  // Normalize limit: -1 or falsy (except 0) means "return all"
+  var effectiveLimit = limit === -1 || limit === Infinity ? Number.MAX_SAFE_INTEGER : limit || 10
   var posts = getAllPosts()
 
   // Filter by category
@@ -164,23 +155,26 @@ export function getFilteredPosts({
   }
 
   var total = posts.length
-  var totalPages = Math.ceil(total / limit)
-  var currentPage = Math.floor(offset / limit) + 1
-  var paginated = posts.slice(offset, offset + limit)
+  var totalPages = Math.ceil(total / effectiveLimit)
+  var currentPage = Math.floor(offset / effectiveLimit) + 1
+  var paginated =
+    effectiveLimit >= Number.MAX_SAFE_INTEGER
+      ? posts.slice(offset)
+      : posts.slice(offset, offset + effectiveLimit)
 
   return {
     posts: paginated,
     total,
     totalPages,
     currentPage,
-    limit,
+    limit: effectiveLimit,
     offset,
-    hasNext: offset + limit < total,
+    hasNext: effectiveLimit < Number.MAX_SAFE_INTEGER && offset + effectiveLimit < total,
     hasPrev: offset > 0,
     pages: Array.from({ length: totalPages }, function (_, i) {
       return {
         number: i + 1,
-        offset: i * limit,
+        offset: i * effectiveLimit,
         isActive: i + 1 === currentPage
       }
     }),
@@ -257,7 +251,7 @@ function collectByField(field, mapEntry) {
 
 /* Get all categories */
 export function getAllCategories() {
-  if (cachedCategories && !shouldReloadCache()) return cachedCategories
+  if (cachedCategories) return cachedCategories
 
   cachedCategories = collectByField('categories', function (title, slug, count) {
     return {
@@ -270,19 +264,17 @@ export function getAllCategories() {
     }
   })
 
-  cacheTimestamp = Date.now()
   return cachedCategories
 }
 
 /* Get all tags */
 export function getAllTags() {
-  if (cachedTags && !shouldReloadCache()) return cachedTags
+  if (cachedTags) return cachedTags
 
   cachedTags = collectByField('tags', function (name, slug, count) {
     return { name, slug, count }
   })
 
-  cacheTimestamp = Date.now()
   return cachedTags
 }
 
@@ -297,6 +289,5 @@ export function reloadCache() {
   cachedPosts = null
   cachedCategories = null
   cachedTags = null
-  cacheTimestamp = null
   getAllPosts()
 }

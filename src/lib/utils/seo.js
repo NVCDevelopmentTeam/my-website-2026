@@ -34,25 +34,45 @@ export const defaultSeoConfig = {
 
 /**
  * Build SEO configuration for a specific page
+ * @param {Object} params
+ * @param {string} params.title
+ * @param {string} [params.description]
+ * @param {string} params.url
+ * @param {string} [params.image]
+ * @param {string} [params.type] - OpenGraph type: 'website' | 'article'
+ * @param {Object} [params.article] - Article metadata (publishedTime, modifiedTime, author, tags)
  */
-export function getSeoConfig({ title, description, url, image }) {
+export function getSeoConfig({ title, description, url, image, type = 'website', article = null }) {
   var fullTitle = title + ' — ' + siteConfig.title
   var fullUrl = siteConfig.siteUrl + url
   var seoDescription = description || siteConfig.description
   var seoImage = image ? siteConfig.siteUrl + image : siteConfig.siteUrl + '/og-image.jpg'
+
+  var ogData = {
+    ...defaultSeoConfig.openGraph,
+    type,
+    title: fullTitle,
+    description: seoDescription,
+    url: fullUrl,
+    images: [{ url: seoImage, alt: title }]
+  }
+
+  // Add article-specific OpenGraph properties
+  if (type === 'article' && article) {
+    ogData.article = {
+      publishedTime: article.publishedTime,
+      modifiedTime: article.modifiedTime,
+      authors: article.author ? [article.author] : [],
+      tags: article.tags || []
+    }
+  }
 
   return {
     ...defaultSeoConfig,
     title: fullTitle,
     description: seoDescription,
     canonical: fullUrl,
-    openGraph: {
-      ...defaultSeoConfig.openGraph,
-      title: fullTitle,
-      description: seoDescription,
-      url: fullUrl,
-      images: [{ url: seoImage, alt: title }]
-    },
+    openGraph: ogData,
     twitter: {
       ...defaultSeoConfig.twitter,
       title: fullTitle,

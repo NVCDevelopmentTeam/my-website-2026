@@ -220,14 +220,17 @@
 </svelte:head>
 
 {#if crumbs.length > 0}
-  <nav class="flex py-4 px-4 sm:px-6 mb-6 overflow-x-auto whitespace-nowrap">
+  <nav
+    aria-label="Breadcrumb"
+    class="mb-6 flex overflow-x-auto px-4 py-4 whitespace-nowrap sm:px-6"
+  >
     <ol class="flex items-center space-x-2 text-sm text-gray-950 dark:text-gray-50">
       {#each crumbs as crumb, i (crumb.href)}
         <li class="flex items-center">
           <!-- Separator icon -->
           {#if i > 0}
             <svg
-              class="flex-shrink-0 h-5 w-5 text-gray-400 dark:text-gray-600 mx-2"
+              class="mx-2 h-5 w-5 flex-shrink-0 text-gray-400 dark:text-gray-600"
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 20 20"
               fill="currentColor"
@@ -244,7 +247,7 @@
           <!-- Current page (no link) -->
           {#if crumb.isActive}
             <span
-              class="font-black text-gray-950 dark:text-gray-50 truncate max-w-[200px] sm:max-w-md"
+              class="max-w-[200px] truncate font-black text-gray-950 sm:max-w-md dark:text-gray-50"
               aria-current="page"
               title={crumb.name}
             >
@@ -255,7 +258,7 @@
             <a
               href={crumb.href}
               data-sveltekit-preload-data="hover"
-              class="font-bold text-gray-950 dark:text-gray-50 hover:text-sky-800 dark:hover:text-sky-400 transition-colors"
+              class="font-bold text-gray-950 transition-colors hover:text-sky-800 dark:text-gray-50 dark:hover:text-sky-400"
               title={crumb.name}
             >
               {crumb.name}

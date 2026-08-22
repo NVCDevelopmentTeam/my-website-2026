@@ -1,109 +1,132 @@
 <script>
   import RecentPosts from './RecentPosts.svelte'
   import SocialMenu from './SocialMenu.svelte'
+  import { page } from '$app/state'
 
-  /** @type {Object} Props */
+  /**
+   * Sidebar Component - Displays Recent Posts, Categories, and Social / Exploration widgets.
+   * Uses Svelte 5 runes ($props, $derived) for reactive updates.
+   */
   let { recentPosts = [], categories = [] } = $props()
 
-  // Process recent posts
-  const processedRecentPosts = $derived.by(() => {
-    return recentPosts.map((post) => {
-      const metadata = post.metadata || post
+  // Process recent posts for sidebar display
+  const processedRecentPosts = $derived(
+    Array.isArray(recentPosts)
+      ? recentPosts.map((post) => {
+          const metadata = post?.metadata || post || {}
+          return {
+            slug: post?.slug || metadata.slug || '',
+            metadata: {
+              title: metadata.title || post?.title || 'Không có tiêu đề',
+              date: metadata.date || null,
+              preview: metadata.preview || metadata.description || '',
+              description: metadata.description || '',
+              readingTime: metadata.readingTime || 5,
+              image: metadata.image || null,
+              categories: metadata.categories || [],
+              tags: metadata.tags || []
+            }
+          }
+        })
+      : []
+  )
 
-      return {
-        slug: post.slug || metadata.slug,
-        metadata: {
-          title: metadata.title,
-          date: metadata.date,
-          preview: metadata.preview || metadata.description || '',
-          description: metadata.description,
-          readingTime: metadata.readingTime,
-          image: metadata.image,
-          categories: metadata.categories || [],
-          tags: metadata.tags || []
-        }
-      }
-    })
-  })
+  // Process categories for category list
+  const processedCategories = $derived(
+    Array.isArray(categories)
+      ? categories.map((cat) => {
+          if (cat?.metadata) {
+            return {
+              title: cat.metadata.title || 'Chưa phân loại',
+              slug: cat.metadata.slug || '',
+              count: cat.metadata.count || 0
+            }
+          }
+          return {
+            title: cat?.title || cat?.name || 'Chưa phân loại',
+            slug: cat?.slug || '',
+            count: cat?.count || 0
+          }
+        })
+      : []
+  )
 
-  // Process categories
-  const processedCategories = $derived.by(() => {
-    return categories.map((cat) => {
-      if (cat.metadata) {
-        return {
-          title: cat.metadata.title,
-          slug: cat.metadata.slug,
-          count: cat.metadata.count
-        }
-      }
-
-      return {
-        title: cat.title || cat.name,
-        slug: cat.slug,
-        count: cat.count
-      }
-    })
-  })
-
-  const hasRecentPosts = $derived(processedRecentPosts.length > 0)
-  const hasCategories = $derived(processedCategories.length > 0)
+  const currentPath = $derived(page?.url?.pathname || '')
 </script>
 
-<aside class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-8">
-  <!-- Recent Posts -->
-  {#if hasRecentPosts}
-    <section
-      class="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm h-full"
+<aside class="flex flex-col gap-6">
+  <!-- Recent Posts Widget -->
+  <section
+    class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
+  >
+    <div
+      class="mb-4 flex items-center justify-between border-b border-gray-100 pb-3 dark:border-gray-800"
     >
-      <h2 id="recent-posts-heading" class="text-lg font-black text-gray-950 dark:text-gray-50 mb-4">
-        bài viết gần đây
+      <h2
+        id="recent-posts-heading"
+        class="text-xs font-black tracking-widest text-gray-950 uppercase dark:text-gray-50"
+      >
+        Bài viết gần đây
       </h2>
-      <RecentPosts recentPosts={processedRecentPosts} />
-    </section>
-  {/if}
+    </div>
+    <RecentPosts recentPosts={processedRecentPosts} />
+  </section>
 
-  <!-- Categories (WordPress style) -->
-  {#if hasCategories}
+  <!-- Categories Widget -->
+  {#if processedCategories.length > 0}
     <section
-      class="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm h-full"
+      class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
     >
-      <h2 id="categories-heading" class="text-lg font-black text-gray-950 dark:text-gray-50 mb-4">
-        xem theo danh mục
-      </h2>
-      <ul class="space-y-1">
-        {#each processedCategories as category (category.slug)}
+      <div
+        class="mb-4 flex items-center justify-between border-b border-gray-100 pb-3 dark:border-gray-800"
+      >
+        <h2
+          id="categories-heading"
+          class="text-xs font-black tracking-widest text-gray-950 uppercase dark:text-gray-50"
+        >
+          Danh mục
+        </h2>
+      </div>
+      <ul class="space-y-1.5">
+        {#each processedCategories as category (category.slug || category.title)}
+          {@const isActive = currentPath.includes(`/blog/category/${category.slug}`)}
           <li>
             <a
               href="/blog/category/{category.slug}"
-              class="flex items-center justify-between py-2 px-3 rounded hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors group"
+              data-sveltekit-preload-data="hover"
+              class="group flex items-center justify-between rounded-xl px-3 py-2.5 transition-all duration-200 {isActive
+                ? 'bg-sky-50 font-black text-sky-700 dark:bg-sky-950/50 dark:text-sky-300'
+                : 'text-gray-700 hover:bg-gray-50 hover:text-sky-700 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-sky-300'}"
             >
-              <span
-                class="text-sm font-bold text-gray-950 dark:text-gray-50 group-hover:text-blue-700 dark:group-hover:text-blue-300"
-              >
+              <span class="text-sm font-semibold transition-transform group-hover:translate-x-0.5">
                 {category.title}
               </span>
-              <span class="text-xs text-gray-950 dark:text-gray-50">
-                ({category.count})
+              <span
+                class="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-bold text-gray-600 group-hover:bg-sky-100 group-hover:text-sky-800 dark:bg-gray-800 dark:text-gray-400 dark:group-hover:bg-sky-900/60 dark:group-hover:text-sky-200"
+              >
+                {category.count}
               </span>
             </a>
           </li>
         {/each}
       </ul>
 
-      <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+      <div class="mt-4 border-t border-gray-100 pt-3 dark:border-gray-800">
         <a
           href="/blog/category"
-          class="text-sm font-bold text-blue-800 dark:text-blue-300 hover:underline inline-flex items-center gap-1"
+          data-sveltekit-preload-data="hover"
+          class="inline-flex items-center gap-1.5 text-xs font-black tracking-wider text-sky-700 uppercase hover:underline dark:text-sky-400"
         >
-          Xem tất cả danh mục →
+          <span>Khám phá tất cả danh mục</span>
+          <span aria-hidden="true">→</span>
         </a>
       </div>
     </section>
   {/if}
 
-  <!-- Social -->
+  <!-- Social & Quick Connect Widget -->
   <section
-    class="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm h-full"
+    class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
   >
     <SocialMenu />
   </section>

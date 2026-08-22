@@ -29,7 +29,7 @@
     {category?.title || 'Danh mục'}
   </h1>
 
-  <p class="mt-2 text-gray-950 dark:text-gray-50 font-bold">
+  <p class="mt-2 font-bold text-gray-950 dark:text-gray-50">
     Danh mục {category?.title} có {data.pagination?.totalPosts || 0} bài viết
   </p>
 
@@ -41,7 +41,7 @@
       <Pagination pagination={data.pagination} />
     </div>
   {:else}
-    <p class="text-center text-gray-950 dark:text-gray-50 font-bold italic mt-8">
+    <p class="mt-8 text-center font-bold text-gray-950 italic dark:text-gray-50">
       Chưa có posts nào trong danh mục này.
     </p>
   {/if}

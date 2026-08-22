@@ -54,17 +54,18 @@
 
   $effect(() => {
     if (isMenuOpen) {
-      document.body.style.overflow = 'hidden'
+      // Class toggle avoids reading computed style — prevents forced reflow.
+      document.documentElement.classList.add('menu-open')
       requestAnimationFrame(() => {
         const firstLink = containerRef?.querySelector('a')
         if (firstLink) firstLink.focus()
       })
     } else {
-      document.body.style.overflow = ''
+      document.documentElement.classList.remove('menu-open')
     }
 
     return () => {
-      document.body.style.overflow = ''
+      document.documentElement.classList.remove('menu-open')
     }
   })
 </script>
@@ -75,7 +76,7 @@
     bind:this={openButtonRef}
     onclick={openMenu}
     aria-haspopup="dialog"
-    class="bg-transparent border-0 cursor-pointer p-3 flex items-center justify-center text-gray-900 dark:text-gray-100 hover:opacity-70 transition-opacity min-w-[48px] min-h-[48px]"
+    class="flex min-h-[48px] min-w-[48px] cursor-pointer items-center justify-center border-0 bg-transparent p-3 text-gray-900 transition-opacity hover:opacity-70 dark:text-gray-100"
   >
     <svg
       width="24"
@@ -101,7 +102,7 @@
     >
       <!-- Backdrop -->
       <div
-        class="fixed inset-0 bg-black/60 animate-in fade-in duration-200"
+        class="animate-in fade-in fixed inset-0 bg-black/60 duration-200"
         onclick={handleBackdropClick}
         onkeydown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
@@ -115,7 +116,7 @@
 
       <!-- Menu Panel -->
       <div
-        class="fixed top-0 right-0 bottom-0 w-full max-w-md bg-white dark:bg-gray-950 text-gray-950 dark:text-white overflow-y-auto shadow-2xl animate-in slide-in-from-right duration-200"
+        class="animate-in slide-in-from-right fixed top-0 right-0 bottom-0 w-full max-w-md overflow-y-auto bg-white text-gray-950 shadow-2xl duration-200 dark:bg-gray-950 dark:text-white"
         role="dialog"
         aria-modal="true"
         aria-label="Menu điều hướng"
@@ -124,7 +125,7 @@
         <!-- Close Button -->
         <button
           onclick={closeMenu}
-          class="absolute top-5 right-5 bg-transparent border-0 cursor-pointer p-2 flex items-center justify-center text-gray-950 dark:text-white hover:opacity-70 transition-opacity z-10 min-w-[48px] min-h-[48px]"
+          class="absolute top-5 right-5 z-10 flex min-h-[48px] min-w-[48px] cursor-pointer items-center justify-center border-0 bg-transparent p-2 text-gray-950 transition-opacity hover:opacity-70 dark:text-white"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -144,11 +145,11 @@
 
         <!-- Menu Content -->
         <div class="p-8 pt-20">
-          <ul class="list-none m-0 p-0 flex flex-col items-start justify-start w-full space-y-1">
+          <ul class="m-0 flex w-full list-none flex-col items-start justify-start space-y-1 p-0">
             {#each navPages as p (p.slug)}
               <li class="w-full">
                 <a
-                  class="block py-3 px-4 no-underline text-gray-950 dark:text-gray-50 text-lg hover:bg-gray-100 dark:hover:bg-gray-900 rounded-lg transition-colors font-bold -tracking-[0.1px]"
+                  class="block rounded-lg px-4 py-3 text-lg font-bold -tracking-[0.1px] text-gray-950 no-underline transition-colors hover:bg-gray-100 dark:text-gray-50 dark:hover:bg-gray-900"
                   class:font-black={isCurrentPage(p.slug)}
                   class:bg-gray-100={isCurrentPage(p.slug)}
                   class:dark:bg-gray-900={isCurrentPage(p.slug)}
@@ -164,7 +165,7 @@
 
             <li class="w-full">
               <a
-                class="block py-3 px-4 no-underline text-gray-950 dark:text-gray-50 text-lg hover:bg-gray-100 dark:hover:bg-gray-900 rounded-lg transition-colors font-bold -tracking-[0.1px]"
+                class="block rounded-lg px-4 py-3 text-lg font-bold -tracking-[0.1px] text-gray-950 no-underline transition-colors hover:bg-gray-100 dark:text-gray-50 dark:hover:bg-gray-900"
                 class:font-black={page.url.pathname === '/blog'}
                 class:bg-gray-100={page.url.pathname === '/blog'}
                 class:dark:bg-gray-900={page.url.pathname === '/blog'}
@@ -185,15 +186,15 @@
 
 <!-- Desktop Menu -->
 <nav
-  class="hidden lg:block relative bg-white/80 dark:bg-gray-950/80 backdrop-blur-md border border-gray-200 dark:border-gray-800 rounded-2xl shadow-md px-4 py-2"
+  class="relative hidden rounded-2xl border border-gray-200 bg-white/80 px-4 py-2 shadow-md backdrop-blur-md lg:block dark:border-gray-800 dark:bg-gray-950/80"
 >
-  <ul class="flex flex-wrap justify-center items-center gap-3 m-0 p-0 list-none">
+  <ul class="m-0 flex list-none flex-wrap items-center justify-center gap-3 p-0">
     {#each navPages as p (p.slug)}
       <li>
         <a
           href={getHref(p.slug)}
           data-sveltekit-preload-data="hover"
-          class="px-4 py-2 rounded-xl font-black text-gray-950 dark:text-gray-50 transition-[background-color,color] duration-300 hover:bg-sky-800 dark:hover:bg-sky-400 hover:text-white dark:hover:text-gray-950 focus:outline-none focus:ring-2 focus:ring-sky-800 no-underline inline-block"
+          class="inline-block rounded-xl px-4 py-2 font-black text-gray-950 no-underline transition-[background-color,color] duration-300 hover:bg-sky-800 hover:text-white focus:ring-2 focus:ring-sky-800 focus:outline-none dark:text-gray-50 dark:hover:bg-sky-400 dark:hover:text-gray-950"
           class:bg-sky-800={isCurrentPage(p.slug)}
           class:dark:bg-sky-400={isCurrentPage(p.slug)}
           class:text-white={isCurrentPage(p.slug)}
@@ -209,7 +210,7 @@
       <a
         href="/blog"
         data-sveltekit-preload-data="hover"
-        class="px-4 py-2 rounded-xl font-black text-gray-950 dark:text-gray-50 transition-[background-color,color] duration-300 hover:bg-sky-800 dark:hover:bg-sky-400 hover:text-white dark:hover:text-gray-950 focus:outline-none focus:ring-2 focus:ring-sky-800 no-underline inline-block"
+        class="inline-block rounded-xl px-4 py-2 font-black text-gray-950 no-underline transition-[background-color,color] duration-300 hover:bg-sky-800 hover:text-white focus:ring-2 focus:ring-sky-800 focus:outline-none dark:text-gray-50 dark:hover:bg-sky-400 dark:hover:text-gray-950"
         class:bg-sky-800={page.url.pathname === '/blog'}
         class:dark:bg-sky-400={page.url.pathname === '/blog'}
         class:text-white={page.url.pathname === '/blog'}

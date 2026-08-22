@@ -6,20 +6,34 @@
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#030712" media="(prefers-color-scheme: dark)" />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
-    <link rel="manifest" href="%sveltekit.assets%/manifest.json" />
-    <link rel="icon" href="%sveltekit.assets%/favicon.svg" type="image/svg+xml" />
-    <link rel="preload" href="%sveltekit.assets%/favicon.svg" as="image" type="image/svg+xml" />
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+
+    <!-- PWA manifest -->
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- Favicon -->
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/logo.svg" />
+
+    <!-- PWA meta -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <!-- DNS prefetch for external resources -->
+    <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
+    <link rel="dns-prefetch" href="https://www.facebook.com" />
+
+    <!-- Inline theme script: runs synchronously to prevent FOUC.
+         IMPORTANT: No beforeunload/unload handlers here — preserves BF-cache. -->
     <script>
-      /* Apply theme synchronously to prevent FOUC */
       ;(function () {
         try {
           var t = localStorage.getItem('theme')
           if (!t) {
             t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
           }
-          if (t === 'dark') {
-            document.documentElement.classList.add('dark')
-          }
+          if (t === 'dark') document.documentElement.classList.add('dark')
         } catch (e) {}
       })()
     </script>
@@ -28,7 +42,7 @@
 
   <body
     data-sveltekit-preload-data="hover"
-    data-sveltekit-preload-code="eager"
+    data-sveltekit-preload-code="viewport"
     class="bg-white dark:bg-gray-950"
   >
     <div style="display: contents">%sveltekit.body%</div>

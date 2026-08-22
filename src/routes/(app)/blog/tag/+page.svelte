@@ -18,23 +18,23 @@
 <SEO {...seoConfig} />
 
 <div class="container mx-auto px-4 py-16">
-  <div class="max-w-3xl mx-auto">
+  <div class="mx-auto max-w-3xl">
     <!-- Title -->
-    <h1 class="text-4xl font-black text-center mb-10 text-gray-950 dark:text-gray-50">
+    <h1 class="mb-10 text-center text-4xl font-black text-gray-950 dark:text-gray-50">
       Tất cả thẻ
-      <span class="text-gray-950 dark:text-gray-50 text-2xl"> ({totalTags || 0}) </span>
+      <span class="text-2xl text-gray-950 dark:text-gray-50"> ({totalTags || 0}) </span>
     </h1>
 
     <!-- Tags cloud (WordPress style) -->
     {#if tags?.length > 0}
-      <div class="flex flex-wrap gap-3 justify-center">
+      <div class="flex flex-wrap justify-center gap-3">
         {#each tags as tag (tag.slug)}
           <a
             href={`/blog/tag/${tag.slug}`}
-            class="inline-flex items-center gap-2 px-4 py-2 bg-purple-50 dark:bg-purple-950/30 text-purple-950 dark:text-purple-200 rounded-full border border-purple-200 dark:border-purple-800 hover:bg-purple-100 dark:hover:bg-purple-900/50 hover:border-purple-300 dark:hover:border-purple-700 transition-all duration-200 font-bold text-sm group"
+            class="group inline-flex items-center gap-2 rounded-full border border-purple-200 bg-purple-50 px-4 py-2 text-sm font-bold text-purple-950 transition-all duration-200 hover:border-purple-300 hover:bg-purple-100 dark:border-purple-800 dark:bg-purple-950/30 dark:text-purple-200 dark:hover:border-purple-700 dark:hover:bg-purple-900/50"
           >
             <svg
-              class="w-4 h-4 text-purple-800 dark:text-purple-300"
+              class="h-4 w-4 text-purple-800 dark:text-purple-300"
               fill="currentColor"
               viewBox="0 0 20 20"
             >
@@ -44,11 +44,11 @@
                 clip-rule="evenodd"
               />
             </svg>
-            <span class="group-hover:scale-105 transition-transform">
+            <span class="transition-transform group-hover:scale-105">
               {tag.name}
             </span>
             <span
-              class="text-xs text-purple-950 dark:text-purple-50 bg-purple-200 dark:bg-purple-900/60 px-2 py-0.5 rounded-full font-black"
+              class="rounded-full bg-purple-200 px-2 py-0.5 text-xs font-black text-purple-950 dark:bg-purple-900/60 dark:text-purple-50"
             >
               {tag.count}
             </span>
@@ -56,7 +56,7 @@
         {/each}
       </div>
     {:else}
-      <p class="text-center text-gray-950 dark:text-gray-50 text-lg font-bold italic">
+      <p class="text-center text-lg font-bold text-gray-950 italic dark:text-gray-50">
         Chưa có thẻ nào được gắn cho bài viết.
       </p>
     {/if}

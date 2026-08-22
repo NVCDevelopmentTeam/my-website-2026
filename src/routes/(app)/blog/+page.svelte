@@ -22,9 +22,9 @@
 <SEO {...seoConfig} />
 
 <section class="px-4 py-12">
-  <h1 class="text-4xl sm:text-5xl font-black text-center mb-16 tracking-tight">
+  <h1 class="mb-16 text-center text-4xl font-black tracking-tight sm:text-5xl">
     <span
-      class="bg-clip-text text-transparent bg-gradient-to-r from-sky-800 to-violet-950 dark:from-sky-400 dark:to-violet-400"
+      class="bg-gradient-to-r from-sky-800 to-violet-950 bg-clip-text text-transparent dark:from-sky-400 dark:to-violet-400"
     >
       Blog
     </span>
@@ -39,7 +39,7 @@
       <Pagination pagination={data.pagination} />
     </div>
   {:else}
-    <p class="text-center text-gray-950 dark:text-gray-50 text-lg font-bold italic">
+    <p class="text-center text-lg font-bold text-gray-950 italic dark:text-gray-50">
       Chưa có bài viết nào được đăng.
     </p>
   {/if}

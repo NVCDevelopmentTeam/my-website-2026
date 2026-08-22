@@ -8,7 +8,7 @@
   let { data } = $props()
 
   // Logic: Just use posts from data. Home posts are fetched at build time (static)
-  const recentPosts = $derived(data?.recentPosts || [])
+  const latestPosts = $derived(data?.latestPosts || [])
 
   // SEO Config
   const seoTitle = $derived(data.metadata?.title || siteConfig.title)
@@ -47,14 +47,14 @@
 
 <div class="space-y-16">
   <!-- Personal Intro Section (Hero) - Clean & Focused -->
-  <section class="py-12 border-b border-gray-100 dark:border-gray-800">
+  <section class="border-b border-gray-100 py-12 dark:border-gray-800">
     <div class="max-w-none">
       <PageContent {data} />
     </div>
   </section>
 
   <!-- Latest Section - Simple List -->
-  {#if recentPosts.length > 0}
+  {#if latestPosts.length > 0}
     <section class="space-y-12">
       <div class="flex items-center gap-4">
         <h2 class="text-xs font-black tracking-[0.3em] text-gray-950 dark:text-gray-50">
@@ -62,13 +62,13 @@
         </h2>
         <div class="h-px flex-grow bg-gray-100 dark:bg-gray-800"></div>
       </div>
-      <PostsList {recentPosts} />
+      <PostsList posts={latestPosts} />
 
       <div class="pt-8">
         <a
           href="/blog"
           data-sveltekit-preload-data="hover"
-          class="inline-flex px-8 py-4 rounded-full bg-gray-950 dark:bg-white text-white dark:text-gray-950 font-black text-sm hover:scale-105 transition-transform shadow-xl"
+          class="inline-flex rounded-full bg-gray-950 px-8 py-4 text-sm font-black text-white shadow-xl transition-transform hover:scale-105 dark:bg-white dark:text-gray-950"
         >
           Xem tất cả bài viết
         </a>

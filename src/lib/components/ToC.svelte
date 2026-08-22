@@ -1,6 +1,6 @@
 <script>
   import { browser } from '$app/environment'
-  import { onMount, tick } from 'svelte'
+  import { onMount } from 'svelte'
   import { afterNavigate, pushState } from '$app/navigation'
   import { slugify } from '$lib/utils/slugify'
 
@@ -46,125 +46,37 @@
      Methods - similar to methods in Vue
   ----------------------------------------------------- */
 
-  // Fix heading IDs in DOM to match slugified versions
-  function syncHeadingIds() {
-    if (!browser) return
-
-    // Select all headings within the main content area
-    const contentArea = document.querySelector('article') || document.querySelector('main')
-    if (!contentArea) return
-
-    const headings = contentArea.querySelectorAll('h1, h2, h3, h4, h5, h6')
-
-    processedToc.forEach((h) => {
-      // 1. Try to find by ID exactly
-      let foundHeading = document.getElementById(h.id)
-
-      // 2. Try to find by text content if ID not found
-      if (!foundHeading) {
-        for (const el of headings) {
-          // Check text content or nested anchor text (rehype-autolink-headings behavior)
-          const text = el.textContent.trim().toLowerCase()
-          if (text === h.title.toLowerCase()) {
-            foundHeading = el
-            break
-          }
-        }
-      }
-
-      // 3. Try to find by slugified text content
-      if (!foundHeading) {
-        for (const el of headings) {
-          if (slugify(el.textContent.trim()) === h.id) {
-            foundHeading = el
-            break
-          }
-        }
-      }
-
-      // Update ID to match TOC expected ID if found
-      if (foundHeading) {
-        if (foundHeading.id !== h.id) {
-          foundHeading.id = h.id
-        }
-        // Ensure it's focusable for accessibility
-        if (!foundHeading.hasAttribute('tabindex')) {
-          foundHeading.setAttribute('tabindex', '-1')
-        }
-      }
-    })
-  }
-
-  // Scroll to a specific ID with multiple strategies
-  async function scrollToId(id, smooth = true) {
-    if (!browser || !id) return
-
-    // Normalize ID
+  // Scroll to a specific heading ID smoothly and set focus
+  function scrollToId(id, smooth = true) {
+    if (!browser || !id) return false
     const decodedId = decodeURIComponent(id).replace(/^#/, '')
-
-    // Ensure headings are synced first
-    syncHeadingIds()
-
-    // Wait for Svelte to finish any pending updates
-    await tick()
-
-    let el = document.getElementById(decodedId)
-
-    // If not found, try finding by matching data attributes or text content fallback
-    if (!el) {
-      // Try re-syncing in case DOM changed
-      syncHeadingIds()
-      el = document.getElementById(decodedId)
-    }
-
+    const el = document.getElementById(decodedId)
     if (el) {
-      // Use scrollIntoView which respects scroll-margin-top (defined in app.css)
       el.scrollIntoView({
         behavior: smooth ? 'smooth' : 'auto',
         block: 'start'
       })
-
-      // Move focus to the element (important for accessibility/skip-to)
+      el.setAttribute('tabindex', '-1')
       el.focus({ preventScroll: true })
-
       return true
     }
-
     return false
   }
 
   // Handle link click
-  async function handleLinkClick(e) {
+  function handleLinkClick(e) {
     const href = e.currentTarget.getAttribute('href')
     if (href?.startsWith('#')) {
       const id = href.slice(1)
       e.preventDefault()
-
-      // Update URL hash without jumping
       pushState(`#${id}`, {})
-
-      // Manual trigger for immediate response
-      const success = await scrollToId(id)
-
-      if (success) {
-        // Set focus to the element for accessibility/skip-link behavior
-        const el = document.getElementById(id)
-        if (el) {
-          el.setAttribute('tabindex', '-1')
-          el.focus({ preventScroll: true })
-        }
-      }
-
-      // Set active immediately
+      scrollToId(id)
       const found = processedToc.find((h) => h.id === id)
       if (found) activeHeading = found
     }
 
-    // Auto-collapse after scroll on mobile
-    if (window.innerWidth < 1024) {
-      setTimeout(() => {
-        isExpanded = false
-      }, 400)
+    if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+      isExpanded = false
     }
   }
 
@@ -186,68 +98,51 @@
     return '▪'
   }
 
-  /* -----------------------------------------------------
-     Lifecycle & Navigation
-  ----------------------------------------------------- */
-
-  // Watch for hash changes
-  function onHashChange() {
-    const hash = window.location.hash.slice(1)
-    if (hash) scrollToId(hash)
-  }
-
-  // Handle navigation (including deep links)
-  afterNavigate(async (nav) => {
+  // Navigation hash watcher
+  afterNavigate((nav) => {
     if (nav.to?.url.hash) {
       const hash = nav.to.url.hash.slice(1)
-      // Wait a bit for the content to fully render
-      setTimeout(() => scrollToId(hash), 300)
+      setTimeout(() => scrollToId(hash), 200)
     }
   })
 
   $effect(() => {
     if (browser && post && hasToc) {
-      // 1. Setup IntersectionObserver for active heading detection
-      const headingElements = processedToc.map((h) => document.getElementById(h.id)).filter(Boolean)
+      const timer = setTimeout(() => {
+        const headingElements = processedToc
+          .map((h) => document.getElementById(h.id))
+          .filter(Boolean)
 
-      if (headingElements.length > 0) {
-        observer = new IntersectionObserver(
-          (entries) => {
-            // Find the heading that is most "active" (visible at top)
-            const visibleEntries = entries.filter((e) => e.isIntersecting)
-            if (visibleEntries.length > 0) {
-              // Pick the first visible one (topmost)
-              const id = visibleEntries[0].target.id
-              const found = processedToc.find((h) => h.id === id)
-              if (found) activeHeading = found
+        if (headingElements.length > 0) {
+          observer = new IntersectionObserver(
+            (entries) => {
+              const visible = entries.find((e) => e.isIntersecting)
+              if (visible) {
+                const found = processedToc.find((h) => h.id === visible.target.id)
+                if (found) activeHeading = found
+              }
+            },
+            {
+              rootMargin: '-80px 0px -70% 0px',
+              threshold: 0.1
             }
-          },
-          {
-            rootMargin: '-80px 0% -80% 0%',
-            threshold: 0.1
-          }
-        )
+          )
+          headingElements.forEach((el) => observer?.observe(el))
+        }
 
-        headingElements.forEach((el) => observer.observe(el))
-      }
+        const handleScroll = () => {
+          isSticky = window.scrollY > 300
+        }
+        window.addEventListener('scroll', handleScroll, { passive: true })
 
-      // 2. Setup scroll listener for sticky state only (less frequent update needed)
-      const handleScroll = () => {
-        isSticky = window.scrollY > 300
-      }
-      window.addEventListener('scroll', handleScroll, { passive: true })
-      window.addEventListener('hashchange', onHashChange)
-
-      // 3. Initial hash check
-      const currentHash = window.location.hash.slice(1)
-      if (currentHash) {
-        setTimeout(() => scrollToId(currentHash), 500)
-      }
+        if (window.location.hash) {
+          scrollToId(window.location.hash.slice(1))
+        }
+      }, 100)
 
       return () => {
+        clearTimeout(timer)
         if (observer) observer.disconnect()
-        window.removeEventListener('scroll', handleScroll)
-        window.removeEventListener('hashchange', onHashChange)
       }
     }
   })
@@ -263,17 +158,17 @@
 
 {#if hasToc}
   <nav
-    class="my-8 p-4 sm:p-6 bg-blue-50/50 dark:bg-gray-900 border-l-4 border-blue-800 dark:border-blue-400 rounded-r-2xl shadow-sm hover:shadow-md transition-all duration-300 animate-in slide-in-from-left-5 fade-in
+    class="animate-in slide-in-from-left-5 fade-in my-8 rounded-r-2xl border-l-4 border-blue-800 bg-blue-50/50 p-4 shadow-sm transition-all duration-300 hover:shadow-md sm:p-6 dark:border-blue-400 dark:bg-gray-900
       {isSticky ? 'lg:sticky lg:top-20' : ''}"
   >
     <!-- Header with toggle -->
-    <div class="flex items-center justify-between mb-4">
+    <div class="mb-4 flex items-center justify-between">
       <h2
         id="toc-heading"
-        class="text-lg font-bold text-gray-950 dark:text-white flex items-center gap-2 m-0"
+        class="m-0 flex items-center gap-2 text-lg font-bold text-gray-950 dark:text-white"
       >
         <svg
-          class="w-5 h-5 text-blue-800 dark:text-blue-400"
+          class="h-5 w-5 text-blue-800 dark:text-blue-400"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -291,13 +186,13 @@
 
       <button
         onclick={toggleExpand}
-        class="p-2 rounded-xl hover:bg-white dark:hover:bg-gray-800 transition-colors duration-200"
+        class="rounded-xl p-2 transition-colors duration-200 hover:bg-white dark:hover:bg-gray-800"
         aria-label={isExpanded ? labels.collapse : labels.expand}
         aria-expanded={isExpanded}
         aria-controls="toc-list"
       >
         <svg
-          class="w-5 h-5 text-gray-950 dark:text-gray-50 transition-transform duration-300 {isExpanded
+          class="h-5 w-5 text-gray-950 transition-transform duration-300 dark:text-gray-50 {isExpanded
             ? 'rotate-180'
             : ''}"
           fill="none"
@@ -317,7 +212,7 @@
           {@render children()}
         {:else}
           <ul
-            class="list-none p-0 m-0 flex flex-col gap-2 max-h-[70vh] overflow-y-auto"
+            class="m-0 flex max-h-[70vh] list-none flex-col gap-2 overflow-y-auto p-0"
             role="list"
           >
             {#each processedToc as h (h.id)}
@@ -329,17 +224,17 @@
                 <a
                   href="#{h.id}"
                   onclick={handleLinkClick}
-                  class="relative flex items-start gap-2 text-sm px-3 py-2 rounded-xl transition-all duration-200 no-underline group
+                  class="group relative flex items-start gap-2 rounded-xl px-3 py-2 text-sm no-underline transition-all duration-200
                     {isActive
-                    ? 'text-blue-900 dark:text-blue-300 bg-white dark:bg-gray-800 font-bold shadow-sm before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:w-0.5 before:h-5 before:bg-current before:rounded-full'
-                    : 'text-gray-950 dark:text-gray-50 hover:text-blue-800 dark:hover:text-blue-400 hover:bg-white dark:hover:bg-gray-800'}"
+                    ? 'bg-white font-bold text-blue-900 shadow-sm before:absolute before:top-1/2 before:left-0 before:h-5 before:w-0.5 before:-translate-y-1/2 before:rounded-full before:bg-current dark:bg-gray-800 dark:text-blue-300'
+                    : 'text-gray-950 hover:bg-white hover:text-blue-800 dark:text-gray-50 dark:hover:bg-gray-800 dark:hover:text-blue-400'}"
                   aria-current={isActive ? 'location' : undefined}
                 >
                   <span
                     class="mt-0.5 flex-shrink-0 transition-all duration-200
                       {isActive
-                      ? 'text-blue-900 dark:text-blue-300 opacity-100 scale-110'
-                      : 'text-blue-800 dark:text-blue-400 opacity-70 group-hover:opacity-100 group-hover:scale-105'}"
+                      ? 'scale-110 text-blue-900 opacity-100 dark:text-blue-300'
+                      : 'text-blue-800 opacity-70 group-hover:scale-105 group-hover:opacity-100 dark:text-blue-400'}"
                     aria-hidden="true"
                   >
                     {bullet}

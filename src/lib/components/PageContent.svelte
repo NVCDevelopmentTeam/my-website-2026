@@ -27,7 +27,7 @@
 <SEO {...seoConfig} />
 
 <section
-  class="prose prose-neutral dark:prose-invert max-w-none px-4 py-10 prose-headings:text-gray-950 dark:prose-headings:text-white prose-p:text-gray-950 dark:prose-p:text-gray-50 prose-a:text-sky-900 dark:prose-a:text-sky-400 prose-a:font-bold prose-strong:text-gray-950 dark:prose-strong:text-white prose-li:text-gray-950 dark:prose-li:text-gray-50 prose-ul:text-gray-950 dark:prose-ul:text-gray-50 prose-ol:text-gray-950 dark:prose-ol:text-gray-50"
+  class="prose max-w-none px-4 py-10 prose-neutral dark:prose-invert prose-headings:text-gray-950 dark:prose-headings:text-white prose-p:text-gray-950 dark:prose-p:text-gray-50 prose-a:font-bold prose-a:text-sky-900 dark:prose-a:text-sky-400 prose-strong:text-gray-950 dark:prose-strong:text-white prose-ol:text-gray-950 dark:prose-ol:text-gray-50 prose-ul:text-gray-950 dark:prose-ul:text-gray-50 prose-li:text-gray-950 dark:prose-li:text-gray-50"
 >
   {#if PageContent}
     <PageContent />

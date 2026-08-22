@@ -105,7 +105,7 @@
 </script>
 
 {#if totalPages > 1}
-  <nav class="flex justify-center items-center mt-8 mb-4">
+  <nav class="mt-8 mb-4 flex items-center justify-center">
     <ul class="inline-flex items-center gap-1">
       <!-- Previous Button -->
       {#if hasPrev}
@@ -113,10 +113,10 @@
           <a
             href={buildUrl(currentPage - 1)}
             data-sveltekit-preload-data="hover"
-            class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-bold text-gray-950 dark:text-gray-50 bg-white dark:bg-gray-800 border border-gray-400 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            class="inline-flex items-center gap-1.5 rounded border border-gray-400 bg-white px-3 py-2 text-sm font-bold text-gray-950 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-50 dark:hover:bg-gray-700"
           >
             <svg
-              class="w-4 h-4"
+              class="h-4 w-4"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -146,13 +146,13 @@
         >
           {#if num === '...'}
             <span
-              class="inline-flex items-center justify-center w-10 h-10 text-sm font-bold text-gray-950 dark:text-gray-400"
+              class="inline-flex h-10 w-10 items-center justify-center text-sm font-bold text-gray-950 dark:text-gray-400"
             >
               …
             </span>
           {:else if num === currentPage}
             <span
-              class="inline-flex items-center justify-center w-10 h-10 text-sm font-black text-white bg-sky-950 dark:bg-sky-400 dark:text-gray-950 border border-sky-950 dark:border-sky-400 rounded cursor-default"
+              class="inline-flex h-10 w-10 cursor-default items-center justify-center rounded border border-sky-950 bg-sky-950 text-sm font-black text-white dark:border-sky-400 dark:bg-sky-400 dark:text-gray-950"
               aria-current="page"
               aria-label="Trang {num}"
             >
@@ -162,7 +162,7 @@
             <a
               href={buildUrl(num)}
               data-sveltekit-preload-data="hover"
-              class="inline-flex items-center justify-center w-10 h-10 text-sm font-bold text-gray-950 dark:text-gray-50 bg-white dark:bg-gray-800 border border-gray-400 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-500 dark:hover:border-gray-400 transition-colors"
+              class="inline-flex h-10 w-10 items-center justify-center rounded border border-gray-400 bg-white text-sm font-bold text-gray-950 transition-colors hover:border-gray-500 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-50 dark:hover:border-gray-400 dark:hover:bg-gray-700"
               aria-label="Trang {num}"
             >
               {num}
@@ -177,12 +177,12 @@
           <a
             href={buildUrl(currentPage + 1)}
             data-sveltekit-preload-data="hover"
-            class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-bold text-gray-950 dark:text-gray-50 bg-white dark:bg-gray-800 border border-gray-400 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            class="inline-flex items-center gap-1.5 rounded border border-gray-400 bg-white px-3 py-2 text-sm font-bold text-gray-950 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-50 dark:hover:bg-gray-700"
             aria-label="Trang sau"
           >
             <span>Sau</span>
             <svg
-              class="w-4 h-4"
+              class="h-4 w-4"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"

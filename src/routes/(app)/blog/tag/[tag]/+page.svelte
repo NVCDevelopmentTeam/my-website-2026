@@ -27,9 +27,9 @@
 <section class="px-4 py-12">
   <!-- Tag header with icon -->
   <div class="mb-8">
-    <div class="flex items-center gap-2 mb-2">
+    <div class="mb-2 flex items-center gap-2">
       <svg
-        class="w-5 h-5 text-purple-800 dark:text-purple-400"
+        class="h-5 w-5 text-purple-800 dark:text-purple-400"
         fill="currentColor"
         viewBox="0 0 20 20"
       >
@@ -44,7 +44,7 @@
       </h1>
     </div>
 
-    <p class="text-sm text-gray-950 dark:text-gray-50 font-bold">
+    <p class="text-sm font-bold text-gray-950 dark:text-gray-50">
       Thẻ {tag?.title} có {data.pagination?.totalPosts || 0} bài viết
     </p>
   </div>
@@ -58,7 +58,7 @@
       <Pagination pagination={data.pagination} />
     </div>
   {:else}
-    <p class="text-center text-gray-950 dark:text-gray-50 font-bold italic mt-8">
+    <p class="mt-8 text-center font-bold text-gray-950 italic dark:text-gray-50">
       Chưa có bài viết nào dùng tag này.
     </p>
   {/if}

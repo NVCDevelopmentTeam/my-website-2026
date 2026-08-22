@@ -9,16 +9,16 @@
 </script>
 
 <header
-  class="w-full bg-white/90 dark:bg-gray-950/90 border-b border-gray-100 dark:border-gray-800 sticky top-0 z-50 backdrop-blur-md transition-colors"
+  class="sticky top-0 z-50 w-full border-b border-gray-100 bg-white/90 backdrop-blur-md transition-colors dark:border-gray-800 dark:bg-gray-950/90"
 >
   <div class="w-full">
-    <div class="max-w-[1340px] mx-auto px-[clamp(16px,5vw,50px)]">
-      <div class="flex items-center justify-between flex-nowrap w-full py-4">
+    <div class="mx-auto max-w-[1340px] px-[clamp(16px,5vw,50px)]">
+      <div class="flex w-full flex-nowrap items-center justify-between py-4">
         <SkipLink />
 
         <Logo pages={allPages} />
 
-        <nav class="flex items-center justify-end flex-nowrap gap-4">
+        <nav class="flex flex-nowrap items-center justify-end gap-4">
           <ThemeSwitcher />
           <Menu {navPages} />
         </nav>

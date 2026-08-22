@@ -41,7 +41,7 @@
 
 <button
   onclick={toggleTheme}
-  class="p-3 min-h-[48px] min-w-[48px] flex items-center justify-center rounded-xl bg-gray-50 dark:bg-gray-900 text-gray-950 dark:text-gray-50 hover:text-sky-800 dark:hover:text-sky-400 border border-gray-200 dark:border-gray-800 transition-[background-color,color,border-color,box-shadow] duration-200 focus:outline-none focus:ring-2 focus:ring-sky-800 dark:focus:ring-sky-400 shadow-sm"
+  class="flex min-h-[48px] min-w-[48px] items-center justify-center rounded-xl border border-gray-200 bg-gray-50 p-3 text-gray-950 shadow-sm transition-[background-color,color,border-color,box-shadow] duration-200 hover:text-sky-800 focus:ring-2 focus:ring-sky-800 focus:outline-none dark:border-gray-800 dark:bg-gray-900 dark:text-gray-50 dark:hover:text-sky-400 dark:focus:ring-sky-400"
   aria-label={theme === 'light' ? 'Chuyển sang chế độ tối' : 'Chuyển sang chế độ sáng'}
   title={theme === 'light' ? 'Bật chế độ tối' : 'Bật chế độ sáng'}
 >

@@ -6,9 +6,7 @@ import { loadPaginatedPosts } from '$lib/utils/pagination'
 export const prerender = true
 
 /** @type {import('./$types').PageLoad} */
-export async function load({ url, depends }) {
-  depends('blog:list')
-
+export async function load({ url }) {
   try {
     const { posts, pagination } = loadPaginatedPosts(url, {}, getFilteredPosts)
 

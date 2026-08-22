@@ -9,23 +9,20 @@
 </script>
 
 <footer
-  class="mt-20 bg-gray-50 dark:bg-gray-950
-	       border-t border-gray-100 dark:border-gray-800
-	       text-gray-900 dark:text-gray-100
-	       transition-colors"
+  class="mt-20 border-t border-gray-100 bg-gray-50 text-gray-900 transition-colors lazy-section dark:border-gray-800 dark:bg-gray-950 dark:text-gray-100"
 >
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-12">
-    <div class="flex flex-col md:flex-row justify-between items-start gap-12">
+  <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6">
+    <div class="flex flex-col items-start justify-between gap-12 md:flex-row">
       <!-- Minimal navigation -->
       <nav class="space-y-4">
-        <h3 class="text-sm font-black text-gray-950 dark:text-gray-50 uppercase tracking-widest">
+        <h3 class="text-sm font-black tracking-widest text-gray-950 uppercase dark:text-gray-50">
           liên kết hữu ích
         </h3>
         <LegalMenu {pages} />
       </nav>
 
       <!-- Brand & Copyright -->
-      <div class="space-y-4 max-w-sm">
+      <div class="max-w-sm space-y-4">
         <p class="text-sm leading-relaxed font-bold">
           &copy; {new Date().getFullYear()}
           {siteConfig.author.name}. Mọi quyền được bảo lưu. Website được thiết kế đáp ứng tiêu chuẩn
@@ -35,11 +32,11 @@
     </div>
 
     <!-- Bottom decoration line -->
-    <div class="mt-12 pt-8 border-t border-gray-100 dark:border-gray-800 flex justify-center">
+    <div class="mt-12 flex justify-center border-t border-gray-100 pt-8 dark:border-gray-800">
       <div class="flex gap-3">
-        <span class="w-2 h-2 rounded-full bg-gray-200 dark:bg-gray-800"></span>
-        <span class="w-2 h-2 rounded-full bg-gray-400 dark:bg-gray-600"></span>
-        <span class="w-2 h-2 rounded-full bg-gray-200 dark:bg-gray-800"></span>
+        <span class="h-2 w-2 rounded-full bg-gray-200 dark:bg-gray-800"></span>
+        <span class="h-2 w-2 rounded-full bg-gray-400 dark:bg-gray-600"></span>
+        <span class="h-2 w-2 rounded-full bg-gray-200 dark:bg-gray-800"></span>
       </div>
     </div>
   </div>

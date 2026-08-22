@@ -1,127 +1,297 @@
 <script>
   import { siteConfig } from '$lib/config'
-  import { onMount } from 'svelte'
 
-  // Props - Vue.js/Nuxt.js style with reactive state
+  /**
+   * PostNavigation — mirrors WordPress Twenty Twenty-Five's block-theme
+   * equivalent of `get_the_post_navigation()`: a `<nav>` landmark built
+   * from the "Query Pagination" pattern (`wp-block-query-pagination`,
+   * `wp-block-query-pagination-previous` / `-next`), not the classic-theme
+   * `.navigation.post-navigation` box. T25 renders these as plain text
+   * links with a small arrow glyph and generous spacing - no bordered
+   * card, no background fill - so the markup/CSS below follows that:
+   * flat links, not boxed buttons. A screen-reader-only heading and
+   * `aria-label` are kept because T25's accessibility baseline still
+   * requires a labeled landmark even though the visual chrome is gone.
+   *
+   * -- Svelte 5 runes <-> Vue 3 Composition API -------------------------
+   * Same split-per-concern approach as in RecentPosts.svelte:
+   *
+   *   Svelte 5                        Vue 3 (script setup)
+   *   -------------------------------  -------------------------------
+   *   let { post, prevPost } = $props() defineProps<{ post, prevPost }>()
+   *   $derived(expr)                    computed(() => expr)
+   *   function f(x) { ... }             function f(x) { ... } (plain method)
+   *
+   * `newerPost` / `olderPost` / `hasNewerPost` / `hasOlderPost` are pure,
+   * memoized derivations with no side effects, exactly like Vue computed
+   * refs - they only ever read props, never write them.
+   *
+   * @typedef {Object} NavPost
+   * @property {string} [slug]
+   * @property {string} [title]
+   * @property {{ title?: string }} [metadata]
+   *
+   * @typedef {Object} PostNavigationProps
+   * @property {{ prevPost?: NavPost, nextPost?: NavPost, metadata?: { prevPost?: NavPost, nextPost?: NavPost } }} [post]
+   * @property {NavPost} [prevPost]
+   * @property {NavPost} [nextPost]
+   */
+
+  /** @type {PostNavigationProps} */
   let {
     post = undefined,
     prevPost: propPrevPost = undefined,
     nextPost: propNextPost = undefined
   } = $props()
 
-  // Reactive state - similar to data() in Vue
-  let prevPost = $state(null)
-  let nextPost = $state(null)
-  let isLoading = $state(true)
-
-  // Site metadata from config
+  // ~ Vue: const blogBasePath = computed(() => siteConfig?.blog?.basePath || '/blog')
+  // Static per render, but kept as a plain const (not a rune) since
+  // `siteConfig` isn't reactive state - same as reading an imported
+  // constant directly in a Vue <script setup> block.
   const blogBasePath = siteConfig?.blog?.basePath || '/blog'
-  const prefetchEnabled = siteConfig?.prefetch?.enabled ?? true
+
   const labels = {
     navigation: 'Điều hướng bài viết',
     previous: 'Bài trước',
     next: 'Bài sau',
-    srOnly: 'Điều hướng bài viết'
+    allPosts: 'Tất cả bài viết',
+    firstPost: 'Đang ở bài đầu tiên',
+    latestPost: 'Đang ở bài mới nhất'
   }
 
-  // Reactive effect - similar to watch in Vue
-  $effect(() => {
-    // Auto-extract from post object or use direct props
-    prevPost = propPrevPost || post?.prevPost || post?.metadata?.prevPost || null
+  // Posts are ordered newest-to-oldest in the backend list.
+  // - propPrevPost / post.prevPost is the item BEFORE the current one in
+  //   that list, i.e. the NEWER article -> rendered as the "Next" link
+  //   (rel="next"), matching WP's "next = newer" convention.
+  // - propNextPost / post.nextPost is the item AFTER the current one in
+  //   that list, i.e. the OLDER article -> rendered as the "Previous" link
+  //   (rel="prev"), matching WP's "previous = older" convention.
+  // ~ Vue: const newerPost = computed(() => propPrevPost ?? post.value?.prevPost ?? post.value?.metadata?.prevPost ?? null)
+  const newerPost = $derived(propPrevPost || post?.prevPost || post?.metadata?.prevPost || null)
+  // ~ Vue: const olderPost = computed(() => propNextPost ?? post.value?.nextPost ?? post.value?.metadata?.nextPost ?? null)
+  const olderPost = $derived(propNextPost || post?.nextPost || post?.metadata?.nextPost || null)
 
-    nextPost = propNextPost || post?.nextPost || post?.metadata?.nextPost || null
+  // ~ Vue: const hasNewerPost = computed(() => Boolean(newerPost.value && (newerPost.value.slug || newerPost.value.title)))
+  const hasNewerPost = $derived(Boolean(newerPost && (newerPost.slug || newerPost.title)))
+  // ~ Vue: const hasOlderPost = computed(() => Boolean(olderPost.value && (olderPost.value.slug || olderPost.value.title)))
+  const hasOlderPost = $derived(Boolean(olderPost && (olderPost.slug || olderPost.title)))
 
-    isLoading = false
-  })
-
-  // Computed - similar to computed in Vue
-  const hasPrevPost = $derived(prevPost !== null && prevPost !== undefined)
-  const hasNextPost = $derived(nextPost !== null && nextPost !== undefined)
-  const hasNavigation = $derived(hasPrevPost || hasNextPost)
-
-  // Helper function - similar to methods in Vue
+  /**
+   * Build a link for an adjacent post, falling back to the blog index
+   * when no slug is available. Equivalent to a small Vue "method" - a
+   * pure function with no reactive dependencies, so it doesn't need to
+   * be a rune.
+   * @param {string | undefined} slug
+   * @returns {string}
+   */
   function getPostUrl(slug) {
-    if (!slug) return '#'
-    return `${blogBasePath}/${slug}`
+    if (!slug) return blogBasePath
+    return slug.startsWith('/') ? slug : `${blogBasePath}/${slug}`
   }
 
-  function getPostTitle(post) {
-    return post?.metadata?.title || post?.title || 'Không có tiêu đề'
+  /**
+   * @param {NavPost | null} targetPost
+   * @returns {string}
+   */
+  function getPostTitle(targetPost) {
+    return targetPost?.metadata?.title || targetPost?.title || 'Không có tiêu đề'
   }
-
-  // Lifecycle - similar to mounted in Vue
-  onMount(() => {
-    // Prefetch navigation posts if enabled
-    if (prefetchEnabled && typeof window !== 'undefined') {
-      if (hasPrevPost) {
-        const prevLink = document.querySelector(`a[href="${getPostUrl(prevPost.slug)}"]`)
-        if (prevLink) prevLink.setAttribute('data-sveltekit-preload-data', 'hover')
-      }
-
-      if (hasNextPost) {
-        const nextLink = document.querySelector(`a[href="${getPostUrl(nextPost.slug)}"]`)
-        if (nextLink) nextLink.setAttribute('data-sveltekit-preload-data', 'hover')
-      }
-    }
-  })
 </script>
 
-{#if hasNavigation && !isLoading}
-  <!-- WordPress-style navigation with Nuxt.js transition -->
-  <nav
-    class="border-t border-gray-100 dark:border-gray-800 mt-12 pt-8 transition-opacity duration-300 ease-in-out animate-in fade-in slide-in-from-bottom-3"
-  >
-    <h2 class="sr-only">{labels.srOnly}</h2>
-    <div class="flex flex-col sm:flex-row justify-between items-stretch gap-6">
-      <!-- Previous Post -->
-      <div class="flex-1">
-        {#if hasPrevPost}
-          <div
-            class="text-xs font-black uppercase tracking-widest text-gray-950 dark:text-gray-50 mb-2"
-          >
-            ← {labels.previous}
-          </div>
-          <a
-            href={getPostUrl(prevPost.slug)}
-            data-sveltekit-preload-data="hover"
-            class="block text-lg font-black text-sky-800 dark:text-sky-400 hover:text-sky-600 dark:hover:text-sky-300 hover:underline decoration-2 underline-offset-2 line-clamp-2 leading-snug transition-all duration-200"
-            rel="prev"
-            aria-label={`${labels.previous}: ${getPostTitle(prevPost)}`}
-          >
-            {getPostTitle(prevPost)}
-          </a>
-        {:else}
-          <div class="opacity-0 pointer-events-none select-none" aria-hidden="true">
-            <div class="text-xs font-bold uppercase tracking-widest mb-2">← {labels.previous}</div>
-            <div class="text-lg font-bold line-clamp-2 leading-snug">Placeholder</div>
-          </div>
-        {/if}
-      </div>
+<!-- Post Navigation - T25's "Query Pagination" pattern: flat text links,
+     no card/box chrome, small arrow glyphs instead of icon buttons. -->
+<nav class="post-navigation wp-block-query-pagination" aria-label={labels.navigation}>
+  <h2 class="screen-reader-text">{labels.navigation}</h2>
 
-      <!-- Next Post -->
-      <div class="flex-1 sm:text-right">
-        {#if hasNextPost}
-          <div
-            class="text-xs font-black uppercase tracking-widest text-gray-950 dark:text-gray-50 mb-2"
+  <div class="post-navigation__links">
+    <!-- Previous Post (older article, rel="prev") -->
+    <div class="post-navigation__prev wp-block-query-pagination-previous">
+      {#if hasOlderPost}
+        <a href={getPostUrl(olderPost.slug)} data-sveltekit-preload-data="hover" rel="prev">
+          <span class="post-navigation__arrow" aria-hidden="true">←</span>
+          <span class="post-navigation__group">
+            <span class="post-navigation__label">{labels.previous}</span>
+            <span class="post-navigation__title">{getPostTitle(olderPost)}</span>
+          </span>
+        </a>
+      {:else}
+        <span class="post-navigation__placeholder">
+          <span class="post-navigation__label">← {labels.previous}</span>
+          <span class="post-navigation__title post-navigation__title--muted"
+            >{labels.firstPost}</span
           >
-            {labels.next} →
-          </div>
-          <a
-            href={getPostUrl(nextPost.slug)}
-            data-sveltekit-preload-data="hover"
-            class="block text-lg font-black text-sky-800 dark:text-sky-400 hover:text-sky-600 dark:hover:text-sky-300 hover:underline decoration-2 underline-offset-2 line-clamp-2 leading-snug transition-all duration-200"
-            rel="next"
-            aria-label={`${labels.next}: ${getPostTitle(nextPost)}`}
-          >
-            {getPostTitle(nextPost)}
-          </a>
-        {:else}
-          <div class="opacity-0 pointer-events-none select-none" aria-hidden="true">
-            <div class="text-xs font-bold uppercase tracking-widest mb-2">{labels.next} →</div>
-            <div class="text-lg font-bold line-clamp-2 leading-snug">Placeholder</div>
-          </div>
-        {/if}
-      </div>
+        </span>
+      {/if}
     </div>
-  </nav>
-{/if}
+
+    <!-- Center: link back to the archive/blog index -->
+    <div class="post-navigation__all">
+      <a
+        href={blogBasePath}
+        data-sveltekit-preload-data="hover"
+        title="Quay về danh sách tất cả bài viết"
+      >
+        {labels.allPosts}
+      </a>
+    </div>
+
+    <!-- Next Post (newer article, rel="next") -->
+    <div class="post-navigation__next wp-block-query-pagination-next">
+      {#if hasNewerPost}
+        <a href={getPostUrl(newerPost.slug)} data-sveltekit-preload-data="hover" rel="next">
+          <span class="post-navigation__group">
+            <span class="post-navigation__label">{labels.next}</span>
+            <span class="post-navigation__title">{getPostTitle(newerPost)}</span>
+          </span>
+          <span class="post-navigation__arrow" aria-hidden="true">→</span>
+        </a>
+      {:else}
+        <span class="post-navigation__placeholder post-navigation__placeholder--right">
+          <span class="post-navigation__label">{labels.next} →</span>
+          <span class="post-navigation__title post-navigation__title--muted"
+            >{labels.latestPost}</span
+          >
+        </span>
+      {/if}
+    </div>
+  </div>
+</nav>
+
+<style>
+  /*
+   * WordPress Twenty Twenty-Five design tokens, hand-mirrored - same
+   * baseline as RecentPosts.svelte:
+   * - Manrope for links/labels, Fira Code for the small uppercase meta
+   *   label (T25's default font pairing).
+   * - Content links underlined at 1px / .1em offset, exactly as T25's
+   *   style.css hardcodes.
+   * - Plain 2px solid focus outline, no fancy offset.
+   * - No border/shadow/rounded "card" - T25's Query Pagination pattern
+   *   is just spaced-out text with a top border to separate it from the
+   *   post content above.
+   */
+  .screen-reader-text {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .post-navigation {
+    font-family: 'Manrope', system-ui, sans-serif;
+    margin-block: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--wp--preset--color--contrast-3, #ddd);
+  }
+
+  .post-navigation__links {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  @media (min-width: 768px) {
+    .post-navigation__links {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: start;
+      gap: 1.5rem;
+    }
+  }
+
+  .post-navigation__prev a,
+  .post-navigation__next a {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    text-decoration: none;
+    color: var(--wp--preset--color--contrast, #1e1e1e);
+  }
+  .post-navigation__next a {
+    justify-content: flex-end;
+    text-align: right;
+  }
+  .post-navigation__prev a:hover .post-navigation__title,
+  .post-navigation__next a:hover .post-navigation__title {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.1em;
+    color: var(--wp--preset--color--accent, #3858e9);
+  }
+  .post-navigation__prev a:focus-visible,
+  .post-navigation__next a:focus-visible,
+  .post-navigation__all a:focus-visible {
+    outline: 2px solid var(--wp--preset--color--contrast, #1e1e1e);
+    outline-offset: 2px;
+  }
+
+  .post-navigation__arrow {
+    font-size: 1.1rem;
+    line-height: 1.4;
+    color: var(--wp--preset--color--contrast-2, #6b6b6b);
+  }
+
+  .post-navigation__group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .post-navigation__label {
+    font-family: 'Fira Code', ui-monospace, monospace;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--wp--preset--color--contrast-2, #6b6b6b);
+  }
+
+  .post-navigation__title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .post-navigation__title--muted {
+    font-weight: 400;
+    font-style: italic;
+    color: var(--wp--preset--color--contrast-2, #999);
+  }
+
+  .post-navigation__placeholder {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    opacity: 0.6;
+  }
+  .post-navigation__placeholder--right {
+    align-items: flex-end;
+    text-align: right;
+  }
+
+  .post-navigation__all {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .post-navigation__all a {
+    font-family: 'Fira Code', ui-monospace, monospace;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.15em;
+    color: var(--wp--preset--color--accent, #3858e9);
+    white-space: nowrap;
+  }
+</style>

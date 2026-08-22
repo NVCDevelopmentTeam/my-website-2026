@@ -3,15 +3,15 @@ import { error } from '@sveltejs/kit'
 
 export const prerender = true
 
+/** @type {import('./$types').HomePageServerLoad} */
 export async function load() {
   try {
-    const { posts: recentPosts } = getFilteredPosts({ offset: 0, limit: 10 })
-
+    var { posts: latestPosts } = getFilteredPosts({ offset: 0, limit: 3 })
     return {
-      recentPosts
+      latestPosts
     }
   } catch (err) {
-    console.error('Error loading recent posts:', err)
-    error(500, 'Không thể tải bài viết mới nhất.')
+    console.error('Error loading hoem page data:', err)
+    error(500, 'Internal Server Error')
   }
 }

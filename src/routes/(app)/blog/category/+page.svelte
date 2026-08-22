@@ -18,11 +18,11 @@
 <SEO {...seoConfig} />
 
 <div class="container mx-auto px-4 py-16">
-  <div class="max-w-3xl mx-auto">
+  <div class="mx-auto max-w-3xl">
     <!-- Title -->
-    <h1 class="text-4xl font-black text-center mb-10 text-gray-950 dark:text-gray-50">
+    <h1 class="mb-10 text-center text-4xl font-black text-gray-950 dark:text-gray-50">
       Tất cả danh mục
-      <span class="text-gray-950 dark:text-gray-50 text-2xl"> ({totalCategories || 0}) </span>
+      <span class="text-2xl text-gray-950 dark:text-gray-50"> ({totalCategories || 0}) </span>
     </h1>
 
     <!-- Category list -->
@@ -32,11 +32,11 @@
           <li class="py-4">
             <a
               href={`/blog/category/${category.slug}`}
-              class="flex items-center justify-between group hover:bg-gray-50 dark:hover:bg-gray-800/50 px-4 py-2 rounded-lg transition-colors"
+              class="group flex items-center justify-between rounded-lg px-4 py-2 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/50"
             >
               <!-- Category name with count (WordPress style) -->
               <span
-                class="text-lg font-black text-blue-800 dark:text-blue-300 group-hover:underline"
+                class="text-lg font-black text-blue-800 group-hover:underline dark:text-blue-300"
               >
                 {category.title} ({category.count})
               </span>
@@ -45,7 +45,7 @@
         {/each}
       </ul>
     {:else}
-      <p class="text-center text-gray-950 dark:text-gray-50 text-lg font-bold italic">
+      <p class="text-center text-lg font-bold text-gray-950 italic dark:text-gray-50">
         Chưa có danh mục nào được gắn cho bài viết.
       </p>
     {/if}

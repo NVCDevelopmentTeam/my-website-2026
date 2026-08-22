@@ -47,14 +47,14 @@
 </script>
 
 {#if categories.length > 0}
-  <div class="flex items-center gap-2 text-gray-950 dark:text-gray-50 font-bold">
+  <div class="flex items-center gap-2 font-bold text-gray-950 dark:text-gray-50">
     <span class="text-sm">danh mục:</span>
     <ul class="flex flex-wrap gap-2 text-sm">
       {#each categories as category (category.slug)}
         <li>
           <a
             href={`/blog/category/${category.slug}`}
-            class="px-3 py-1 bg-sky-50 dark:bg-sky-950/30 text-sky-900 dark:text-sky-300 rounded-full border border-sky-200 dark:border-sky-800 hover:bg-sky-100 dark:hover:bg-sky-900/50 transition-colors font-bold"
+            class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 font-bold text-sky-900 transition-colors hover:bg-sky-100 dark:border-sky-800 dark:bg-sky-950/30 dark:text-sky-300 dark:hover:bg-sky-900/50"
           >
             {category.title}
           </a>
@@ -63,5 +63,5 @@
     </ul>
   </div>
 {:else}
-  <p class="text-sm text-gray-950 dark:text-gray-50 italic px-4">Chưa phân loại</p>
+  <p class="px-4 text-sm text-gray-950 italic dark:text-gray-50">Chưa phân loại</p>
 {/if}

@@ -4,7 +4,7 @@ import { error } from '@sveltejs/kit'
 export const prerender = true
 
 export async function entries() {
-  const { posts } = getFilteredPosts({ limit: -1 })
+  const { posts } = getFilteredPosts({ limit: Number.MAX_SAFE_INTEGER })
   return posts.map((post) => ({ post: post.slug }))
 }
 
@@ -16,10 +16,10 @@ export async function load({ params }) {
     const entry = getPostBySlug(slugOrRaw)
     const { metadata, rawName, slug } = entry
 
-    // Get all posts using getFilteredPosts (no filter = all posts)
+    // Get all posts for navigation (no pagination filter)
     const { posts: allPosts } = getFilteredPosts({
       offset: 0,
-      limit: 9999 // Get all posts
+      limit: Number.MAX_SAFE_INTEGER
     })
 
     // Find current post index

@@ -21,58 +21,31 @@
   const faqs = $derived(metadata?.faqs || [])
   const hasToc = $derived(metadata?.toc && metadata.toc.length > 0)
 
-  let contentRef = $state()
-  let tocRef = $state()
+  /** @type {number} — starts at 0, updated client-side after mount */
   let views = $state(0)
 
-  // Track page views per post using localStorage
+  // Track page views per post using localStorage.
+  // Deferred via setTimeout to run after paint — keeps it off the critical path.
   onMount(function () {
     if (!browser || !metadata) return
 
-    var viewKey = 'views_' + (metadata.slug || 'unknown')
-    var sessionKey = 'viewed_' + (metadata.slug || 'unknown')
+    // Non-critical: defer 200ms to avoid blocking TBT
+    setTimeout(function () {
+      var viewKey = 'views_' + (metadata.slug || 'unknown')
+      var sessionKey = 'viewed_' + (metadata.slug || 'unknown')
 
-    var currentViews = parseInt(localStorage.getItem(viewKey) || '0', 10)
+      var currentViews = parseInt(localStorage.getItem(viewKey) || '0', 10)
 
-    // Only increment if not already viewed in this session
-    var alreadyViewed = sessionStorage.getItem(sessionKey)
-    if (!alreadyViewed) {
-      currentViews += 1
-      sessionStorage.setItem(sessionKey, 'true')
-    }
-
-    views = currentViews
-    localStorage.setItem(viewKey, views.toString())
-  })
-
-  // Inject TOC between intro and first heading
-  $effect(function () {
-    if (!metadata || !contentRef || !tocRef || !hasToc) return
-
-    var firstHeading = contentRef.querySelector('h2, h3, h4, h5, h6')
-
-    if (firstHeading) {
-      var introParas = []
-      var currentElement = contentRef.firstElementChild
-
-      while (currentElement && currentElement !== firstHeading) {
-        if (currentElement.tagName === 'P') {
-          introParas.push(currentElement)
-        }
-        currentElement = currentElement.nextElementSibling
+      // Only increment if not already viewed in this session
+      var alreadyViewed = sessionStorage.getItem(sessionKey)
+      if (!alreadyViewed) {
+        currentViews += 1
+        sessionStorage.setItem(sessionKey, 'true')
+        localStorage.setItem(viewKey, currentViews.toString())
       }
 
-      if (introParas.length > 0) {
-        introParas[introParas.length - 1].after(tocRef)
-      } else {
-        firstHeading.before(tocRef)
-      }
-    } else {
-      // eslint-disable-next-line svelte/no-dom-manipulating
-      contentRef.prepend(tocRef)
-    }
-
-    tocRef.classList.remove('hidden')
+      views = currentViews
+    }, 200)
   })
 
   const seoConfig = $derived(
@@ -142,10 +115,10 @@
 
 <div class="px-4 sm:px-6">
   {#if metadata}
-    <article class="py-10 animate-fade-in" itemscope itemtype="https://schema.org/BlogPosting">
+    <article class="animate-fade-in py-10" itemscope itemtype="https://schema.org/BlogPosting">
       <header class="mb-10 space-y-6">
         <h1
-          class="text-3xl sm:text-4xl lg:text-5xl font-black text-gray-950 dark:text-white leading-tight tracking-tight"
+          class="text-3xl leading-tight font-black tracking-tight text-gray-950 sm:text-4xl lg:text-5xl dark:text-white"
           itemprop="headline"
         >
           {metadata.title}
@@ -153,7 +126,7 @@
 
         <!-- Meta info -->
         <div
-          class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-gray-950 dark:text-gray-50 font-bold"
+          class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm font-bold text-gray-950 dark:text-gray-50"
         >
           <span itemprop="author" itemscope itemtype="https://schema.org/Person">
             <meta itemprop="name" content={metadata.author || siteConfig.author.name} />
@@ -174,10 +147,12 @@
               {metadata.readingTime} min read
             </span>
           </span>
-          <span aria-hidden="true" class="text-gray-300 dark:text-gray-700">|</span>
-          <span class="font-bold text-gray-950 dark:text-gray-200">
-            {views} views
-          </span>
+          {#if views > 0}
+            <span aria-hidden="true" class="text-gray-300 dark:text-gray-700">|</span>
+            <span class="font-bold text-gray-950 dark:text-gray-200">
+              {views} views
+            </span>
+          {/if}
         </div>
 
         <div class="flex items-center pt-2">
@@ -189,30 +164,29 @@
         <meta itemprop="description" content={metadata.description} />
       </header>
 
-      <!-- Post content with TOC auto-injected -->
+      <!-- Table of Contents — rendered inline before body (no DOM manipulation = no forced reflow) -->
+      {#if hasToc}
+        <nav class="not-prose my-10" aria-label="Table of contents">
+          <ToC post={{ metadata }} />
+        </nav>
+      {/if}
+
+      <!-- Post content -->
       <section
-        bind:this={contentRef}
-        class="prose prose-neutral dark:prose-invert max-w-none prose-headings:font-black prose-headings:text-gray-950 dark:prose-headings:text-white prose-p:text-gray-950 dark:prose-p:text-gray-50 prose-a:text-sky-900 dark:prose-a:text-sky-400 prose-a:font-bold prose-img:rounded-[2rem] prose-img:shadow-2xl prose-strong:text-gray-950 dark:prose-strong:text-white prose-li:text-gray-950 dark:prose-li:text-gray-50 prose-ul:text-gray-950 dark:prose-ul:text-gray-50 prose-ol:text-gray-950 dark:prose-ol:text-gray-50"
+        class="prose max-w-none prose-neutral dark:prose-invert prose-headings:font-black prose-headings:text-gray-950 dark:prose-headings:text-white prose-p:text-gray-950 dark:prose-p:text-gray-50 prose-a:font-bold prose-a:text-sky-900 dark:prose-a:text-sky-400 prose-strong:text-gray-950 dark:prose-strong:text-white prose-ol:text-gray-950 dark:prose-ol:text-gray-50 prose-ul:text-gray-950 dark:prose-ul:text-gray-50 prose-li:text-gray-950 dark:prose-li:text-gray-50 prose-img:rounded-[2rem] prose-img:shadow-2xl"
         itemprop="articleBody"
       >
         <PostContent />
       </section>
 
-      <!-- TOC placeholder -->
-      {#if hasToc}
-        <nav bind:this={tocRef} class="my-10 not-prose hidden" aria-label="Table of contents">
-          <ToC post={{ metadata }} />
-        </nav>
-      {/if}
-
       {#if faqs.length > 0}
-        <div class="mt-20 not-prose">
+        <div class="not-prose mt-20">
           <FAQ items={faqs} />
         </div>
       {/if}
 
       <footer class="mt-16 space-y-10">
-        <div class="pt-8 border-t border-gray-100 dark:border-gray-800">
+        <div class="border-t border-gray-100 pt-8 dark:border-gray-800">
           <PostTags post={{ metadata }} />
         </div>
 

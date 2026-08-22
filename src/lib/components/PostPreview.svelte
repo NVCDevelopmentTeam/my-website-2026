@@ -24,20 +24,20 @@
 
 <div class="mb-4">
   {#if hasValidPreview}
-    <div class="text-gray-950 dark:text-gray-50 leading-relaxed line-clamp-2">
+    <div class="line-clamp-2 leading-relaxed text-gray-950 dark:text-gray-50">
       {displayPreview}
       <a
         href={postUrl}
-        class="ml-2 text-blue-800 dark:text-blue-300 font-bold hover:underline inline-block"
+        class="ml-2 inline-block font-bold text-blue-800 hover:underline dark:text-blue-300"
       >
-        Đọc thêm →
+        →tiếp tục đọc {post.metadata.title}
       </a>
     </div>
   {:else}
-    <p class="text-gray-800 dark:text-gray-300 italic leading-relaxed">
+    <p class="leading-relaxed text-gray-800 italic dark:text-gray-300">
       Bài viết chưa có đoạn trích.
-      <a href={postUrl} class="ml-2 text-blue-800 dark:text-blue-300 font-bold hover:underline">
-        Xem bài →
+      <a href={postUrl} class="ml-2 font-bold text-blue-800 hover:underline dark:text-blue-300">
+        tiếp tục đọc {post.metadata.title} →
       </a>
     </p>
   {/if}

@@ -3,3 +3,7 @@ package.json
 package-lock.json
 public
 pnpm-lock.yaml
+# Reference / data files — not source code
+file.md
+Check.json
+antigravity.md

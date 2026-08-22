@@ -5,17 +5,23 @@ import { build, files, prerendered, version } from '$service-worker'
 var CACHE = 'app-' + version
 
 var IMMUTABLE_ASSETS = build
-var STATIC_FILES = files
+var STATIC_FILES = files.filter(function (file) {
+  return !file.startsWith('/_') && !file.startsWith('/.')
+})
 var PRERENDERED_HTML = prerendered
 var ALL_ASSETS = [].concat(IMMUTABLE_ASSETS, STATIC_FILES, PRERENDERED_HTML)
 
-// Install — pre-cache all known assets
+// Install — pre-cache all known assets safely
 self.addEventListener('install', function (event) {
   event.waitUntil(
     caches
       .open(CACHE)
       .then(function (cache) {
-        return cache.addAll(ALL_ASSETS)
+        return Promise.allSettled(
+          ALL_ASSETS.map(function (asset) {
+            return cache.add(asset)
+          })
+        )
       })
       .then(function () {
         return self.skipWaiting()
@@ -52,8 +58,9 @@ self.addEventListener('fetch', function (event) {
 
   var url = new URL(event.request.url)
 
-  // Bypass SW for cross-origin requests
+  // Bypass SW for cross-origin requests and dev server / Vite HMR endpoints
   if (url.origin !== self.location.origin) return
+  if (url.pathname.startsWith('/@') || url.pathname.includes('node_modules')) return
 
   // Immutable hashed JS/CSS — cache-first (permanent)
   if (url.pathname.startsWith('/_app/immutable/')) {
@@ -67,19 +74,26 @@ self.addEventListener('fetch', function (event) {
     return
   }
 
+  // Normalize pathname (with and without trailing slash)
+  var normalizedPath = url.pathname
+  var trimmedPath =
+    normalizedPath.endsWith('/') && normalizedPath.length > 1
+      ? normalizedPath.slice(0, -1)
+      : normalizedPath
+
   // Prerendered HTML — stale-while-revalidate (instant paint + fresh data)
-  if (PRERENDERED_HTML.includes(url.pathname)) {
+  if (PRERENDERED_HTML.includes(normalizedPath) || PRERENDERED_HTML.includes(trimmedPath)) {
     event.respondWith(staleWhileRevalidate(event.request))
     return
   }
 
   // Other static files — cache-first
-  if (STATIC_FILES.includes(url.pathname)) {
+  if (STATIC_FILES.includes(normalizedPath) || STATIC_FILES.includes(trimmedPath)) {
     event.respondWith(cacheFirst(event.request))
     return
   }
 
-  // Everything else — network-first with 3s timeout
+  // Everything else — network-first with 3s timeout, graceful fallback
   event.respondWith(networkFirstWithTimeout(event.request, 3000))
 })
 
@@ -96,7 +110,7 @@ async function cacheFirst(request) {
     if (response.ok) cache.put(request, response.clone())
     return response
   } catch {
-    return Response.error()
+    return fetch(request)
   }
 }
 
@@ -116,7 +130,8 @@ async function staleWhileRevalidate(request) {
       return null
     })
 
-  return cached ?? (await revalidate) ?? Response.error()
+  var fresh = await revalidate
+  return cached ?? fresh ?? fetch(request)
 }
 
 /**
@@ -125,28 +140,26 @@ async function staleWhileRevalidate(request) {
 async function networkFirstWithTimeout(request, timeoutMs) {
   var cache = await caches.open(CACHE)
 
-  var networkRace = new Promise(function (resolve, reject) {
+  try {
+    var controller = new AbortController()
     var timer = setTimeout(function () {
-      reject(new Error('sw-timeout'))
+      controller.abort()
     }, timeoutMs)
 
-    fetch(request)
-      .then(function (response) {
-        clearTimeout(timer)
-        if (response.ok) cache.put(request, response.clone())
-        resolve(response)
-      })
-      .catch(function (err) {
-        clearTimeout(timer)
-        reject(err)
-      })
-  })
-
-  try {
-    return await networkRace
+    var response = await fetch(request, { signal: controller.signal })
+    clearTimeout(timer)
+    if (response.ok) {
+      cache.put(request, response.clone())
+    }
+    return response
   } catch {
     var cached = await cache.match(request)
-    return cached ?? Response.error()
+    if (cached) return cached
+    return new Response('Network error', {
+      status: 504,
+      statusText: 'Gateway Timeout',
+      headers: { 'Content-Type': 'text/plain' }
+    })
   }
 }
 

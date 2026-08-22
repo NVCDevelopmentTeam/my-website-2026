@@ -5,12 +5,7 @@ import { error } from '@sveltejs/kit'
 export const prerender = true
 
 /** @type {import('./$types').LayoutServerLoad} */
-export async function load({ setHeaders }) {
-  // Cache headers for static site performance
-  setHeaders({
-    'cache-control': 'public, max-age=3600'
-  })
-
+export async function load() {
   try {
     var { pages: allPages } = getAllPages()
     var { pages: navPages } = getAllPages({ menu: 'nav' })
