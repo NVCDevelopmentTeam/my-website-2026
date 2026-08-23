@@ -2,7 +2,6 @@
   import { siteConfig } from '$lib/config'
   import { onMount } from 'svelte'
   import { browser } from '$app/environment'
-  import { Client, Account } from 'appwrite'
 
   let props = $props()
   const cmsConfig = $derived(props?.data?.config)
@@ -24,53 +23,62 @@
   }
 
   /**
-   * Directly triggers the asynchronous full-page redirection towards Appwrite Cloud OAuth gateway.
-   * This is executed inline inside the window context to seamlessly hand over control to GitHub.
+   * Compiles the explicit Appwrite Cloud REST API OAuth link structure.
+   * Targets cloud.appwrite.io directly to eliminate Access-Control-Allow-Credentials CORS policy bugs.
    */
-  function executeDirectAppwriteOAuth() {
-    const client = new Client()
-      .setEndpoint('https://appwrite.io') // Target the centralized secure API gateway
-      .setProject('698965f2000da6808b70');
-
-    const account = new Account(client);
+  function triggerAppwriteOAuth() {
+    const projectId = '698965f2000da6808b70';
+    const provider = 'github';
     
-    // Fallback and redirect landing targets point strictly back to this clean admin view path
-    const currentSiteUrl = window.location.origin + window.location.pathname;
+    // Auto-resolve current site address to keep redirect boundaries dynamic (localhost vs custom domain)
+    const currentSiteOrigin = window.location.origin;
+    const redirectUrl = currentSiteOrigin + window.location.pathname;
 
-    account.createOAuth2Session(
-      'github',
-      currentSiteUrl, 
-      currentSiteUrl,
-      ['repo', 'user'] // Scope parameters allowing write access to GitHub storage
+    // MANDATORY FIX: Target the official global Appwrite Cloud infrastructure gateway instead of custom domain
+    const appwriteEndpoint = 'https://cloud.appwrite.io/v1';
+
+    // Compile the strict REST URL query mapping template to bypass SDK pop-up blockers completely
+    const appwriteOAuthUrl = `${appwriteEndpoint}/account/sessions/oauth2/${provider}` +
+      `?project=${projectId}` +
+      `&success=${encodeURIComponent(redirectUrl)}` +
+      `&failure=${encodeURIComponent(redirectUrl)}` +
+      `&scopes[]=repo&scopes[]=user`;
+
+    // Initialize an isolated browser popup window context to retain window.opener memory references
+    const width = 600;
+    const height = 750;
+    const left = window.screen.width / 2 - width / 2;
+    const top = window.screen.height / 2 - height / 2;
+    
+    window.open(
+      appwriteOAuthUrl,
+      'Appwrite-OAuth-Gateway',
+      `width=${width},height=${height},top=${top},left=${left},status=no,resizable=yes,scrollbars=yes`
     );
   }
 
   onMount(async () => {
     if (!browser) return
 
-    // 1. POPUP WINDOW LIFECYCLE INTERCEPT: Post-Authorization Token Return
-    // If this window is the spawned tab and now contains valid credentials from Appwrite redirect
+    // Context Execution Block: Evaluated inside the spawned temporary popup auth window frame
     if (oauthData?.token) {
+      const payload = { token: oauthData.token, provider: oauthData.provider };
+      
+      // Securely transfer credentials backward into the master parent layout view frame instantly
       if (window.opener) {
-        const payload = { token: oauthData.token, provider: oauthData.provider };
-        // Post the Git credentials back to the main master dashboard controller frame securely
         window.opener.postMessage(
           `authorizing:${oauthData.provider}:success:${JSON.stringify(payload)}`,
           window.location.origin
         );
-        // Self-destruct and close this secondary auth tab cleanly
+        // Automatically self-destruct and close the isolated popup container tab view
         window.close();
         return;
+      } else {
+        // Fallback: If parameters arrive outside an opener tab context, stash metrics inside storage keys natively
+        localStorage.setItem('sveltia-cms:local-provider-token', oauthData.token);
+        localStorage.setItem('decap-cms:user', JSON.stringify({ token: oauthData.token, backendName: 'github' }));
+        window.history.replaceState({}, document.title, window.location.pathname);
       }
-    }
-
-    // 2. POPUP WINDOW LIFECYCLE INTERCEPT: Initial Click Launch
-    // Sveltia CMS creates a new tab targeting current admin URL but signs it with an internal opener context.
-    // If this current window has a master opener, it means it is Sveltia's designated authentication tab!
-    if (window.opener && !oauthData?.token) {
-      // Immediately kick off the Appwrite login protocol to route this tab directly to GitHub
-      executeDirectAppwriteOAuth();
-      return;
     }
 
     if (loadError) {
@@ -78,33 +86,30 @@
       return
     }
 
-    // 3. MAIN DASHBOARD LIFECYCLE: Initialization and Event Binding
-    if (!window.opener && cmsConfig) {
-      try {
-        const sveltia = await import('@sveltia/cms')
-        const CMS = sveltia.default
+    try {
+      const sveltia = await import('@sveltia/cms')
+      const CMS = sveltia.default
 
+      if (cmsConfig) {
         cmsConfig.load_config_file = false;
 
-        // Satisfy Sveltia's trigger routine. When clicking login, Sveltia spawns the tab.
-        // We catch that window signal here and notify the child view to prepare execution.
+        // Establish message event listening pipeline to catch Sveltia's login triggers
         window.addEventListener('message', (event) => {
           if (event.data === 'request:auth') {
-            // Sveltia automatically opens the tab; our window.opener checks above handle the rest!
-            console.log('Sveltia login hook intercepted successfully.');
+            triggerAppwriteOAuth();
           }
         });
 
-        // Initialize Sveltia CMS GUI dashboard layout links
+        // Initialize Sveltia CMS GUI container layout links
         await CMS.init({
           config: cmsConfig
         })
 
         cmsInitialized = true
-      } catch (err) {
-        cmsError = err.message || err
-        console.error('CMS Runtime Mount Exception:', err)
       }
+    } catch (err) {
+      cmsError = err.message || err
+      console.error('CMS Runtime Mount Exception:', err)
     }
   })
 </script>
