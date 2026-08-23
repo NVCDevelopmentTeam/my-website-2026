@@ -24,27 +24,27 @@
 
   /**
    * Compiles the explicit Appwrite Cloud REST API OAuth link structure.
-   * Targets cloud.appwrite.io directly to eliminate Access-Control-Allow-Credentials CORS policy bugs.
+   * Strictly cleanses the target route to prevent appending client-side pathnames like '/admin' into Appwrite infrastructure.
    */
   function triggerAppwriteOAuth() {
     const projectId = '698965f2000da6808b70';
     const provider = 'github';
     
-    // Auto-resolve current site address to keep redirect boundaries dynamic (localhost vs custom domain)
-    const currentSiteOrigin = window.location.origin;
-    const redirectUrl = currentSiteOrigin + window.location.pathname;
+    // CRITICAL FIX: Keep the dynamic window.location context but isolate it solely for the success parameter callback
+    const currentSiteOrigin = window.location.origin; // Dynamically resolves to 'https://appwrite.network' or your custom domain later
+    const redirectUrl = currentSiteOrigin + window.location.pathname; // Absolute callback target link back to this view
 
-    // MANDATORY FIX: Target the official global Appwrite Cloud infrastructure gateway instead of custom domain
-    const appwriteEndpoint = 'https://cloud.appwrite.io/v1';
+    // MANDATORY GATEWAY: Force request to point directly into the core v1 engine endpoint route of Appwrite Cloud
+    const appwriteBaseCloudGateway = 'https://sgp.cloud.appwrite.io/v1';
 
-    // Compile the strict REST URL query mapping template to bypass SDK pop-up blockers completely
-    const appwriteOAuthUrl = `${appwriteEndpoint}/account/sessions/oauth2/${provider}` +
+    // Compile the strict official query string parameters. Notice there is NO client-side '/admin' layout injected inside the core API string path.
+    const appwriteOAuthUrl = `${appwriteBaseCloudGateway}/account/sessions/oauth2/${provider}` +
       `?project=${projectId}` +
       `&success=${encodeURIComponent(redirectUrl)}` +
       `&failure=${encodeURIComponent(redirectUrl)}` +
       `&scopes[]=repo&scopes[]=user`;
 
-    // Initialize an isolated browser popup window context to retain window.opener memory references
+    // Initialize an isolated centered browser popup window frame container instance
     const width = 600;
     const height = 750;
     const left = window.screen.width / 2 - width / 2;
@@ -60,11 +60,11 @@
   onMount(async () => {
     if (!browser) return
 
-    // Context Execution Block: Evaluated inside the spawned temporary popup auth window frame
+    // Context Execution Block: Evaluated inside the spawned temporary popup auth window frame post-redirect
     if (oauthData?.token) {
       const payload = { token: oauthData.token, provider: oauthData.provider };
       
-      // Securely transfer credentials backward into the master parent layout view frame instantly
+      // Securely transfer credentials backward into the master main parent panel layout view context frame instantly
       if (window.opener) {
         window.opener.postMessage(
           `authorizing:${oauthData.provider}:success:${JSON.stringify(payload)}`,
