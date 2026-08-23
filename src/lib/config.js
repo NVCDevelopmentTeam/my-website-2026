@@ -22,7 +22,7 @@ export const siteConfig = {
   // subdomain like "sgp.cloud.appwrite.io" in different files) is the most
   // common cause of "session not found" / empty provider token errors.
   appwrite: {
-    endpoint: 'https://cloud.appwrite.io/v1', // <-- replace with YOUR region endpoint
+    endpoint: 'https://sgp.cloud.appwrite.io/v1', // <-- replace with YOUR region endpoint
     projectId: '698965f2000da6808b70'
   },
 
