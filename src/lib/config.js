@@ -4,8 +4,8 @@ export const siteConfig = {
   description: 'Lan tỏa nguồn năng lượng tích cực mỗi ngày',
   siteDomain: 'codingnguyen2.appwrite.network',
   siteUrl: 'https://codingnguyen2.appwrite.network',
-siteRepo: 'NVCDevelopmentTeam/my-website-2026',
-siteBranch: 'main',
+  siteRepo: 'NVCDevelopmentTeam/my-website-2026',
+  siteBranch: 'main',
   language: 'vi',
   // Geo metadata for SEO
   geo: {
