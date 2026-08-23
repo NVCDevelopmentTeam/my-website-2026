@@ -1,2 +1,2 @@
-minimumReleaseAgeExclude:
-  - '@sveltia/cms@0.196.0'
+allowBuilds:
+  esbuild: true
