@@ -5,23 +5,23 @@ export const ssr = false
 export const prerender = true
 
 /**
- * Single entrypoint for loading Sveltia CMS configuration and catching Appwrite OAuth callbacks.
+ * Combined entrypoint for checking active Appwrite OAuth redirect params
+ * and serving the synchronized Sveltia CMS static configuration object.
  */
 export const load = async ({ url }) => {
-  // Check if this page load is actually an OAuth callback redirect from Appwrite
   const provider = url.searchParams.get('provider') || 'github';
+  // Detect if current route hit is a post-authorization redirect from Appwrite Cloud
   const hasAppwriteAuthSession = url.searchParams.get('secret') && url.searchParams.get('userId');
 
   if (hasAppwriteAuthSession) {
     try {
-      // Initialize Appwrite client link with your verified credentials
       const client = new Client()
-        .setEndpoint('https://appwrite.io') 
-        .setProject('698965f2000da6808b70'); // Your secure Appwrite project ID
+        .setEndpoint('https://appwrite.io') // Your specific SGP cloud cluster location
+        .setProject('698965f2000da6808b70');
 
       const account = new Account(client);
       
-      // Fetch the active session to resolve the underlying Git Token
+      // Request active session parameters to resolve the underlying Git provider token
       const session = await account.getSession('current');
       const gitAccessToken = session?.providerAccessToken || '';
 
@@ -33,16 +33,15 @@ export const load = async ({ url }) => {
         };
       }
     } catch (err) {
-      console.error('OAuth token extraction failed:', err);
-      return { oauthError: 'Could not extract Git credentials from Appwrite session.' };
+      console.error('Failed to isolate providerAccessToken during inline load intercept:', err);
+      return { oauthError: 'Could not extract Git credentials from Appwrite session status.' };
     }
   }
 
-  // Fallback to standard CMS config payload output if it's just a normal page load
+  // Baseline immutable config layout configuration payload
   const defaultAuthor = siteConfig?.author?.name || '';
   const config = {
     load_config_file: false,
-    // Fully qualified URL schema definition path for better IDE autocompletion layout
     $schema: 'https://unpkg.com',
     backend: {
       name: 'github',
@@ -50,7 +49,6 @@ export const load = async ({ url }) => {
       branch: siteConfig?.backend?.branch || 'main',
       site_domain: siteConfig?.siteDomain || '',
       base_url: siteConfig?.siteUrl || '',
-      // Directly point to the current page path to process authentication inline inside the popup window context
       auth_endpoint: url.pathname 
     },
     media_folder: 'src/lib/assets',

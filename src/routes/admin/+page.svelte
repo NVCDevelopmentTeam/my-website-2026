@@ -12,7 +12,7 @@
   let cmsInitialized = $state(false)
   let cmsError = $state(null)
 
-  // Mute schema console log notices immediately
+  // Mute schema console validation log noises immediately
   if (browser) {
     const originalConsoleInfo = console.info;
     console.info = function (...args) {
@@ -24,56 +24,36 @@
   }
 
   /**
-   * Custom handler to trigger Appwrite OAuth sequence inside an isolated browser popup modal.
-   * This retains the window.opener reference required by Sveltia CMS to clear AbortError bugs.
+   * Triggers native full-page redirection sequence towards Appwrite Cloud authentication layer.
    */
   function triggerAppwriteOAuth() {
     const client = new Client()
       .setEndpoint('https://appwrite.io')
-      .setProject('698965f2000da6808b70'); // Using your verified Appwrite project ID
+      .setProject('698965f2000da6808b70');
 
     const account = new Account(client);
     
-    // Construct the absolute callback URL pointing back directly to this admin page routing path
-    const redirectUrl = window.location.origin + window.location.pathname;
+    // Fallback and redirect landing targets point strictly to this exact clean admin view path
+    const currentUrl = window.location.origin + window.location.pathname;
 
-    try {
-      // Generate the Appwrite static redirection URL scheme
-      const targetUrl = account.createOAuth2Session(
-        'github',
-        redirectUrl, 
-        redirectUrl,
-        ['repo', 'user'] // Critical permission scope flags to grant write access to Git markdown files
-      );
-
-      // Open a centered popup browser container to properly satisfy Sveltia's cross-window communication
-      const width = 600;
-      const height = 700;
-      const left = window.screen.width / 2 - width / 2;
-      const top = window.screen.height / 2 - height / 2;
-      
-      window.open(
-        targetUrl,
-        'Appwrite-OAuth-Bridge',
-        `width=${width},height=${height},top=${top},left=${left},status=no,resizable=yes`
-      );
-    } catch (err) {
-      console.error('Failed to invoke isolated OAuth authorization sequence:', err);
-    }
+    account.createOAuth2Session(
+      'github',
+      currentUrl, 
+      currentUrl,
+      ['repo', 'user'] // Permissions required for write access to GitHub storage pipelines
+    );
   }
 
   onMount(async () => {
     if (!browser) return
 
-    // If this window is a login popup, transmit the Git token back to Sveltia CMS core
-    if (oauthData) {
-      const payload = { token: oauthData.token, provider: oauthData.provider };
-      window.opener.postMessage(
-        `authorizing:${oauthData.provider}:success:${JSON.stringify(payload)}`,
-        window.location.origin
-      );
-      window.close();
-      return;
+    // Core Intercept: If redirected back with token metrics, stash into storage locations instantly
+    if (oauthData?.token) {
+      localStorage.setItem('sveltia-cms:local-provider-token', oauthData.token);
+      localStorage.setItem('decap-cms:user', JSON.stringify({ token: oauthData.token, backendName: 'github' }));
+      
+      // Clean query parameters from URL address bar for clean aesthetic state layout
+      window.history.replaceState({}, document.title, window.location.pathname);
     }
 
     if (loadError) {
@@ -81,27 +61,29 @@
       return
     }
 
-    if (!cmsConfig) return
-
     try {
       const sveltia = await import('@sveltia/cms')
       const CMS = sveltia.default
 
-      cmsConfig.load_config_file = false;
+      // Verify if a token is present either from the current load prop or from prior localStorage states
+      const savedToken = localStorage.getItem('sveltia-cms:local-provider-token');
+      
+      if (cmsConfig) {
+        cmsConfig.load_config_file = false;
 
-      // Intercept the default authentication action to plug in Appwrite instead of Netlify/Decap defaults
-      // This ensures clicking "Login with GitHub" runs our inline function
-      window.addEventListener('message', (event) => {
-        if (event.data === 'request:auth') {
-          triggerAppwriteOAuth();
-        }
-      });
+        // Listen for internal Sveltia trigger event if token is not cached yet
+        window.addEventListener('message', (event) => {
+          if (event.data === 'request:auth') {
+            triggerAppwriteOAuth();
+          }
+        });
 
-      await CMS.init({
-        config: cmsConfig
-      })
-
-      cmsInitialized = true
+        // Initialize utilizing configuration context properties
+        await CMS.init({
+          config: cmsConfig
+        })
+        cmsInitialized = true
+      }
     } catch (err) {
       cmsError = err.message || err
       console.error('CMS Runtime Mount Exception:', err)
@@ -120,13 +102,9 @@
       <h2 class="text-2xl font-black">Khởi tạo CMS thất bại</h2>
       <p class="mt-2 font-bold">{cmsError}</p>
     </div>
-  {:else if !cmsInitialized && !oauthData}
+  {:else if !cmsInitialized}
     <div role="status" aria-busy="true" class="text-center text-lg font-bold text-gray-950 dark:text-gray-50">
       <p>Đang tải Hệ thống quản lý nội dung…</p>
-    </div>
-  {:else if oauthData}
-    <div role="status" class="text-center text-lg font-bold text-emerald-600">
-      <p>Xác thực thành công! Đang đồng bộ hóa quyền hạn...</p>
     </div>
   {:else}
     <div id="sveltia-cms"></div>
