@@ -2,7 +2,7 @@
   "name": "My-website-2026",
   "description": "This is my personal website",
   "author": "Coding Nguyen",
-	"private": true,
+  "private": true,
   "version": "0.0.1",
   "type": "module",
   "scripts": {
@@ -45,6 +45,7 @@
     "vite-plugin-compression2": "^2.5.3"
   },
   "dependencies": {
-    "@sveltia/cms": "^0.196.0"
+    "@sveltia/cms": "^0.196.0",
+    "appwrite": "^26.2.0"
   }
 }

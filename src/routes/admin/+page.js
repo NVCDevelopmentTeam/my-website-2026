@@ -14,10 +14,10 @@ export const load = async ({ url }) => {
 
   if (hasAppwriteAuthSession) {
     try {
-      // Initialize Appwrite client link
+      // Initialize Appwrite client link with your verified credentials
       const client = new Client()
         .setEndpoint('https://appwrite.io') 
-        .setProject('698965f2000da6808b70'); // Insert your secure Appwrite project ID here
+        .setProject('698965f2000da6808b70'); // Your secure Appwrite project ID
 
       const account = new Account(client);
       
@@ -42,6 +42,7 @@ export const load = async ({ url }) => {
   const defaultAuthor = siteConfig?.author?.name || '';
   const config = {
     load_config_file: false,
+    // Fully qualified URL schema definition path for better IDE autocompletion layout
     $schema: 'https://unpkg.com',
     backend: {
       name: 'github',
@@ -49,7 +50,7 @@ export const load = async ({ url }) => {
       branch: siteConfig?.backend?.branch || 'main',
       site_domain: siteConfig?.siteDomain || '',
       base_url: siteConfig?.siteUrl || '',
-      // Directly point to the current page path to process authentication inline
+      // Directly point to the current page path to process authentication inline inside the popup window context
       auth_endpoint: url.pathname 
     },
     media_folder: 'src/lib/assets',

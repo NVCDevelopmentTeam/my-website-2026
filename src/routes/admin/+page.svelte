@@ -23,21 +23,43 @@
     };
   }
 
-  // Custom handler to trigger Appwrite OAuth sequence when the editor clicks Login
-  async function triggerAppwriteOAuth() {
+  /**
+   * Custom handler to trigger Appwrite OAuth sequence inside an isolated browser popup modal.
+   * This retains the window.opener reference required by Sveltia CMS to clear AbortError bugs.
+   */
+  function triggerAppwriteOAuth() {
     const client = new Client()
       .setEndpoint('https://appwrite.io')
-      .setProject('698965f2000da6808b70'); // Insert your secure Appwrite project ID here
+      .setProject('698965f2000da6808b70'); // Using your verified Appwrite project ID
 
     const account = new Account(client);
     
-    // Fire OAuth login redirection with mandatory repo write scopes
-    account.createOAuth2Session(
-      'github',
-      window.location.href, // Redirect back to this exact admin page
-      window.location.href,
-      ['repo', 'user']       // Request write permissions for GitHub storage repository
-    );
+    // Construct the absolute callback URL pointing back directly to this admin page routing path
+    const redirectUrl = window.location.origin + window.location.pathname;
+
+    try {
+      // Generate the Appwrite static redirection URL scheme
+      const targetUrl = account.createOAuth2Session(
+        'github',
+        redirectUrl, 
+        redirectUrl,
+        ['repo', 'user'] // Critical permission scope flags to grant write access to Git markdown files
+      );
+
+      // Open a centered popup browser container to properly satisfy Sveltia's cross-window communication
+      const width = 600;
+      const height = 700;
+      const left = window.screen.width / 2 - width / 2;
+      const top = window.screen.height / 2 - height / 2;
+      
+      window.open(
+        targetUrl,
+        'Appwrite-OAuth-Bridge',
+        `width=${width},height=${height},top=${top},left=${left},status=no,resizable=yes`
+      );
+    } catch (err) {
+      console.error('Failed to invoke isolated OAuth authorization sequence:', err);
+    }
   }
 
   onMount(async () => {
