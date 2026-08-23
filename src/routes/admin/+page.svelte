@@ -24,38 +24,53 @@
   }
 
   /**
-   * Triggers native top-level window redirection towards Appwrite Cloud OAuth gateway.
-   * This entirely bypasses browser pop-up blockers by navigating inline within the same tab view.
+   * Directly triggers the asynchronous full-page redirection towards Appwrite Cloud OAuth gateway.
+   * This is executed inline inside the window context to seamlessly hand over control to GitHub.
    */
-  function triggerAppwriteOAuthDirect() {
+  function executeDirectAppwriteOAuth() {
     const client = new Client()
-      .setEndpoint('https://appwrite.io') // Point to official secure server gateway
+      .setEndpoint('https://appwrite.io') // Target the centralized secure API gateway
       .setProject('698965f2000da6808b70');
 
     const account = new Account(client);
     
-    // Auto-resolve current site address dynamically to maintain compatibility if you change domains later
+    // Fallback and redirect landing targets point strictly back to this clean admin view path
     const currentSiteUrl = window.location.origin + window.location.pathname;
 
-    // Execute standard SDK navigation. This redirects the current tab directly to GitHub login
     account.createOAuth2Session(
       'github',
-      currentSiteUrl, // Redirect back here on successful auth
-      currentSiteUrl, // Fallback here if auth fails or cancels
-      ['repo', 'user'] // Critical permission scope flags to grant write access to Git
+      currentSiteUrl, 
+      currentSiteUrl,
+      ['repo', 'user'] // Scope parameters allowing write access to GitHub storage
     );
   }
 
   onMount(async () => {
     if (!browser) return
 
-    // Core Intercept: If redirected back from Appwrite with validated credentials, inject them instantly
+    // 1. POPUP WINDOW LIFECYCLE INTERCEPT: Post-Authorization Token Return
+    // If this window is the spawned tab and now contains valid credentials from Appwrite redirect
     if (oauthData?.token) {
-      localStorage.setItem('sveltia-cms:local-provider-token', oauthData.token);
-      localStorage.setItem('decap-cms:user', JSON.stringify({ token: oauthData.token, backendName: 'github' }));
-      
-      // Clear url address parameters to restore a clean administrative path layout look
-      window.history.replaceState({}, document.title, window.location.pathname);
+      if (window.opener) {
+        const payload = { token: oauthData.token, provider: oauthData.provider };
+        // Post the Git credentials back to the main master dashboard controller frame securely
+        window.opener.postMessage(
+          `authorizing:${oauthData.provider}:success:${JSON.stringify(payload)}`,
+          window.location.origin
+        );
+        // Self-destruct and close this secondary auth tab cleanly
+        window.close();
+        return;
+      }
+    }
+
+    // 2. POPUP WINDOW LIFECYCLE INTERCEPT: Initial Click Launch
+    // Sveltia CMS creates a new tab targeting current admin URL but signs it with an internal opener context.
+    // If this current window has a master opener, it means it is Sveltia's designated authentication tab!
+    if (window.opener && !oauthData?.token) {
+      // Immediately kick off the Appwrite login protocol to route this tab directly to GitHub
+      executeDirectAppwriteOAuth();
+      return;
     }
 
     if (loadError) {
@@ -63,30 +78,33 @@
       return
     }
 
-    try {
-      const sveltia = await import('@sveltia/cms')
-      const CMS = sveltia.default
+    // 3. MAIN DASHBOARD LIFECYCLE: Initialization and Event Binding
+    if (!window.opener && cmsConfig) {
+      try {
+        const sveltia = await import('@sveltia/cms')
+        const CMS = sveltia.default
 
-      if (cmsConfig) {
         cmsConfig.load_config_file = false;
 
-        // Establish message event listening pipeline to trap Sveltia's login triggers
+        // Satisfy Sveltia's trigger routine. When clicking login, Sveltia spawns the tab.
+        // We catch that window signal here and notify the child view to prepare execution.
         window.addEventListener('message', (event) => {
           if (event.data === 'request:auth') {
-            triggerAppwriteOAuthDirect();
+            // Sveltia automatically opens the tab; our window.opener checks above handle the rest!
+            console.log('Sveltia login hook intercepted successfully.');
           }
         });
 
-        // Initialize Sveltia CMS GUI dashboard container
+        // Initialize Sveltia CMS GUI dashboard layout links
         await CMS.init({
           config: cmsConfig
         })
 
         cmsInitialized = true
+      } catch (err) {
+        cmsError = err.message || err
+        console.error('CMS Runtime Mount Exception:', err)
       }
-    } catch (err) {
-      cmsError = err.message || err
-      console.error('CMS Runtime Mount Exception:', err)
     }
   })
 </script>
@@ -102,9 +120,13 @@
       <h2 class="text-2xl font-black">Khởi tạo CMS thất bại</h2>
       <p class="mt-2 font-bold">{cmsError}</p>
     </div>
-  {:else if !cmsInitialized}
+  {:else if !cmsInitialized && !oauthData}
     <div role="status" aria-busy="true" class="text-center text-lg font-bold text-gray-950 dark:text-gray-50">
       <p>Đang tải Hệ thống quản lý nội dung…</p>
+    </div>
+  {:else if oauthData}
+    <div role="status" class="text-center text-lg font-bold text-emerald-600">
+      <p>Xác thực thành công! Đang đồng bộ hóa quyền hạn...</p>
     </div>
   {:else}
     <div id="sveltia-cms"></div>
