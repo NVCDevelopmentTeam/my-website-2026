@@ -13,6 +13,19 @@ export const siteConfig = {
     branch: 'main'
   },
 
+  // Appwrite Cloud project used as the OAuth2 token broker between Sveltia
+  // CMS and GitHub (see routes/+page.js / +page.svelte).
+  // IMPORTANT: `endpoint` MUST match the exact region shown under
+  // Project Settings > API Endpoint in the Appwrite console (e.g.
+  // https://fra.cloud.appwrite.io/v1, https://syd.cloud.appwrite.io/v1...).
+  // Using the wrong region (or mixing "cloud.appwrite.io" with a regional
+  // subdomain like "sgp.cloud.appwrite.io" in different files) is the most
+  // common cause of "session not found" / empty provider token errors.
+  appwrite: {
+    endpoint: 'https://cloud.appwrite.io/v1', // <-- replace with YOUR region endpoint
+    projectId: '698965f2000da6808b70'
+  },
+
   // Geo metadata for SEO optimization
   geo: {
     region: 'VN',

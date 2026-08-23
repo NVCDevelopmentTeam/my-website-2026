@@ -5,40 +5,63 @@ export const ssr = false
 export const prerender = true
 
 /**
- * Single entrypoint for loading Sveltia CMS configuration and catching Appwrite OAuth callbacks.
+ * Single entrypoint for this route. It serves three purposes:
+ *
+ *  1. Normal load (no query params) -> returns the Sveltia CMS config.
+ *  2. OAuth popup target: Sveltia's GitHub backend opens a popup at
+ *     `${backend.base_url}/${backend.auth_endpoint}`, which resolves back
+ *     to THIS same route (see `config.backend` below) -> the +page.svelte
+ *     then kicks off the Appwrite OAuth2 redirect from inside that popup.
+ *  3. OAuth callback: Appwrite redirects the popup back here with
+ *     `?userId=...&secret=...` (the token-based OAuth2 flow) -> we
+ *     exchange that token for a real Appwrite session and read the
+ *     GitHub access token off the resulting identity.
  */
 export const load = async ({ url }) => {
-  const provider = url.searchParams.get('provider') || 'github';
-  const hasAppwriteAuthSession = url.searchParams.get('secret') && url.searchParams.get('userId');
+  const provider = url.searchParams.get('provider') || 'github'
+  const userId = url.searchParams.get('userId')
+  const secret = url.searchParams.get('secret')
 
-  if (hasAppwriteAuthSession) {
+  if (userId && secret) {
     try {
-      // Initialize Appwrite client link pointing directly to the global secure cloud region
       const client = new Client()
-        .setEndpoint('https://cloud.appwrite.io/v1') // MUST match the .svelte file endpoint to resolve 401 bugs
-        .setProject('698965f2000da6808b70');
+        .setEndpoint(siteConfig.appwrite.endpoint)
+        .setProject(siteConfig.appwrite.projectId)
 
-      const account = new Account(client);
-      
-      // Fetch the active session to resolve the underlying Git Token
-      const session = await account.getSession('current');
-      const gitAccessToken = session?.providerAccessToken || '';
+      const account = new Account(client)
 
-      if (gitAccessToken) {
+      // Token-based OAuth2 exchange: creates the session on OUR domain
+      // instead of relying on a cookie set on cloud.appwrite.io. This
+      // avoids the "providerAccessToken is empty" failures that
+      // createOAuth2Session + getSession('current') hits once browsers
+      // block third-party cookies.
+      await account.createSession({ userId, secret })
+
+      // With the token flow, provider details (incl. the GitHub access
+      // token) live on the identity record, not on the session object.
+      const { identities } = await account.listIdentities()
+      const identity = identities.find((entry) => entry.provider === provider)
+      const gitAccessToken = identity?.providerAccessToken || ''
+
+      if (!gitAccessToken) {
         return {
-          oauthSuccess: true,
-          token: gitAccessToken,
-          provider
-        };
+          oauthError: `Đăng nhập Appwrite thành công nhưng không nhận được access token từ ${provider}. Hãy kiểm tra lại scope OAuth (repo, user) đã cấu hình trong Appwrite Console > Auth > OAuth2 Providers.`
+        }
       }
+
+      return { oauthSuccess: true, token: gitAccessToken, provider }
     } catch (err) {
-      console.error('OAuth token extraction failed:', err);
-      return { oauthError: 'Could not extract Git credentials from Appwrite session.' };
+      console.error('Appwrite OAuth token exchange failed:', err)
+      return {
+        oauthError: err?.message || 'Không thể xác thực phiên đăng nhập Appwrite.'
+      }
     }
   }
 
-  // Fallback to standard CMS config payload output if it's just a normal page load
-  const defaultAuthor = siteConfig?.author?.name || '';
+  // Fallback to standard CMS config payload output for a normal page load.
+  const defaultAuthor = siteConfig?.author?.name || ''
+  const authPath = url.pathname.replace(/^\//, '') // strip leading slash, no trailing dupes
+
   const config = {
     load_config_file: false,
     $schema: 'https://unpkg.com',
@@ -46,9 +69,11 @@ export const load = async ({ url }) => {
       name: 'github',
       repo: siteConfig?.backend?.repo || '',
       branch: siteConfig?.backend?.branch || 'main',
-      site_domain: siteConfig?.siteDomain || '',
-      base_url: 'https://cloud.appwrite.io', // Standardize backend gateway base location
-      auth_endpoint: url.pathname 
+      // Points Sveltia's built-in popup-based OAuth flow back at THIS
+      // route (origin + this same pathname), which is what actually
+      // talks to Appwrite (see triggerAppwriteOAuth() in +page.svelte).
+      base_url: url.origin,
+      auth_endpoint: authPath
     },
     media_folder: 'src/lib/assets',
     public_folder: '/src/lib/assets',
@@ -82,7 +107,7 @@ export const load = async ({ url }) => {
         ]
       }
     ]
-  };
+  }
 
-  return { config };
+  return { config }
 }
