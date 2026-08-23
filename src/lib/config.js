@@ -4,10 +4,16 @@ export const siteConfig = {
   description: 'Lan tỏa nguồn năng lượng tích cực mỗi ngày',
   siteDomain: 'codingnguyen2.appwrite.network',
   siteUrl: 'https://codingnguyen2.appwrite.network',
-  siteRepo: 'NVCDevelopmentTeam/my-website-2026',
-  siteBranch: 'main',
   language: 'vi',
-  // Geo metadata for SEO
+
+  // Sveltia CMS & Git integration backend settings
+  backend: {
+    name: 'github',
+    repo: 'NVCDevelopmentTeam/my-website-2026',
+    branch: 'main'
+  },
+
+  // Geo metadata for SEO optimization
   geo: {
     region: 'VN',
     placename: 'Ho Chi Minh City',
@@ -15,42 +21,42 @@ export const siteConfig = {
     icbm: '10.762622, 106.660172'
   },
 
-  // Author info
+  // Author details
   author: {
     name: 'Coding Nguyễn',
     email: 'contact@codingnguyen.dev',
     // Public Access Key for Web3Forms (https://web3forms.com/)
-    // DO NOT put private/secret keys here as this file is exposed to the client.
+    // DO NOT expose private or secret keys here as this file is accessible to the client.
     accessKey: ''
   },
 
-  // Blog configuration
+  // Blog routing and core layouts
   blog: {
     basePath: '/blog',
     postsPerPage: 10
   },
 
-  // Theme settings
+  // UI/UX Theme customization styling
   theme: {
     color: '#333333',
     background: '#ffffff'
   },
 
-  // Pagination (legacy support)
+  // Pagination setups (fallback support)
   pagination: {
     postsPerPage: 10
   },
 
-  // Social links
+  // Social media profiles
   social: {
-    facebook: '/',
-    zalo: '/',
+    facebook: '#',
+    zalo: '#',
     github: 'https://github.com/NVCDevelopmentTeam',
-    viber: '/'
+    viber: '#'
   },
 
-  // Backwards-compatibility alias
+  // Backwards-compatibility alias getter method
   get url() {
-    return this.siteUrl
+    return this.siteUrl;
   }
-}
+};

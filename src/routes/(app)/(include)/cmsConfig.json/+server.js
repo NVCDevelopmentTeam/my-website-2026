@@ -1,58 +1,60 @@
-import { json } from '@sveltejs/kit'
-import { siteConfig } from '$lib/config'
+import { json } from '@sveltejs/kit';
+import { siteConfig } from '$lib/config';
 
-export const prerender = true
-export const trailingSlash = 'never'
+export const prerender = true;
+export const trailingSlash = 'never';
 
 /**
- * Sveltia CMS configuration with WordPress-like slug behavior
+ * Sveltia CMS configuration with WordPress-like slug behavior.
  *
  * Principles:
- * - English only (avoid CMS UI issues)
- * - Auto-generate slug from title (can be customized)
- * - CMS = editor only, NOT data authority
+ * - English configuration layout to prevent CMS UI compatibility issues.
+ * - Auto-generate slug from title with manual customization support.
+ * - CMS functions strictly as an editor, not the primary data authority.
  *
  * Slug logic:
- * - Auto-generated from title when creating new post
- * - User can edit/override slug manually
- * - File name follows slug pattern
+ * - Automatically extracted from the title during creation.
+ * - Users can manually overwrite or fine-tune the slug.
+ * - The markdown file name strictly adheres to the finalized slug pattern.
  *
  * Author logic:
- * - Default author comes from siteConfig
- * - User MAY override author in markdown
- * - Frontend decides final author (markdown > siteConfig)
+ * - Fallback author is dynamically retrieved from siteConfig.
+ * - Content managers can override the author per post in frontmatter.
+ * - Frontend application resolves priority (Frontmatter > siteConfig).
  *
  * Categories & tags:
- * - Comma-separated string
- * - Stored as plain text in markdown
- * - Frontend parses & handles logic
+ * - Maintained as comma-separated values (CSV) string format.
+ * - Raw string data is stored directly inside the markdown file.
+ * - UI/Frontend handles parsing, sorting, and tag-cloud logic.
  */
 export async function GET() {
-  const defaultAuthor = siteConfig?.author?.name || ''
+  // Dynamically resolve default author with an ultimate fallback string
+  const defaultAuthor = siteConfig?.author?.name || '';
 
   const config = {
-    // Production backend (GitHub via Netlify)
+    // Sveltia CMS repository integration mapping directly from siteConfig
     backend: {
-      name: 'github',
-      repo: siteConfig.siteRepo,
-      branch: siteConfig.siteBranch,
-      site_domain: siteConfig.siteDomain,
-      base_url: siteConfig.siteUrl,
-      auth_endpoint: '/oauth'
+      name: siteConfig?.backend?.name || 'github',
+      repo: siteConfig?.backend?.repo || '',
+      branch: siteConfig?.backend?.branch || 'main',
+      site_domain: siteConfig?.siteDomain || '',
+      // Non-Cloudflare Appwrite custom endpoint setup for OAuth validation
+      base_url: siteConfig?.siteUrl || '',
+      auth_endpoint: '/auth' // Points to the Appwrite function path configured previously
     },
 
-    // Media storage
+    // Media and static asset storage folders
     media_folder: 'src/lib/assets',
     public_folder: '/src/lib/assets',
 
-    // Collections
+    // Content collections schemas
     collections: [
       {
         name: 'pages',
         label: 'Pages',
         folder: 'src/lib/contents/pages',
         create: true,
-        slug: '{{slug}}', // File name will follow slug
+        slug: '{{slug}}', // Markdown filename matches the resolved URL slug
         fields: [
           {
             label: 'Title',
@@ -78,7 +80,7 @@ export async function GET() {
         label: 'Posts',
         folder: 'src/lib/contents/posts',
         create: true,
-        slug: '{{slug}}', // File name will follow slug
+        slug: '{{slug}}', // Markdown filename matches the resolved URL slug
         fields: [
           {
             label: 'Title',
@@ -127,7 +129,7 @@ export async function GET() {
         ]
       }
     ]
-  }
+  };
 
-  return json(config)
+  return json(config);
 }
