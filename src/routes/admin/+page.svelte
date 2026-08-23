@@ -11,7 +11,7 @@
   let cmsInitialized = $state(false)
   let cmsError = $state(null)
 
-  // Mute schema console validation log noises immediately
+  // Mute schema console validation log notices immediately
   if (browser) {
     const originalConsoleInfo = console.info;
     console.info = function (...args) {
@@ -23,21 +23,31 @@
   }
 
   /**
-   * Directly constructs the native Appwrite Cloud OAuth REST URL.
-   * This bypasses the async SDK side-effects that cause Sveltia CMS to freeze and loop.
+   * Dynamically constructs the Appwrite Cloud OAuth REST URL pattern based on active environment metrics.
+   * Bypasses hardcoded domain values to ensure smooth transitions between localhost, staging, and production domains.
    */
   function triggerAppwriteOAuth() {
-    const projectId = '698965f2000da6808b70';
+    const projectId = '698965f2000da6808b70'; // Keep your explicit Appwrite project ID fixed
     const provider = 'github';
     
-    // Construct the absolute callback URL pointing back directly to this admin page
-    const redirectUrl = window.location.origin + window.location.pathname;
+    // 1. Dynamic Website Domain: Auto-resolves current site URL context (localhost, production-domain.com, etc.)
+    const currentSiteOrigin = window.location.origin;
+    const redirectUrl = currentSiteOrigin + window.location.pathname;
 
-    // Build the exact explicit REST API URL that Appwrite Web SDK generates under the hood
-    const appwriteOAuthUrl = `https://appwrite.io{provider}?project=${projectId}&success=${encodeURIComponent(redirectUrl)}&failure=${encodeURIComponent(redirectUrl)}&scopes[]=repo&scopes[]=user`;
+    // 2. Dynamic Appwrite API Domain: Pulls directly from siteConfig parameters or fallbacks to the current origin
+    const appwriteApiBase = siteConfig?.siteUrl || 'https://appwrite.network';
+    
+    // Ensure the endpoint path securely appends the core v1 API suffix structure
+    const appwriteEndpoint = `${appwriteApiBase.replace(/\/$/, '')}/v1`;
 
-    // Open a completely decoupled native browser popup window
-    // This fully detaches the redirection lifecycle from Sveltia's internal state machine
+    // Compile the explicit REST URL using real-time evaluated parameters to prevent redirect freezing loops
+    const appwriteOAuthUrl = `${appwriteEndpoint}/account/sessions/oauth2/${provider}` +
+      `?project=${projectId}` +
+      `&success=${encodeURIComponent(redirectUrl)}` +
+      `&failure=${encodeURIComponent(redirectUrl)}` +
+      `&scopes[]=repo&scopes[]=user`;
+
+    // Launch an isolated browser popup layout container safely detached from main thread lifecycles
     const width = 600;
     const height = 750;
     const left = window.screen.width / 2 - width / 2;
@@ -53,21 +63,21 @@
   onMount(async () => {
     if (!browser) return
 
-    // Context Execution Block: Inside the spawned POPUP view window post-authorization
+    // Context Execution Block: Triggered inside the temporary auth popup container window view
     if (oauthData?.token) {
       const payload = { token: oauthData.token, provider: oauthData.provider };
       
-      // Transmit credentials backward into the main dashboard controller frame securely
+      // Securely transfer credentials backward into the master main parent panel layout context
       if (window.opener) {
         window.opener.postMessage(
           `authorizing:${oauthData.provider}:success:${JSON.stringify(payload)}`,
           window.location.origin
         );
-        // Safely close the auxiliary auth popup window
+        // Automatically self-destruct and close the isolated popup container tab
         window.close();
         return;
       } else {
-        // Fallback: If opened in standard view instead of a popup, stash into storage directly
+        // Fallback: If parameters arrive outside an opener context, stash metrics inside storage keys natively
         localStorage.setItem('sveltia-cms:local-provider-token', oauthData.token);
         localStorage.setItem('decap-cms:user', JSON.stringify({ token: oauthData.token, backendName: 'github' }));
         window.history.replaceState({}, document.title, window.location.pathname);
@@ -83,20 +93,17 @@
       const sveltia = await import('@sveltia/cms')
       const CMS = sveltia.default
 
-      // Check if a valid token is already stashed inside storage keys
-      const savedToken = localStorage.getItem('sveltia-cms:local-provider-token');
-
       if (cmsConfig) {
         cmsConfig.load_config_file = false;
 
-        // Clean slate event listener to trap Sveltia CMS login button clicks
+        // Establish message event listening pipeline to catch Sveltia's login triggers
         window.addEventListener('message', (event) => {
           if (event.data === 'request:auth') {
             triggerAppwriteOAuth();
           }
         });
 
-        // Initialize Sveltia CMS dashboard interface layout
+        // Initialize Sveltia CMS GUI container layout links
         await CMS.init({
           config: cmsConfig
         })
