@@ -57,6 +57,6 @@ export const siteConfig = {
 
   // Backwards-compatibility alias getter method
   get url() {
-    return this.siteUrl;
+    return this.siteUrl
   }
-};
+}

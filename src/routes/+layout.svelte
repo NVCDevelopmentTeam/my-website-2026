@@ -77,7 +77,6 @@
 <svelte:head>
   <meta name="google-adsense-account" content="ca-pub-3602487920405886" />
   <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
-  <link rel="cms-config-url" type="application/json" href="/cmsConfig.json" />
   <link rel="alternate" type="application/rss+xml" href="/rss.xml" />
 </svelte:head>
 
