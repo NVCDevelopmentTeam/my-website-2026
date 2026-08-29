@@ -1,10 +1,29 @@
+/**
+ * Single Central Configuration File for the Entire Website
+ * Edit this file to update any metadata, branding, analytics, CMS, social links,
+ * navigation defaults, or backend settings across the whole site without touching component code.
+ */
 export const siteConfig = {
-  // Site metadata
+  // Site Identity & Metadata
   title: 'Góc thư giãn',
-  description: 'Lan tỏa nguồn năng lượng tích cực mỗi ngày',
+  shortTitle: 'Góc thư giãn',
+  description:
+    'Lan tỏa nguồn năng lượng tích cực mỗi ngày qua những chia sẻ về lập trình và cuộc sống',
   siteDomain: 'codingnguyen2.appwrite.network',
   siteUrl: 'https://codingnguyen2.appwrite.network',
   language: 'vi',
+  locale: 'vi_VN',
+  timezone: 'Asia/Ho_Chi_Minh',
+
+  // Author details & Contact
+  author: {
+    name: 'Coding Nguyễn',
+    email: 'contact@codingnguyen.dev',
+    url: 'https://codingnguyen2.appwrite.network',
+    // Public Access Key for Web3Forms (https://web3forms.com/)
+    // DO NOT expose private or secret keys here as this file is accessible to the client.
+    accessKey: ''
+  },
 
   // Sveltia CMS & Git integration backend settings
   backend: {
@@ -14,48 +33,37 @@ export const siteConfig = {
   },
 
   // Appwrite Cloud project used as the OAuth2 token broker between Sveltia
-  // CMS and GitHub (see routes/+page.js / +page.svelte).
-  // IMPORTANT: `endpoint` MUST match the exact region shown under
-  // Project Settings > API Endpoint in the Appwrite console (e.g.
-  // https://fra.cloud.appwrite.io/v1, https://syd.cloud.appwrite.io/v1...).
-  // Using the wrong region (or mixing "cloud.appwrite.io" with a regional
-  // subdomain like "sgp.cloud.appwrite.io" in different files) is the most
-  // common cause of "session not found" / empty provider token errors.
+  // CMS and GitHub (see routes/admin/+page.js / +page.svelte).
   appwrite: {
-    endpoint: 'https://sgp.cloud.appwrite.io/v1', // <-- replace with YOUR region endpoint
+    endpoint: 'https://sgp.cloud.appwrite.io/v1',
     projectId: '698965f2000da6808b70'
   },
 
   // Geo metadata for SEO optimization
   geo: {
     region: 'VN',
-    placename: 'Ho Chi Minh City',
+    placename: 'Ha Noi',
     position: '10.762622;106.660172',
     icbm: '10.762622, 106.660172'
-  },
-
-  // Author details
-  author: {
-    name: 'Coding Nguyễn',
-    email: 'contact@codingnguyen.dev',
-    // Public Access Key for Web3Forms (https://web3forms.com/)
-    // DO NOT expose private or secret keys here as this file is accessible to the client.
-    accessKey: ''
   },
 
   // Blog routing and core layouts
   blog: {
     basePath: '/blog',
-    postsPerPage: 10
+    postsPerPage: 10,
+    recentPostsCount: 5
   },
 
   // UI/UX Theme customization styling
   theme: {
-    color: '#333333',
-    background: '#ffffff'
+    primaryColor: '#0284c7',
+    color: '#111827',
+    background: '#ffffff',
+    themeColorLight: '#ffffff',
+    themeColorDark: '#030712'
   },
 
-  // Pagination setups (fallback support)
+  // Pagination setups
   pagination: {
     postsPerPage: 10
   },

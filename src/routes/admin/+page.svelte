@@ -147,7 +147,11 @@
       <p class="mt-2 font-bold">{cmsError}</p>
     </div>
   {:else if !cmsInitialized && !oauthData}
-    <div role="status" aria-busy="true" class="text-center text-lg font-bold text-gray-950 dark:text-gray-50">
+    <div
+      role="status"
+      aria-busy="true"
+      class="text-center text-lg font-bold text-gray-950 dark:text-gray-50"
+    >
       <p>Đang tải Hệ thống quản lý nội dung…</p>
     </div>
   {:else if oauthData}

@@ -6,4 +6,8 @@ pnpm-lock.yaml
 # Reference / data files — not source code
 file.md
 Check.json
+check.html
+CHECK.html
 antigravity.md
+antigravity-prompt.md
+

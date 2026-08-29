@@ -100,7 +100,13 @@ export const load = async ({ url }) => {
           { label: 'Title', name: 'title', widget: 'string' },
           { label: 'Slug', name: 'slug', widget: 'string', required: false },
           { label: 'Publish Date', name: 'date', widget: 'datetime' },
-          { label: 'Author', name: 'author', widget: 'string', required: false, default: defaultAuthor },
+          {
+            label: 'Author',
+            name: 'author',
+            widget: 'string',
+            required: false,
+            default: defaultAuthor
+          },
           { label: 'Categories', name: 'categories', widget: 'string', required: false },
           { label: 'Tags', name: 'tags', widget: 'string', required: false },
           { label: 'Content', name: 'body', widget: 'markdown' }

@@ -186,7 +186,10 @@
     font-family: 'Manrope', system-ui, sans-serif;
     margin-block: 3rem;
     padding-top: 1.5rem;
-    border-top: 1px solid var(--wp--preset--color--contrast-3, #ddd);
+    border-top: 1px solid #e5e7eb;
+  }
+  :global(.dark) .post-navigation {
+    border-top-color: #374151;
   }
 
   .post-navigation__links {
@@ -209,7 +212,11 @@
     align-items: flex-start;
     gap: 0.5rem;
     text-decoration: none;
-    color: var(--wp--preset--color--contrast, #1e1e1e);
+    color: #111827;
+  }
+  :global(.dark) .post-navigation__prev a,
+  :global(.dark) .post-navigation__next a {
+    color: #f9fafb;
   }
   .post-navigation__next a {
     justify-content: flex-end;
@@ -220,19 +227,26 @@
     text-decoration: underline;
     text-decoration-thickness: 1px;
     text-underline-offset: 0.1em;
-    color: var(--wp--preset--color--accent, #3858e9);
+    color: #0284c7;
+  }
+  :global(.dark) .post-navigation__prev a:hover .post-navigation__title,
+  :global(.dark) .post-navigation__next a:hover .post-navigation__title {
+    color: #38bdf8;
   }
   .post-navigation__prev a:focus-visible,
   .post-navigation__next a:focus-visible,
   .post-navigation__all a:focus-visible {
-    outline: 2px solid var(--wp--preset--color--contrast, #1e1e1e);
+    outline: 2px solid #0284c7;
     outline-offset: 2px;
   }
 
   .post-navigation__arrow {
     font-size: 1.1rem;
     line-height: 1.4;
-    color: var(--wp--preset--color--contrast-2, #6b6b6b);
+    color: #4b5563;
+  }
+  :global(.dark) .post-navigation__arrow {
+    color: #d1d5db;
   }
 
   .post-navigation__group {
@@ -242,12 +256,15 @@
   }
 
   .post-navigation__label {
-    font-family: 'Fira Code', ui-monospace, monospace;
-    font-size: 0.7rem;
+    font-family: 'Fira Mono', ui-monospace, monospace;
+    font-size: 0.75rem;
     font-weight: 600;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: var(--wp--preset--color--contrast-2, #6b6b6b);
+    color: #4b5563;
+  }
+  :global(.dark) .post-navigation__label {
+    color: #d1d5db;
   }
 
   .post-navigation__title {
@@ -263,14 +280,17 @@
   .post-navigation__title--muted {
     font-weight: 400;
     font-style: italic;
-    color: var(--wp--preset--color--contrast-2, #999);
+    color: #6b7280;
+  }
+  :global(.dark) .post-navigation__title--muted {
+    color: #9ca3af;
   }
 
   .post-navigation__placeholder {
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
-    opacity: 0.6;
+    opacity: 0.75;
   }
   .post-navigation__placeholder--right {
     align-items: flex-end;
@@ -283,15 +303,18 @@
     justify-content: center;
   }
   .post-navigation__all a {
-    font-family: 'Fira Code', ui-monospace, monospace;
-    font-size: 0.7rem;
+    font-family: 'Fira Mono', ui-monospace, monospace;
+    font-size: 0.75rem;
     font-weight: 700;
     letter-spacing: 0.04em;
     text-transform: uppercase;
     text-decoration: underline;
     text-decoration-thickness: 1px;
     text-underline-offset: 0.15em;
-    color: var(--wp--preset--color--accent, #3858e9);
+    color: #0369a1;
     white-space: nowrap;
+  }
+  :global(.dark) .post-navigation__all a {
+    color: #38bdf8;
   }
 </style>
