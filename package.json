@@ -13,7 +13,7 @@
     "check": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json --watch",
     "format": "prettier --write .",
-    "test": "pnpm lint && pnpm check",
+    "test": "npm run lint && npm run check",
     "prepare": "svelte-kit sync || echo ''"
   },
   "devDependencies": {
