@@ -13,7 +13,7 @@ export const siteConfig = {
   siteUrl: 'https://codingnguyen2.appwrite.network',
   language: 'vi',
   locale: 'vi_VN',
-  timezone: 'Asia/Ho_Chi_Minh',
+  timezone: 'Asia/Ha-noi',
 
   // Author details & Contact
   author: {
