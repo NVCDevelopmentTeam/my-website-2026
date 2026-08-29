@@ -1,5 +1,5 @@
 allowBuilds:
   esbuild: true
 minimumReleaseAgeExclude:
-  - '@sveltia/cms@0.201.0 || 0.201.2'
+  - '@sveltia/cms@0.201.2'
   - svelte@5.57.0

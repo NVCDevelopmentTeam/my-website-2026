@@ -92,8 +92,20 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id) {
-          // BẮC CẦU: Chỉ nên chia nhỏ các module độc lập nặng (VD: CMS)
-          if (id.includes('@sveltia')) return 'cms'
+          // Sveltia CMS + Appwrite are already loaded via a dynamic import()
+          // in the /admin route (see routes/admin/+page.svelte), so Rollup's
+          // default automatic chunking already isolates them into their own
+          // lazy chunk without any help here.
+          //
+          // ⚠️ Do NOT force '@sveltia' into a manually-named chunk (previously
+          // `if (id.includes('@sveltia')) return 'cms'`). Naming a chunk
+          // manually turns it into a fixed merge point: Rollup then also uses
+          // that same chunk to host the Svelte runtime helpers shared between
+          // the CMS bundle and the rest of the app, which made the app-wide
+          // runtime chunk (loaded on every single page, including the
+          // homepage) statically import the ~2MB CMS/Appwrite bundle. Removing
+          // the manual pin fixes that — verified via `.vite/manifest.json`:
+          // the shared runtime chunk no longer imports the CMS chunk.
           if (
             id.includes('mdsvex') ||
             id.includes('unified') ||

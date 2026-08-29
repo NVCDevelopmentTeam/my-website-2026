@@ -73,55 +73,27 @@
     document.cookie = name + '=' + value + '; max-age=31536000; path=/; SameSite=Lax'
   }
 
-  let clientIp = $state('')
-
-  /**
-   * Fetch visitor IP asynchronously in background (cached in localStorage)
-   */
-  async function fetchClientIp() {
-    try {
-      var cachedIp = localStorage.getItem('visitor_ip')
-      if (cachedIp) {
-        clientIp = cachedIp
-        return cachedIp
-      }
-      var res = await fetch('https://api.ipify.org?format=json')
-      if (res.ok) {
-        var data = await res.json()
-        if (data && data.ip) {
-          clientIp = data.ip
-          localStorage.setItem('visitor_ip', data.ip)
-          return data.ip
-        }
-      }
-    } catch {
-      // IP lookup blocked or offline — gracefully ignored
-    }
-    return ''
-  }
-
   /**
    * Check if the current visitor has already liked this page.
-   * Uses quadruple-check: localStorage + cookie + browser fingerprint + IP tracking.
+   * Triple-check: localStorage + cookie + browser fingerprint. This is
+   * intentionally client-side only — the site is static with no backend,
+   * so it can be bypassed by clearing storage or using incognito mode.
    * @param {string} fingerprint
-   * @param {string} [ip]
    * @returns {boolean}
    */
-  function checkAlreadyLiked(fingerprint, ip) {
+  function checkAlreadyLiked(fingerprint) {
     var inStorage = localStorage.getItem(userKey) === 'true'
     var inCookie = getCookie(userKey) === 'true'
     var fingerprintKey = userKey + '_' + fingerprint
     var inFpStorage = localStorage.getItem(fingerprintKey) === 'true'
-    var inIpStorage = ip ? localStorage.getItem(userKey + '_ip_' + ip) === 'true' : false
-    return inStorage || inCookie || inFpStorage || inIpStorage
+    return inStorage || inCookie || inFpStorage
   }
 
   /**
    * Persist the liked state across all mechanisms.
    * @param {string} fingerprint
-   * @param {string} [ip]
    */
-  function persistLiked(fingerprint, ip) {
+  function persistLiked(fingerprint) {
     try {
       setCookie(userKey, 'true')
       localStorage.setItem(userKey, 'true')
@@ -129,10 +101,6 @@
       var fingerprintKey = userKey + '_' + fingerprint
       localStorage.setItem(fingerprintKey, 'true')
       setCookie(fingerprintKey, 'true')
-      if (ip) {
-        localStorage.setItem(userKey + '_ip_' + ip, 'true')
-        setCookie(userKey + '_ip_' + ip, 'true')
-      }
     } catch {
       // localStorage may be blocked (privacy mode)
     }
@@ -146,14 +114,14 @@
 
     var fingerprint = getBrowserFingerprint()
 
-    if (checkAlreadyLiked(fingerprint, clientIp)) {
+    if (checkAlreadyLiked(fingerprint)) {
       hasLiked = true
       return
     }
 
     likes += 1
     hasLiked = true
-    persistLiked(fingerprint, clientIp)
+    persistLiked(fingerprint)
   }
 
   // Open the sharing dialog modal
@@ -265,19 +233,18 @@
     }
   }
 
-  // Restore like state from localStorage/cookie/fingerprint/IP on mount.
+  // Restore like state from localStorage/cookie/fingerprint on mount.
   // Deferred 300ms — fingerprint computation (canvas API) is expensive and non-critical.
   onMount(function () {
-    setTimeout(async function () {
+    setTimeout(function () {
       try {
         var savedLikes = localStorage.getItem(storageKey)
         if (savedLikes) {
           likes = parseInt(savedLikes, 10) || 0
         }
 
-        var ip = await fetchClientIp()
         var fingerprint = getBrowserFingerprint()
-        if (checkAlreadyLiked(fingerprint, ip)) {
+        if (checkAlreadyLiked(fingerprint)) {
           hasLiked = true
         }
       } catch {
