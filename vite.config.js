@@ -1,6 +1,7 @@
 import { sveltekit } from '@sveltejs/kit/vite'
 import { defineConfig } from 'vite'
-import tailwindcss from '@tailwindcss/vite'
+import UnoCSS from 'unocss/vite'
+import extractorSvelte from '@unocss/extractor-svelte'
 import { compression } from 'vite-plugin-compression2'
 import adapter from '@sveltejs/adapter-static'
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte'
@@ -32,6 +33,11 @@ const modernizeMdsvexModuleScript = {
 
 export default defineConfig({
   plugins: [
+    // UnoCSS must come before sveltekit() so its virtual `uno.css` module
+    // (imported in routes/+layout.svelte) is resolved correctly.
+    UnoCSS({
+      extractors: [extractorSvelte()]
+    }),
     // Từ @sveltejs/kit >= 2.62.0, cấu hình của `kit` (adapter, prerender, version,
     // inlineStyleThreshold...) được truyền TRỰC TIẾP cùng cấp với các option của
     // vite-plugin-svelte (extensions, preprocess, compilerOptions) — KHÔNG bọc
@@ -70,7 +76,6 @@ export default defineConfig({
         pollInterval: 0
       }
     }),
-    tailwindcss(),
     // Gộp gzip + brotli vào MỘT lần gọi plugin thay vì hai instance riêng —
     // API `algorithm` (số ít) của vite-plugin-compression2 là cú pháp cũ,
     // bản hiện tại dùng `algorithms` (mảng).
@@ -121,7 +126,7 @@ export default defineConfig({
       },
       treeshake: {
         moduleSideEffects: (id) => {
-          if (id.includes('.css') || id.includes('fontsource') || id.includes('tailwindcss')) {
+          if (id.includes('.css') || id.includes('fontsource') || id.includes('uno.css')) {
             return true
           }
           if (id.includes('node_modules')) {

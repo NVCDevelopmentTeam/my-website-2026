@@ -1,5 +1,6 @@
 <script>
-  import '../app.css'
+  import 'virtual:uno.css';
+  import '../app.css';
   import { onMount } from 'svelte'
   import { pushState, afterNavigate } from '$app/navigation'
   import { siteConfig } from '$lib/config'

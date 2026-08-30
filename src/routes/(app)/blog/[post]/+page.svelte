@@ -173,7 +173,17 @@
 
       <!-- Post content -->
       <section
-        class="prose max-w-none prose-neutral dark:prose-invert prose-headings:font-black prose-headings:text-gray-950 dark:prose-headings:text-white prose-p:text-gray-950 dark:prose-p:text-gray-50 prose-a:font-bold prose-a:text-sky-900 dark:prose-a:text-sky-400 prose-strong:text-gray-950 dark:prose-strong:text-white prose-ol:text-gray-950 dark:prose-ol:text-gray-50 prose-ul:text-gray-950 dark:prose-ul:text-gray-50 prose-li:text-gray-950 dark:prose-li:text-gray-50 prose-img:rounded-[2rem] prose-img:shadow-2xl"
+        class="prose max-w-none prose-neutral dark:prose-invert
+  [&_h1]:font-black [&_h2]:font-black [&_h3]:font-black [&_h4]:font-black
+  [&_h1]:text-gray-950 [&_h2]:text-gray-950 [&_h3]:text-gray-950 [&_h4]:text-gray-950
+  dark:[&_h1]:text-white dark:[&_h2]:text-white dark:[&_h3]:text-white dark:[&_h4]:text-white
+  [&_p]:text-gray-950 dark:[&_p]:text-gray-50
+  [&_a]:font-bold [&_a]:text-sky-900 dark:[&_a]:text-sky-400
+  [&_strong]:text-gray-950 dark:[&_strong]:text-white
+  [&_ol]:text-gray-950 dark:[&_ol]:text-gray-50
+  [&_ul]:text-gray-950 dark:[&_ul]:text-gray-50
+  [&_li]:text-gray-950 dark:[&_li]:text-gray-50
+  [&_img]:rounded-[2rem] [&_img]:shadow-2xl"
         itemprop="articleBody"
       >
         <PostContent />
