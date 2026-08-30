@@ -71,7 +71,7 @@
 </script>
 
 <!-- Mobile Menu -->
-<nav class="flex items-center justify-end lg:hidden">
+<nav class="flex items-center justify-end lg:hidden" aria-label="Main navigation (mobile)">
   <button
     bind:this={openButtonRef}
     onclick={openMenu}
@@ -187,6 +187,7 @@
 <!-- Desktop Menu -->
 <nav
   class="relative hidden rounded-2xl border border-gray-200 bg-white/80 px-4 py-2 shadow-md backdrop-blur-md lg:block dark:border-gray-800 dark:bg-gray-950/80"
+  aria-label="Main navigation"
 >
   <ul class="m-0 flex list-none flex-wrap items-center justify-center gap-3 p-0">
     {#each navPages as p (p.slug)}

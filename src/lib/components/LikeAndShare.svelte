@@ -466,7 +466,7 @@
           <span class="text-xs font-medium text-gray-800 dark:text-gray-200">X (Twitter)</span>
         </button>
 
-        <!-- Sao chép liên kết button -->
+        <!-- Copy link button -->
         <button
           onclick={copyLink}
           class="flex flex-col items-center gap-1.5 rounded-2xl p-2.5 text-center transition-colors hover:bg-gray-100 active:scale-95 dark:hover:bg-gray-800"

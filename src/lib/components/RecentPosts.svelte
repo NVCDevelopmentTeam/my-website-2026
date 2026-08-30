@@ -112,8 +112,10 @@
 <style>
   /*
    * WordPress Twenty Twenty-Five design tokens, hand-mirrored:
-   * - Type pairing: Manrope (body/headings) + Fira Code (meta/mono),
-   *   T25's default font pairing (theme.json).
+   * - Type pairing: system sans-serif (headings/body) + Fira Mono (meta),
+   *   matching this site's global font stack (see --font-sans/--font-mono
+   *   in app.css) rather than T25's own Manrope + Fira Code pairing, since
+   *   this project intentionally ships zero extra webfonts beyond Fira Mono.
    * - Link underline: 1px thickness, .1em offset - same values T25's
    *   style.css hardcodes for content links (not nav links).
    * - Focus ring: 2px solid outline, no offset trickery - T25 keeps
@@ -122,7 +124,7 @@
    *   and type contrast rather than boxed "cards" for list content.
    */
   .recent-posts {
-    font-family: 'Manrope', system-ui, sans-serif;
+    font-family: var(--font-sans);
   }
 
   .recent-posts__list {
@@ -178,7 +180,7 @@
     display: flex;
     align-items: center;
     gap: 0.4rem;
-    font-family: 'Fira Mono', ui-monospace, monospace;
+    font-family: var(--font-mono);
     font-size: 0.85rem;
     color: #4b5563;
   }

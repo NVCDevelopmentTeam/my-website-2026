@@ -18,7 +18,7 @@
 
         <Logo pages={allPages} />
 
-        <nav class="flex flex-nowrap items-center justify-end gap-4">
+        <nav class="flex flex-nowrap items-center justify-end gap-4" aria-label="Site utilities">
           <ThemeSwitcher />
           <Menu {navPages} />
         </nav>

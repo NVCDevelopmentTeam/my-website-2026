@@ -101,7 +101,7 @@
 <!-- Post Navigation - T25's "Query Pagination" pattern: flat text links,
      no card/box chrome, small arrow glyphs instead of icon buttons. -->
 <nav class="post-navigation wp-block-query-pagination" aria-label={labels.navigation}>
-  <h2 class="screen-reader-text">{labels.navigation}</h2>
+  <h2 class="sr-only">{labels.navigation}</h2>
 
   <div class="post-navigation__links">
     <!-- Previous Post (older article, rel="prev") -->
@@ -161,8 +161,8 @@
   /*
    * WordPress Twenty Twenty-Five design tokens, hand-mirrored - same
    * baseline as RecentPosts.svelte:
-   * - Manrope for links/labels, Fira Code for the small uppercase meta
-   *   label (T25's default font pairing).
+   * - System sans-serif for links/labels, Fira Mono for the small
+   *   uppercase meta label (see --font-sans/--font-mono in app.css).
    * - Content links underlined at 1px / .1em offset, exactly as T25's
    *   style.css hardcodes.
    * - Plain 2px solid focus outline, no fancy offset.
@@ -170,20 +170,9 @@
    *   is just spaced-out text with a top border to separate it from the
    *   post content above.
    */
-  .screen-reader-text {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    margin: -1px;
-    padding: 0;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-  }
 
   .post-navigation {
-    font-family: 'Manrope', system-ui, sans-serif;
+    font-family: var(--font-sans);
     margin-block: 3rem;
     padding-top: 1.5rem;
     border-top: 1px solid #e5e7eb;
@@ -256,7 +245,7 @@
   }
 
   .post-navigation__label {
-    font-family: 'Fira Mono', ui-monospace, monospace;
+    font-family: var(--font-mono);
     font-size: 0.75rem;
     font-weight: 600;
     letter-spacing: 0.06em;
@@ -303,7 +292,7 @@
     justify-content: center;
   }
   .post-navigation__all a {
-    font-family: 'Fira Mono', ui-monospace, monospace;
+    font-family: var(--font-mono);
     font-size: 0.75rem;
     font-weight: 700;
     letter-spacing: 0.04em;

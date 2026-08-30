@@ -8,15 +8,9 @@
 /* ── 1. UnoCSS LAYERS (avoid specificity conflict) ──────── */
 @layer uno-base, uno-components, uno-utilities;
 
-/* ── 2. FIRA MONO — font-display: swap to avoid FOIT ─────── */
+/* ── 2. FIRA MONO — @fontsource already sets font-display: swap ─── */
 @import '@fontsource/fira-mono/400.css';
 @import '@fontsource/fira-mono/700.css';
-
-/* Override font-display if @fontsource doesn't set it */
-@font-face {
-  font-family: 'Fira Mono';
-  font-display: swap;
-}
 
 /* ── 3. CSS VARIABLES ─────────────────────────────────────── */
 :root {
@@ -24,7 +18,7 @@
   --c-bg: #ffffff;
   --c-text: #111111;
   --c-secondary: #555555;
-  --c-muted: #888888;
+  --c-muted: #6b7280; /* verified 4.83:1 on white — was #888888 (3.54:1, fails WCAG AA) */
   --c-primary: #0052ff;
 
   /* Font stacks */
@@ -105,7 +99,7 @@ textarea {
   min-height: 44px; /* WCAG touch target */
 }
 
-/* Chỉ ẩn outline khi dùng mouse, giữ lại khi dùng keyboard */
+/* Hide the outline only for mouse users, keep it for keyboard users */
 :focus:not(:focus-visible) {
   outline: none;
 }
@@ -186,10 +180,10 @@ samp {
 }
 
 /* ── 9. PERFORMANCE UTILITIES ─────────────────────────────── */
-/* content-visibility: dùng cho các section dài bên dưới fold */
+/* content-visibility: use for long below-the-fold sections */
 .virtual {
   content-visibility: auto;
-  /* contain-intrinsic-block-size thay contain-intrinsic-size (spec 2024+) */
+  /* contain-intrinsic-block-size replaces contain-intrinsic-size (2024+ spec) */
   contain-intrinsic-block-size: 200px;
 }
 
@@ -228,13 +222,13 @@ samp {
   }
 }
 
-/* Default: không animate (mobile + reduced motion) */
+/* Default: no animation (mobile + reduced motion) */
 .reveal-up,
 .reveal-fade {
   opacity: 1;
 }
 
-/* Chỉ animate khi desktop + user OK với motion */
+/* Only animate on desktop + when the user is OK with motion */
 @media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
   .reveal-up {
     opacity: 0;

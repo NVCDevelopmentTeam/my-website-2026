@@ -158,6 +158,7 @@
 
 {#if hasToc}
   <nav
+    aria-labelledby="toc-heading"
     class="animate-in slide-in-from-left-5 fade-in my-8 rounded-r-2xl border-l-4 border-blue-800 bg-blue-50/50 p-4 shadow-sm transition-all duration-300 hover:shadow-md sm:p-6 dark:border-blue-400 dark:bg-gray-900
       {isSticky ? 'lg:sticky lg:top-20' : ''}"
   >

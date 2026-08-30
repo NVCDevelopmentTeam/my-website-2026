@@ -1,6 +1,6 @@
 <script>
-  import 'virtual:uno.css';
-  import '../app.css';
+  import 'virtual:uno.css'
+  import '../app.css'
   import { onMount } from 'svelte'
   import { pushState, afterNavigate } from '$app/navigation'
   import { siteConfig } from '$lib/config'
@@ -92,20 +92,10 @@
   class="flex min-h-screen flex-col bg-white text-gray-950 selection:bg-sky-100 dark:bg-gray-950 dark:text-gray-50 dark:selection:bg-sky-900/30"
 >
   <!-- Double-buffer live regions inside wrapper -->
-  <div
-    role="status"
-    aria-live="polite"
-    aria-atomic="true"
-    style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;"
-  >
+  <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
     {announceA}
   </div>
-  <div
-    role="status"
-    aria-live="polite"
-    aria-atomic="true"
-    style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;"
-  >
+  <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
     {announceB}
   </div>
 

@@ -10,7 +10,7 @@ import mdsvexConfig from './mdsvex.config.js'
 
 const mdsvexExtensions = ['.md', '.svx']
 
-// Preprocessor xóa svelte-announcer (Svelte 5 Runes safe)
+// Preprocessor that strips the svelte-announcer element (Svelte 5 runes safe)
 const stripSvelteAnnouncer = {
   name: 'strip-svelte-announcer',
   markup: ({ content: code }) => {
@@ -38,11 +38,12 @@ export default defineConfig({
     UnoCSS({
       extractors: [extractorSvelte()]
     }),
-    // Từ @sveltejs/kit >= 2.62.0, cấu hình của `kit` (adapter, prerender, version,
-    // inlineStyleThreshold...) được truyền TRỰC TIẾP cùng cấp với các option của
-    // vite-plugin-svelte (extensions, preprocess, compilerOptions) — KHÔNG bọc
-    // trong object `kit: {...}` như trong svelte.config.js. Khi dùng cách này thì
-    // svelte.config.js (nếu còn tồn tại) sẽ bị bỏ qua hoàn toàn.
+    // As of @sveltejs/kit >= 2.62.0, `kit` config (adapter, prerender,
+    // version, inlineStyleThreshold, etc.) is passed DIRECTLY at the same
+    // level as vite-plugin-svelte's own options (extensions, preprocess,
+    // compilerOptions) — NOT nested under a `kit: {...}` object like in
+    // svelte.config.js. When configured this way, svelte.config.js (if it
+    // still exists) is ignored entirely.
     sveltekit({
       extensions: ['.svelte', ...mdsvexExtensions],
       preprocess: [
@@ -52,22 +53,22 @@ export default defineConfig({
         vitePreprocess()
       ],
 
-      // Ép runes mode cho toàn bộ project, trừ các thư viện trong node_modules
-      // (có thể bỏ điều kiện này khi lên Svelte 6, vì lúc đó runes sẽ mặc định bật).
+      // Force runes mode for the whole project, except libraries in node_modules
+      // (this condition can be dropped once on Svelte 6, where runes are default).
       compilerOptions: {
         runes: ({ filename }) =>
           filename.split(/[/\\]/).includes('node_modules') ? undefined : true
       },
 
-      // --- các option dưới đây trước kia bị bọc nhầm trong `kit: {}` ---
+      // --- the options below used to be mistakenly nested under `kit: {}` ---
       adapter: adapter({
         pages: 'build',
         assets: 'build',
-        precompress: true, // Tự động tạo file .gz và .br tối ưu cho các route tĩnh
+        precompress: true, // Auto-generates optimized .gz and .br files for static routes
         strict: true,
         fallback: '404.html'
       }),
-      inlineStyleThreshold: 30720, // Inline CSS dưới 30KB để giảm Blocking Request
+      inlineStyleThreshold: 30720, // Inline CSS under 30KB to reduce blocking requests
       prerender: {
         handleUnseenRoutes: 'ignore',
         crawl: true
@@ -76,9 +77,9 @@ export default defineConfig({
         pollInterval: 0
       }
     }),
-    // Gộp gzip + brotli vào MỘT lần gọi plugin thay vì hai instance riêng —
-    // API `algorithm` (số ít) của vite-plugin-compression2 là cú pháp cũ,
-    // bản hiện tại dùng `algorithms` (mảng).
+    // Merge gzip + brotli into ONE plugin call instead of two separate instances —
+    // the singular `algorithm` API of vite-plugin-compression2 is the old syntax,
+    // the current version uses `algorithms` (an array).
     compression({
       algorithms: ['brotliCompress', 'gzip'],
       threshold: 1024
@@ -119,9 +120,11 @@ export default defineConfig({
           )
             return 'markdown'
 
-          // ⚠️ ĐÃ BỎ: Không can thiệp tách `@sveltejs/kit` và `/svelte/` runtime
-          // Việc tách thủ công Svelte/SvelteKit core dễ gây lỗi Hydration
-          // và phá vỡ cơ chế tự động Code-Splitting / Waterfall Prevention của SvelteKit.
+          // ⚠️ REMOVED: No longer manually splitting `@sveltejs/kit` and
+          // `/svelte/` runtime into their own chunk. Manually splitting
+          // Svelte/SvelteKit core easily causes hydration errors and breaks
+          // SvelteKit's automatic code-splitting / waterfall-prevention
+          // mechanism.
         }
       },
       treeshake: {
@@ -142,10 +145,11 @@ export default defineConfig({
   },
 
   server: {
-    // Bỏ `fs: { allow: ['.'] }` — đây chính xác là default của Vite (project root),
-    // khai báo lại tường minh không thêm quyền truy cập nào cả, chỉ gây rối khi đọc
-    // config. Nếu dự án là monorepo và cần đọc file ngoài root, hãy khai báo
-    // đường dẫn cụ thể (VD: `allow: ['..']`) thay vì mở rộng chung chung.
+    // Removed `fs: { allow: ['.'] }` — that's exactly Vite's default (project
+    // root), so declaring it again grants no additional access and just adds
+    // noise when reading this config. If this ever becomes a monorepo and
+    // needs to read files outside root, declare the specific path (e.g.
+    // `allow: ['..']`) instead of a generic broad allowance.
     host: 'localhost',
     port: 5173,
     hmr: {

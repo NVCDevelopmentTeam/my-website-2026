@@ -84,7 +84,9 @@ export function getSeoConfig({ title, description, url, image, type = 'website',
 
 /**
  * Safely serialize JSON-LD schema for injection into HTML.
- * Escapes </script> to prevent XSS.
+ * Escapes any `</script` sequence (case-insensitively, since HTML parses
+ * script-closing tags case-insensitively and tolerates attributes/whitespace
+ * before the final `>`) to prevent breaking out of the <script> element.
  * @param {Object} schema
  * @returns {string|null}
  */
@@ -92,7 +94,7 @@ export function serializeSchema(schema) {
   if (!schema) return null
   return (
     '<script type="application/ld+json">' +
-    JSON.stringify(schema).replace(/<\/script>/g, '<\\/script>') +
+    JSON.stringify(schema).replace(/<\/script/gi, '<\\/script') +
     '</script>'
   )
 }

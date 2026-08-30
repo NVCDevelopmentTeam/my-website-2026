@@ -21,9 +21,6 @@ importers:
       '@fontsource/fira-mono':
         specifier: ^5.3.0
         version: 5.3.0
-      '@fontsource/manrope':
-        specifier: ^5.3.0
-        version: 5.3.0
       '@sveltejs/adapter-static':
         specifier: ^3.0.10
         version: 3.0.10(@sveltejs/kit@2.70.3(@sveltejs/vite-plugin-svelte@7.3.0(svelte@5.57.0)(vite@8.2.2(jiti@2.7.0)))(svelte@5.57.0)(typescript@6.0.3)(vite@8.2.2(jiti@2.7.0)))
@@ -155,9 +152,6 @@ packages:
 
   '@fontsource/fira-mono@5.3.0':
     resolution: {integrity: sha512-FZzRwKhpoXQU1uhEGKUg5AHUUdfiaTXxGCdBBeGHUmcZaqEDEmndSVvpXHkSViH25f/UiWfhcWTib+6A8o4qeQ==}
-
-  '@fontsource/manrope@5.3.0':
-    resolution: {integrity: sha512-obJ1Dv3+uCA6HlHgW8u4BGYxJR9In2HW7gjJhlflEvkrj1X1iSEwu0fToL+JYGC/FEKFfIz1sBuPduvcL2gIAA==}
 
   '@humanfs/core@0.19.2':
     resolution: {integrity: sha512-UhXNm+CFMWcbChXywFwkmhqjs3PRCmcSa/hfBgLIb7oQ5HNb1wS0icWsGtSAUNgefHeI+eBrA8I1fxmbHsGdvA==}
@@ -1521,8 +1515,6 @@ snapshots:
       levn: 0.4.1
 
   '@fontsource/fira-mono@5.3.0': {}
-
-  '@fontsource/manrope@5.3.0': {}
 
   '@humanfs/core@0.19.2':
     dependencies:

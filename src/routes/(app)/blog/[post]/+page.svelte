@@ -73,7 +73,7 @@
           description: metadata.description,
           image: metadata.image
             ? siteConfig.siteUrl + metadata.image
-            : siteConfig.siteUrl + '/og-image.png',
+            : siteConfig.siteUrl + '/og-image.jpg',
           datePublished: metadata.date,
           dateModified: metadata.updated || metadata.date,
           author: {
@@ -160,7 +160,7 @@
         </div>
 
         <!-- Hidden meta for SEO -->
-        <meta itemprop="image" content={metadata.image || '/og-image.png'} />
+        <meta itemprop="image" content={metadata.image || '/og-image.jpg'} />
         <meta itemprop="description" content={metadata.description} />
       </header>
 

@@ -25,7 +25,7 @@
 </script>
 
 {#if footerPages.length > 0}
-  <nav>
+  <div>
     <ul class="flex flex-col gap-1">
       {#each footerPages as p (p.slug)}
         <li>
@@ -42,5 +42,5 @@
         </li>
       {/each}
     </ul>
-  </nav>
+  </div>
 {/if}

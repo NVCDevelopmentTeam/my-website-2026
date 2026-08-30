@@ -61,6 +61,18 @@
 
   <input type="hidden" name="access_key" value={siteConfig.author.accessKey} />
 
+  <!-- Honeypot: hidden from real users via .visually-hidden, but bots that
+       auto-fill every field will trip it. Web3Forms silently rejects the
+       submission when this field is non-empty. -->
+  <input
+    type="checkbox"
+    name="botcheck"
+    class="sr-only"
+    tabindex="-1"
+    autocomplete="off"
+    aria-hidden="true"
+  />
+
   <div class="space-y-2">
     <label for="name" class="text-sm font-bold text-gray-950 dark:text-gray-50">
       Họ và tên <span class="text-red-700 dark:text-red-400" aria-hidden="true">*</span>
