@@ -34,7 +34,6 @@
 {#if items.length > 0}
   <section
     class="my-12 rounded-3xl border border-gray-100 bg-gray-50 p-6 shadow-sm sm:p-8 dark:border-gray-800 dark:bg-gray-900"
-    aria-labelledby="faq-heading"
   >
     <h2
       id="faq-heading"

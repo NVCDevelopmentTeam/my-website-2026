@@ -166,9 +166,9 @@
 
       <!-- Table of Contents — rendered inline before body (no DOM manipulation = no forced reflow) -->
       {#if hasToc}
-        <nav class="not-prose my-10" aria-label="Table of contents">
+        <div class="not-prose my-10">
           <ToC post={{ metadata }} />
-        </nav>
+        </div>
       {/if}
 
       <!-- Post content -->

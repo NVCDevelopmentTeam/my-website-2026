@@ -57,7 +57,6 @@
 <aside class="flex flex-col gap-6">
   <!-- Recent Posts Widget -->
   <section
-    aria-labelledby="recent-posts-heading"
     class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
   >
     <div
@@ -76,7 +75,6 @@
   <!-- Categories Widget -->
   {#if processedCategories.length > 0}
     <section
-      aria-labelledby="categories-heading"
       class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
     >
       <div

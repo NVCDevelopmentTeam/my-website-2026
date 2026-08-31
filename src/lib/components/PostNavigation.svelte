@@ -100,7 +100,7 @@
 
 <!-- Post Navigation - T25's "Query Pagination" pattern: flat text links,
      no card/box chrome, small arrow glyphs instead of icon buttons. -->
-<nav class="post-navigation wp-block-query-pagination" aria-label={labels.navigation}>
+<nav class="post-navigation wp-block-query-pagination">
   <h2 class="sr-only">{labels.navigation}</h2>
 
   <div class="post-navigation__links">

@@ -44,6 +44,6 @@
     "vite-plugin-compression2": "^2.5.3"
   },
   "dependencies": {
-    "@sveltia/cms": "^0.203.1"
+    "@sveltia/cms": "^0.203.2"
   }
 }

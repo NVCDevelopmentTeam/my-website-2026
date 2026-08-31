@@ -100,18 +100,13 @@
       onfocusout={handleMenuFocusout}
       onkeydown={handleMenuKeydown}
     >
-      <!-- Backdrop -->
+      <!-- Backdrop: click/tap-to-dismiss only — Escape (handleMenuKeydown)
+           and the explicit Close button already cover the keyboard/AT path,
+           so this doesn't need its own focusable, announced control. -->
       <div
         class="animate-in fade-in fixed inset-0 bg-black/60 duration-200"
         onclick={handleBackdropClick}
-        onkeydown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            handleBackdropClick(e)
-          }
-        }}
-        role="button"
-        tabindex="0"
-        aria-label="Đóng menu"
+        aria-hidden="true"
       ></div>
 
       <!-- Menu Panel -->

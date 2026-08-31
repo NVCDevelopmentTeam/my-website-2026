@@ -2,11 +2,8 @@
   import { siteConfig } from '$lib/config'
 </script>
 
-<nav class="space-y-3" aria-labelledby="social-menu-heading">
-  <h3
-    id="social-menu-heading"
-    class="text-sm font-bold tracking-wider text-gray-950 uppercase dark:text-gray-50"
-  >
+<nav class="space-y-3">
+  <h3 class="text-sm font-bold tracking-wider text-gray-950 uppercase dark:text-gray-50">
     Kết nối với mình
   </h3>
   <ul class="flex flex-wrap gap-4">
