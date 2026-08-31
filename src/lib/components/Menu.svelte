@@ -111,7 +111,7 @@
 
       <!-- Menu Panel -->
       <div
-        class="animate-in slide-in-from-right fixed top-0 right-0 bottom-0 w-full max-w-md overflow-y-auto bg-white text-gray-950 shadow-2xl duration-200 dark:bg-gray-950 dark:text-white"
+        class="animate-in slide-in-from-right safe-top safe-bottom safe-x fixed top-0 right-0 bottom-0 w-full max-w-md overflow-y-auto bg-white text-gray-950 shadow-2xl duration-200 dark:bg-gray-950 dark:text-white"
         role="dialog"
         aria-modal="true"
         aria-label="Menu điều hướng"

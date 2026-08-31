@@ -35,10 +35,7 @@
   <section
     class="my-12 rounded-3xl border border-gray-100 bg-gray-50 p-6 shadow-sm sm:p-8 dark:border-gray-800 dark:bg-gray-900"
   >
-    <h2
-      id="faq-heading"
-      class="mb-8 flex items-center gap-3 text-2xl font-bold text-gray-950 dark:text-white"
-    >
+    <h2 class="mb-8 flex items-center gap-3 text-2xl font-bold text-gray-950 dark:text-white">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="24"

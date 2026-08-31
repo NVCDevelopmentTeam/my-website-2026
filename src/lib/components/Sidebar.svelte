@@ -62,10 +62,7 @@
     <div
       class="mb-4 flex items-center justify-between border-b border-gray-100 pb-3 dark:border-gray-800"
     >
-      <h2
-        id="recent-posts-heading"
-        class="text-xs font-black tracking-widest text-gray-950 uppercase dark:text-gray-50"
-      >
+      <h2 class="text-xs font-black tracking-widest text-gray-950 uppercase dark:text-gray-50">
         Bài viết gần đây
       </h2>
     </div>
@@ -80,10 +77,7 @@
       <div
         class="mb-4 flex items-center justify-between border-b border-gray-100 pb-3 dark:border-gray-800"
       >
-        <h2
-          id="categories-heading"
-          class="text-xs font-black tracking-widest text-gray-950 uppercase dark:text-gray-50"
-        >
+        <h2 class="text-xs font-black tracking-widest text-gray-950 uppercase dark:text-gray-50">
           Danh mục
         </h2>
       </div>

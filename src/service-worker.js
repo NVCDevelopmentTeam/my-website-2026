@@ -83,7 +83,7 @@ self.addEventListener('fetch', function (event) {
 
   // Prerendered HTML — stale-while-revalidate (instant paint + fresh data)
   if (PRERENDERED_HTML.includes(normalizedPath) || PRERENDERED_HTML.includes(trimmedPath)) {
-    event.respondWith(staleWhileRevalidate(event.request))
+    event.respondWith(staleWhileRevalidate(event))
     return
   }
 
@@ -115,23 +115,27 @@ async function cacheFirst(request) {
 }
 
 /**
- * Stale-while-revalidate: serve cache instantly, revalidate in background
+ * Stale-while-revalidate: serve cache instantly, revalidate in background.
+ * event.waitUntil() keeps the worker alive for the background fetch even
+ * after we've already returned the cached response via respondWith().
  */
-async function staleWhileRevalidate(request) {
+async function staleWhileRevalidate(event) {
   var cache = await caches.open(CACHE)
-  var cached = await cache.match(request)
+  var cached = await cache.match(event.request)
 
-  var revalidate = fetch(request)
+  var revalidate = fetch(event.request)
     .then(function (response) {
-      if (response.ok) cache.put(request, response.clone())
+      if (response.ok) cache.put(event.request, response.clone())
       return response
     })
     .catch(function () {
       return null
     })
 
-  var fresh = await revalidate
-  return cached ?? fresh ?? fetch(request)
+  event.waitUntil(revalidate)
+
+  if (cached) return cached
+  return (await revalidate) ?? fetch(event.request)
 }
 
 /**

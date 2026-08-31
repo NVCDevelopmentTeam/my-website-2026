@@ -91,11 +91,13 @@
     return (level - minLevel) * 16
   }
 
-  // Get bullet style
-  function getBullet(level) {
-    if (level <= 2) return '•'
-    if (level === 3) return '◦'
-    return '▪'
+  // Visual indent marker style per heading level — returns CSS classes for a
+  // decorative dot (no text glyph), so there is no character in the DOM at
+  // all for assistive tech to potentially pick up.
+  function getBulletClass(level) {
+    if (level <= 2) return 'h-1.5 w-1.5 rounded-full bg-current'
+    if (level === 3) return 'h-1.5 w-1.5 rounded-full border border-current bg-transparent'
+    return 'h-1 w-1 rounded-full border border-current bg-transparent'
   }
 
   // Navigation hash watcher
@@ -163,10 +165,7 @@
   >
     <!-- Header with toggle -->
     <div class="mb-4 flex items-center justify-between">
-      <h2
-        id="toc-heading"
-        class="m-0 flex items-center gap-2 text-lg font-bold text-gray-950 dark:text-white"
-      >
+      <h2 class="m-0 flex items-center gap-2 text-lg font-bold text-gray-950 dark:text-white">
         <svg
           class="h-5 w-5 text-blue-800 dark:text-blue-400"
           fill="none"
@@ -218,27 +217,24 @@
             {#each processedToc as h (h.id)}
               {@const indent = getIndent(h.level)}
               {@const isActive = activeHeading?.id === h.id}
-              {@const bullet = getBullet(h.level)}
+              {@const bulletClass = getBulletClass(h.level)}
 
               <li style="margin-left: {indent}px;" class="transition-all duration-200">
                 <a
                   href="#{h.id}"
                   onclick={handleLinkClick}
-                  class="group relative flex items-start gap-2 rounded-xl px-3 py-2 text-sm no-underline transition-all duration-200
+                  class="group relative flex items-center gap-2 rounded-xl px-3 py-2 text-sm no-underline transition-all duration-200
                     {isActive
                     ? 'bg-white font-bold text-blue-900 shadow-sm before:absolute before:top-1/2 before:left-0 before:h-5 before:w-0.5 before:-translate-y-1/2 before:rounded-full before:bg-current dark:bg-gray-800 dark:text-blue-300'
                     : 'text-gray-950 hover:bg-white hover:text-blue-800 dark:text-gray-50 dark:hover:bg-gray-800 dark:hover:text-blue-400'}"
                   aria-current={isActive ? 'location' : undefined}
                 >
                   <span
-                    class="mt-0.5 flex-shrink-0 transition-all duration-200
+                    class="flex-shrink-0 transition-all duration-200 {bulletClass}
                       {isActive
                       ? 'scale-110 text-blue-900 opacity-100 dark:text-blue-300'
                       : 'text-blue-800 opacity-70 group-hover:scale-105 group-hover:opacity-100 dark:text-blue-400'}"
-                    aria-hidden="true"
-                  >
-                    {bullet}
-                  </span>
+                  ></span>
                   <span class="flex-1 transition-transform duration-200 group-hover:translate-x-1">
                     {h.title}
                   </span>
