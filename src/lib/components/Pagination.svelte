@@ -106,7 +106,7 @@
 
 {#if totalPages > 1}
   <nav class="mt-8 mb-4 flex items-center justify-center" aria-label="Pagination">
-    <ul class="inline-flex items-center gap-1">
+    <ul class="inline-flex list-none items-center gap-1">
       <!-- Previous Button -->
       {#if hasPrev}
         <li>

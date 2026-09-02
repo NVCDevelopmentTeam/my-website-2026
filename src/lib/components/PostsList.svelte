@@ -7,7 +7,7 @@
   let { posts = [] } = $props()
 </script>
 
-<ul class="space-y-8">
+<ul class="list-none space-y-8">
   {#each posts as post (post.slug)}
     <li
       class="group rounded-2xl border border-gray-100 bg-white p-5 shadow-sm transition duration-300 hover:shadow-xl sm:p-6 dark:border-gray-700 dark:bg-gray-800"
@@ -25,9 +25,9 @@
           class="flex flex-wrap items-center gap-3 text-sm font-bold text-gray-950 dark:text-gray-50"
         >
           <PostAuthor {post} />
-          <span aria-hidden="true">•</span>
+          <span class="h-1 w-1 rounded-full bg-current opacity-50" aria-hidden="true"></span>
           <PostDate {post} />
-          <span aria-hidden="true">•</span>
+          <span class="h-1 w-1 rounded-full bg-current opacity-50" aria-hidden="true"></span>
           <PostCategories {post} />
         </div>
 

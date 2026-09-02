@@ -32,7 +32,7 @@
         clip-rule="evenodd"
       />
     </svg>
-    <ul class="flex flex-wrap gap-2 text-sm">
+    <ul class="flex list-none flex-wrap gap-2 text-sm">
       {#each tags as tag (tag.slug)}
         <li>
           <a

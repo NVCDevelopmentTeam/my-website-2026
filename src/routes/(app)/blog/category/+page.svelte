@@ -27,7 +27,7 @@
 
     <!-- Category list -->
     {#if uniqueCategories?.length > 0}
-      <ul class="divide-y divide-gray-200 dark:divide-gray-700">
+      <ul class="list-none divide-y divide-gray-200 dark:divide-gray-700">
         {#each uniqueCategories as category (category.slug)}
           <li class="py-4">
             <a

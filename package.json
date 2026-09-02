@@ -23,13 +23,13 @@
     "@sveltejs/adapter-static": "^3.0.10",
     "@sveltejs/kit": "^2.70.3",
     "@sveltejs/vite-plugin-svelte": "^7.3.0",
-    "@unocss/extractor-svelte": "^66.8.1",
+    "@unocss/svelte-scoped": "^66.9.1",
     "@vcarl/remark-headings": "^0.1.0",
     "appwrite": "^26.2.0",
     "eslint": "^10.9.1",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-svelte": "^3.23.0",
-    "globals": "^17.11.0",
+    "globals": "^17.12.0",
     "mdsvex": "^0.12.8",
     "prettier": "^3.9.6",
     "prettier-plugin-svelte": "^4.1.1",
@@ -39,11 +39,11 @@
     "svelte-eslint-parser": "^1.8.1",
     "svelte-seo": "^2.0.0",
     "unist-util-visit": "^5.1.0",
-    "unocss": "^66.8.1",
+    "unocss": "^66.9.1",
     "vite": "^8.2.2",
     "vite-plugin-compression2": "^2.5.3"
   },
   "dependencies": {
-    "@sveltia/cms": "^0.203.2"
+    "@sveltia/cms": "^0.204.0"
   }
 }

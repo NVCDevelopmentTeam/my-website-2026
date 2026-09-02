@@ -49,7 +49,7 @@
 {#if categories.length > 0}
   <div class="flex items-center gap-2 font-bold text-gray-950 dark:text-gray-50">
     <span class="text-sm">danh mục:</span>
-    <ul class="flex flex-wrap gap-2 text-sm">
+    <ul class="flex list-none flex-wrap gap-2 text-sm">
       {#each categories as category (category.slug)}
         <li>
           <a

@@ -1,7 +1,6 @@
 import { sveltekit } from '@sveltejs/kit/vite'
 import { defineConfig } from 'vite'
-import UnoCSS from 'unocss/vite'
-import extractorSvelte from '@unocss/extractor-svelte'
+import UnoCSS from '@unocss/svelte-scoped/vite'
 import { compression } from 'vite-plugin-compression2'
 import adapter from '@sveltejs/adapter-static'
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte'
@@ -33,11 +32,10 @@ const modernizeMdsvexModuleScript = {
 
 export default defineConfig({
   plugins: [
-    // UnoCSS must come before sveltekit() so its virtual `uno.css` module
-    // (imported in routes/+layout.svelte) is resolved correctly.
-    UnoCSS({
-      extractors: [extractorSvelte()]
-    }),
+    // UnoCSS svelte-scoped: places each component's utility CSS directly in
+    // that component's own <style> block instead of one global stylesheet.
+    // Must come before sveltekit() (it's a preprocessor).
+    UnoCSS(),
     // As of @sveltejs/kit >= 2.62.0, `kit` config (adapter, prerender,
     // version, inlineStyleThreshold, etc.) is passed DIRECTLY at the same
     // level as vite-plugin-svelte's own options (extensions, preprocess,
@@ -129,7 +127,7 @@ export default defineConfig({
       },
       treeshake: {
         moduleSideEffects: (id) => {
-          if (id.includes('.css') || id.includes('fontsource') || id.includes('uno.css')) {
+          if (id.includes('.css') || id.includes('fontsource')) {
             return true
           }
           if (id.includes('node_modules')) {
@@ -142,19 +140,5 @@ export default defineConfig({
     },
     target: ['es2020', 'chrome80', 'safari14', 'firefox78'],
     chunkSizeWarningLimit: 600
-  },
-
-  server: {
-    // Removed `fs: { allow: ['.'] }` — that's exactly Vite's default (project
-    // root), so declaring it again grants no additional access and just adds
-    // noise when reading this config. If this ever becomes a monorepo and
-    // needs to read files outside root, declare the specific path (e.g.
-    // `allow: ['..']`) instead of a generic broad allowance.
-    host: 'localhost',
-    port: 5173,
-    hmr: {
-      protocol: 'ws',
-      host: 'localhost'
-    }
   }
 })

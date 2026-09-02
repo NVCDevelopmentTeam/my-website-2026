@@ -224,7 +224,7 @@
     aria-label="Breadcrumb"
     class="mb-6 flex overflow-x-auto px-4 py-4 whitespace-nowrap sm:px-6"
   >
-    <ol class="flex items-center space-x-2 text-sm text-gray-950 dark:text-gray-50">
+    <ol class="flex list-none items-center space-x-2 text-sm text-gray-950 dark:text-gray-50">
       {#each crumbs as crumb, i (crumb.href)}
         <li class="flex items-center">
           <!-- Separator icon -->

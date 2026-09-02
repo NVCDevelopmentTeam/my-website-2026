@@ -81,7 +81,7 @@
           Danh mục
         </h2>
       </div>
-      <ul class="space-y-1.5">
+      <ul class="list-none space-y-1.5">
         {#each processedCategories as category (category.slug || category.title)}
           {@const isActive = currentPath.includes(`/blog/category/${category.slug}`)}
           <li>

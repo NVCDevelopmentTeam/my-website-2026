@@ -6,7 +6,7 @@
   <h3 class="text-sm font-bold tracking-wider text-gray-950 uppercase dark:text-gray-50">
     Kết nối với mình
   </h3>
-  <ul class="flex flex-wrap gap-4">
+  <ul class="flex list-none flex-wrap gap-4">
     {#if siteConfig.social.facebook && siteConfig.social.facebook !== '/'}
       <li>
         <a
