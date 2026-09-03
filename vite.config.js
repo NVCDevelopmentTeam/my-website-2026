@@ -9,7 +9,7 @@ import mdsvexConfig from './mdsvex.config.js'
 
 const mdsvexExtensions = ['.md', '.svx']
 
-// Preprocessor that strips the svelte-announcer element (Svelte 5 runes safe)
+// Preprocessor that strips the svelte-announcer element (Svelte 5 runes compatible)
 const stripSvelteAnnouncer = {
   name: 'strip-svelte-announcer',
   markup: ({ content: code }) => {
@@ -32,16 +32,11 @@ const modernizeMdsvexModuleScript = {
 
 export default defineConfig({
   plugins: [
-    // UnoCSS svelte-scoped: places each component's utility CSS directly in
-    // that component's own <style> block instead of one global stylesheet.
-    // Must come before sveltekit() (it's a preprocessor).
+    // UnoCSS svelte-scoped: injects utility CSS directly into component <style> blocks.
+    // Must be placed before sveltekit() as it acts as a preprocessor.
     UnoCSS(),
-    // As of @sveltejs/kit >= 2.62.0, `kit` config (adapter, prerender,
-    // version, inlineStyleThreshold, etc.) is passed DIRECTLY at the same
-    // level as vite-plugin-svelte's own options (extensions, preprocess,
-    // compilerOptions) — NOT nested under a `kit: {...}` object like in
-    // svelte.config.js. When configured this way, svelte.config.js (if it
-    // still exists) is ignored entirely.
+
+    // SvelteKit 2 configuration (passing kit options inline into sveltekit plugin)
     sveltekit({
       extensions: ['.svelte', ...mdsvexExtensions],
       preprocess: [
@@ -51,22 +46,21 @@ export default defineConfig({
         vitePreprocess()
       ],
 
-      // Force runes mode for the whole project, except libraries in node_modules
-      // (this condition can be dropped once on Svelte 6, where runes are default).
+      // Enforce Svelte 5 Runes mode for application files while skipping node_modules
       compilerOptions: {
         runes: ({ filename }) =>
           filename.split(/[/\\]/).includes('node_modules') ? undefined : true
       },
 
-      // --- the options below used to be mistakenly nested under `kit: {}` ---
+      // Static Adapter configuration for production static site deployment
       adapter: adapter({
         pages: 'build',
         assets: 'build',
-        precompress: true, // Auto-generates optimized .gz and .br files for static routes
+        precompress: true, // Auto-generates static .gz and .br assets
         strict: true,
         fallback: '404.html'
       }),
-      inlineStyleThreshold: 30720, // Inline CSS under 30KB to reduce blocking requests
+      inlineStyleThreshold: 30720, // Inline critical CSS under 30KB to reduce render-blocking requests
       prerender: {
         handleUnseenRoutes: 'ignore',
         crawl: true
@@ -75,14 +69,18 @@ export default defineConfig({
         pollInterval: 0
       }
     }),
-    // Merge gzip + brotli into ONE plugin call instead of two separate instances —
-    // the singular `algorithm` API of vite-plugin-compression2 is the old syntax,
-    // the current version uses `algorithms` (an array).
+
+    // Compress assets with Brotli and Gzip in parallel using vite-plugin-compression2
     compression({
       algorithms: ['brotliCompress', 'gzip'],
       threshold: 1024
     })
   ],
+
+  // Pre-bundle Appwrite SDK during dev to prevent Vite re-bundling latency and browser WebSocket drops
+  optimizeDeps: {
+    include: ['appwrite']
+  },
 
   build: {
     minify: true,
@@ -96,40 +94,33 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id) {
-          // Sveltia CMS + Appwrite are already loaded via a dynamic import()
-          // in the /admin route (see routes/admin/+page.svelte), so Rollup's
-          // default automatic chunking already isolates them into their own
-          // lazy chunk without any help here.
-          //
-          // ⚠️ Do NOT force '@sveltia' into a manually-named chunk (previously
-          // `if (id.includes('@sveltia')) return 'cms'`). Naming a chunk
-          // manually turns it into a fixed merge point: Rollup then also uses
-          // that same chunk to host the Svelte runtime helpers shared between
-          // the CMS bundle and the rest of the app, which made the app-wide
-          // runtime chunk (loaded on every single page, including the
-          // homepage) statically import the ~2MB CMS/Appwrite bundle. Removing
-          // the manual pin fixes that — verified via `.vite/manifest.json`:
-          // the shared runtime chunk no longer imports the CMS chunk.
+          // Separate Markdown parsing libraries into a standalone chunk
           if (
             id.includes('mdsvex') ||
             id.includes('unified') ||
             id.includes('remark') ||
             id.includes('rehype')
-          )
+          ) {
             return 'markdown'
+          }
 
-          // ⚠️ REMOVED: No longer manually splitting `@sveltejs/kit` and
-          // `/svelte/` runtime into their own chunk. Manually splitting
-          // Svelte/SvelteKit core easily causes hydration errors and breaks
-          // SvelteKit's automatic code-splitting / waterfall-prevention
-          // mechanism.
+          // Isolate Appwrite Web SDK into its own vendor chunk to enable long-term HTTP caching
+          // and prevent blocking the initial page hydration when loaded dynamically
+          if (id.includes('node_modules/appwrite')) {
+            return 'appwrite'
+          }
+
+          // Let Rollup handle Svelte runtime & dynamic routes automatically
+          // to avoid hydration mismatch and bundle bloat.
         }
       },
       treeshake: {
         moduleSideEffects: (id) => {
+          // Preserve side effects for CSS and Web Fonts
           if (id.includes('.css') || id.includes('fontsource')) {
             return true
           }
+          // Enable aggressive tree-shaking for node_modules
           if (id.includes('node_modules')) {
             return false
           }

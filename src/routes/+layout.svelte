@@ -1,5 +1,5 @@
 <script>
-  import '../app.css'
+  import './layout.css'
   import { onMount } from 'svelte'
   import { pushState, afterNavigate } from '$app/navigation'
   import { siteConfig } from '$lib/config'
