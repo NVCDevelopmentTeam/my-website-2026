@@ -3,6 +3,10 @@
   import { onMount } from 'svelte'
   import { pushState, afterNavigate } from '$app/navigation'
   import { siteConfig } from '$lib/config'
+  // ?url gives the final content-hashed build path, so the preload always
+  // matches the actual deployed filename even though Vite renames it per build.
+  import firaMonoLatin from '@fontsource/fira-mono/files/fira-mono-latin-400-normal.woff2?url'
+  import firaMonoLatinExt from '@fontsource/fira-mono/files/fira-mono-latin-ext-400-normal.woff2?url'
 
   let { children } = $props()
 
@@ -78,6 +82,8 @@
   <meta name="google-adsense-account" content="ca-pub-3602487920405886" />
   <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
   <link rel="alternate" type="application/rss+xml" href="/rss.xml" />
+  <link rel="preload" as="font" type="font/woff2" href={firaMonoLatin} crossorigin="anonymous" />
+  <link rel="preload" as="font" type="font/woff2" href={firaMonoLatinExt} crossorigin="anonymous" />
 </svelte:head>
 
 <!--

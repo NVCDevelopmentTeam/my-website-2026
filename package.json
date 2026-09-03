@@ -23,7 +23,7 @@
     "@sveltejs/adapter-static": "^3.0.10",
     "@sveltejs/kit": "^2.70.3",
     "@sveltejs/vite-plugin-svelte": "^7.3.0",
-    "@unocss/svelte-scoped": "^66.9.1",
+    "@unocss/svelte-scoped": "^66.9.2",
     "@vcarl/remark-headings": "^0.1.0",
     "appwrite": "^26.2.0",
     "eslint": "^10.9.1",
@@ -39,11 +39,11 @@
     "svelte-eslint-parser": "^1.8.1",
     "svelte-seo": "^2.0.0",
     "unist-util-visit": "^5.1.0",
-    "unocss": "^66.9.1",
+    "unocss": "^66.9.2",
     "vite": "^8.2.2",
     "vite-plugin-compression2": "^2.5.3"
   },
   "dependencies": {
-    "@sveltia/cms": "^0.204.0"
+    "@sveltia/cms": "^0.205.2"
   }
 }
