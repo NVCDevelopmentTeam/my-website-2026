@@ -2,6 +2,7 @@ import { defineConfig, globalIgnores } from 'eslint/config'
 import { includeIgnoreFile } from '@eslint/compat'
 import js from '@eslint/js'
 import svelte from 'eslint-plugin-svelte'
+import unocss from '@unocss/eslint-config/flat'
 import prettierConfig from 'eslint-config-prettier'
 import globals from 'globals'
 import { fileURLToPath } from 'node:url'
@@ -26,6 +27,9 @@ export default defineConfig([
   ...svelte.configs.recommended,
   prettierConfig,
   ...svelte.configs.prettier,
+
+  // 4b. UnoCSS class-order linting/autofix (pnpm lint --fix sorts utility classes)
+  unocss,
 
   // 5. Globals & language options
   {

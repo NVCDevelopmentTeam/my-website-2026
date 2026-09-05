@@ -9,13 +9,13 @@
 </script>
 
 <footer
-  class="mt-20 border-t border-gray-100 bg-gray-50 text-gray-900 transition-colors virtual dark:border-gray-800 dark:bg-gray-950 dark:text-gray-100"
+  class="virtual mt-20 border-t border-gray-100 bg-gray-50 text-gray-900 transition-colors dark:border-gray-800 dark:bg-gray-950 dark:text-gray-100"
 >
   <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6">
     <div class="flex flex-col items-start justify-between gap-12 md:flex-row">
       <!-- Minimal navigation -->
       <nav class="space-y-4">
-        <h3 class="text-sm font-black tracking-widest text-gray-950 uppercase dark:text-gray-50">
+        <h3 class="text-sm text-gray-950 font-black tracking-widest uppercase dark:text-gray-50">
           liên kết hữu ích
         </h3>
         <LegalMenu {pages} />
@@ -23,7 +23,7 @@
 
       <!-- Brand & Copyright -->
       <div class="max-w-sm space-y-4">
-        <p class="text-sm leading-relaxed font-bold">
+        <p class="text-sm font-bold leading-relaxed">
           &copy; {new Date().getFullYear()}
           {siteConfig.author.name}. Mọi quyền được bảo lưu. Website được thiết kế đáp ứng tiêu chuẩn
           WCAG 2.2 AAA.

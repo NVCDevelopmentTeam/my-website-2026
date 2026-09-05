@@ -57,12 +57,12 @@
 <aside class="flex flex-col gap-6">
   <!-- Recent Posts Widget -->
   <section
-    class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
+    class="border border-gray-200 rounded-2xl bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
   >
     <div
       class="mb-4 flex items-center justify-between border-b border-gray-100 pb-3 dark:border-gray-800"
     >
-      <h2 class="text-xs font-black tracking-widest text-gray-950 uppercase dark:text-gray-50">
+      <h2 class="text-xs text-gray-950 font-black tracking-widest uppercase dark:text-gray-50">
         Bài viết gần đây
       </h2>
     </div>
@@ -72,12 +72,12 @@
   <!-- Categories Widget -->
   {#if processedCategories.length > 0}
     <section
-      class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
+      class="border border-gray-200 rounded-2xl bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
     >
       <div
         class="mb-4 flex items-center justify-between border-b border-gray-100 pb-3 dark:border-gray-800"
       >
-        <h2 class="text-xs font-black tracking-widest text-gray-950 uppercase dark:text-gray-50">
+        <h2 class="text-xs text-gray-950 font-black tracking-widest uppercase dark:text-gray-50">
           Danh mục
         </h2>
       </div>
@@ -89,14 +89,14 @@
               href="/blog/category/{category.slug}"
               data-sveltekit-preload-data="hover"
               class="group flex items-center justify-between rounded-xl px-3 py-2.5 transition-all duration-200 {isActive
-                ? 'bg-sky-50 font-black text-sky-700 dark:bg-sky-950/50 dark:text-sky-300'
-                : 'text-gray-700 hover:bg-gray-50 hover:text-sky-700 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-sky-300'}"
+                ? 'bg-sky-50 text-sky-700 font-black dark:bg-sky-950/50 dark:text-sky-300'
+                : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 hover:text-sky-700 dark:hover:bg-gray-800 dark:hover:text-sky-300'}"
             >
               <span class="text-sm font-semibold transition-transform group-hover:translate-x-0.5">
                 {category.title}
               </span>
               <span
-                class="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-bold text-gray-600 group-hover:bg-sky-100 group-hover:text-sky-800 dark:bg-gray-800 dark:text-gray-400 dark:group-hover:bg-sky-900/60 dark:group-hover:text-sky-200"
+                class="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600 font-bold dark:bg-gray-800 group-hover:bg-sky-100 dark:text-gray-400 group-hover:text-sky-800 dark:group-hover:bg-sky-900/60 dark:group-hover:text-sky-200"
               >
                 {category.count}
               </span>
@@ -109,7 +109,7 @@
         <a
           href="/blog/category"
           data-sveltekit-preload-data="hover"
-          class="inline-flex items-center gap-1.5 text-xs font-black tracking-wider text-sky-700 uppercase hover:underline dark:text-sky-400"
+          class="inline-flex items-center gap-1.5 text-xs text-sky-700 font-black tracking-wider uppercase dark:text-sky-400 hover:underline"
         >
           <span>Khám phá tất cả danh mục</span>
           <span aria-hidden="true">→</span>
@@ -120,7 +120,7 @@
 
   <!-- Social & Quick Connect Widget -->
   <section
-    class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
+    class="border border-gray-200 rounded-2xl bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
   >
     <SocialMenu />
   </section>

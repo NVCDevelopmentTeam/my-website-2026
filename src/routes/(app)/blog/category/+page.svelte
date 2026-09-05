@@ -20,7 +20,7 @@
 <div class="container mx-auto px-4 py-16">
   <div class="mx-auto max-w-3xl">
     <!-- Title -->
-    <h1 class="mb-10 text-center text-4xl font-black text-gray-950 dark:text-gray-50">
+    <h1 class="mb-10 text-center text-4xl text-gray-950 font-black dark:text-gray-50">
       Tất cả danh mục
       <span class="text-2xl text-gray-950 dark:text-gray-50"> ({totalCategories || 0}) </span>
     </h1>
@@ -36,7 +36,7 @@
             >
               <!-- Category name with count (WordPress style) -->
               <span
-                class="text-lg font-black text-blue-800 group-hover:underline dark:text-blue-300"
+                class="text-lg text-blue-800 font-black dark:text-blue-300 group-hover:underline"
               >
                 {category.title} ({category.count})
               </span>
@@ -45,7 +45,7 @@
         {/each}
       </ul>
     {:else}
-      <p class="text-center text-lg font-bold text-gray-950 italic dark:text-gray-50">
+      <p class="text-center text-lg text-gray-950 font-bold italic dark:text-gray-50">
         Chưa có danh mục nào được gắn cho bài viết.
       </p>
     {/if}

@@ -47,14 +47,14 @@
 </script>
 
 {#if categories.length > 0}
-  <div class="flex items-center gap-2 font-bold text-gray-950 dark:text-gray-50">
+  <div class="flex items-center gap-2 text-gray-950 font-bold dark:text-gray-50">
     <span class="text-sm">danh mục:</span>
-    <ul class="flex list-none flex-wrap gap-2 text-sm">
+    <ul class="flex flex-wrap list-none gap-2 text-sm">
       {#each categories as category (category.slug)}
         <li>
           <a
             href={`/blog/category/${category.slug}`}
-            class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 font-bold text-sky-900 transition-colors hover:bg-sky-100 dark:border-sky-800 dark:bg-sky-950/30 dark:text-sky-300 dark:hover:bg-sky-900/50"
+            class="border border-sky-200 rounded-full bg-sky-50 px-3 py-1 text-sky-900 font-bold transition-colors dark:border-sky-800 dark:bg-sky-950/30 hover:bg-sky-100 dark:text-sky-300 dark:hover:bg-sky-900/50"
           >
             {category.title}
           </a>

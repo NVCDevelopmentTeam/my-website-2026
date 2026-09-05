@@ -30,12 +30,12 @@
         announceA = title
         setTimeout(() => {
           announceA = ''
-        }, 500)
+        }, 150)
       } else {
         announceB = title
         setTimeout(() => {
           announceB = ''
-        }, 500)
+        }, 150)
       }
     })
   })
@@ -88,23 +88,27 @@
 
 <!--
   Outer wrapper contains both live regions and page content.
-  Live regions are INSIDE the wrapper — not direct children of <body>
-  so pressing Home jumps to the wrapper top, not the hidden live region.
-  Text auto-clears after 500ms — long enough for screen readers (~100ms) to
-  announce, short enough that pressing Home won't land on visible text.
+  Live regions are placed AFTER page content (not before) so that pressing
+  Home (jump to document top) lands on the actual page heading/content
+  first, not the announcer — a screen reader reading top-to-bottom also
+  reaches the (by-then-cleared) announcer last instead of first.
+  Text auto-clears after 150ms — verified via a real WordPress a11y bug report
+  that VoiceOver needs ~150ms minimum to reliably announce repeated/identical
+  text; long enough to be heard, short enough that it clears well before a
+  user would navigate again.
 -->
 <div
-  class="flex min-h-screen flex-col bg-white text-gray-950 selection:bg-sky-100 dark:bg-gray-950 dark:text-gray-50 dark:selection:bg-sky-900/30"
+  class="min-h-screen flex flex-col bg-white text-gray-950 dark:bg-gray-950 selection:bg-sky-100 dark:text-gray-50 dark:selection:bg-sky-900/30"
 >
-  <!-- Double-buffer live regions inside wrapper -->
+  {@render children?.()}
+
+  <!-- Double-buffer live regions — placed last, see comment above -->
   <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
     {announceA}
   </div>
   <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
     {announceB}
   </div>
-
-  {@render children?.()}
 </div>
 
 <style uno:preflights uno:safelist global></style>

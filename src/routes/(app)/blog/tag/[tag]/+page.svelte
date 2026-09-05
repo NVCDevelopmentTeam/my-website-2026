@@ -39,12 +39,12 @@
           clip-rule="evenodd"
         />
       </svg>
-      <h1 class="text-3xl font-black text-gray-950 dark:text-gray-50">
+      <h1 class="text-3xl text-gray-950 font-black dark:text-gray-50">
         {tag?.title || 'Thẻ'}
       </h1>
     </div>
 
-    <p class="text-sm font-bold text-gray-950 dark:text-gray-50">
+    <p class="text-sm text-gray-950 font-bold dark:text-gray-50">
       Thẻ {tag?.title} có {data.pagination?.totalPosts || 0} bài viết
     </p>
   </div>
@@ -58,7 +58,7 @@
       <Pagination pagination={data.pagination} />
     </div>
   {:else}
-    <p class="mt-8 text-center font-bold text-gray-950 italic dark:text-gray-50">
+    <p class="mt-8 text-center text-gray-950 font-bold italic dark:text-gray-50">
       Chưa có bài viết nào dùng tag này.
     </p>
   {/if}

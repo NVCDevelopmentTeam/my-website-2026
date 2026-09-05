@@ -150,12 +150,12 @@
     <div
       role="status"
       aria-busy="true"
-      class="text-center text-lg font-bold text-gray-950 dark:text-gray-50"
+      class="text-center text-lg text-gray-950 font-bold dark:text-gray-50"
     >
       <p>Đang tải Hệ thống quản lý nội dung…</p>
     </div>
   {:else if oauthData}
-    <div role="status" class="text-center text-lg font-bold text-emerald-600">
+    <div role="status" class="text-center text-lg text-emerald-600 font-bold">
       <p>Xác thực thành công! Đang đồng bộ hóa quyền hạn...</p>
     </div>
   {:else}

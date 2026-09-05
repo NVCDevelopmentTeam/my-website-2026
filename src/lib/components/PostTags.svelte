@@ -23,7 +23,7 @@
 </script>
 
 {#if tags.length > 0}
-  <div class="flex items-center gap-2 font-bold text-gray-950 dark:text-gray-50">
+  <div class="flex items-center gap-2 text-gray-950 font-bold dark:text-gray-50">
     Thẻ
     <svg class="h-4 w-4 text-gray-950 dark:text-gray-50" fill="currentColor" viewBox="0 0 20 20">
       <path
@@ -32,13 +32,13 @@
         clip-rule="evenodd"
       />
     </svg>
-    <ul class="flex list-none flex-wrap gap-2 text-sm">
+    <ul class="flex flex-wrap list-none gap-2 text-sm">
       {#each tags as tag (tag.slug)}
         <li>
           <a
             href={`/blog/tag/${tag.slug}`}
             data-sveltekit-preload-data="hover"
-            class="rounded-full border border-purple-200 bg-purple-50 px-3 py-1 font-bold text-purple-900 transition-colors hover:bg-purple-100 dark:border-purple-800 dark:bg-purple-950/30 dark:text-purple-300 dark:hover:bg-purple-900/50"
+            class="border border-purple-200 rounded-full bg-purple-50 px-3 py-1 text-purple-900 font-bold transition-colors dark:border-purple-800 dark:bg-purple-950/30 hover:bg-purple-100 dark:text-purple-300 dark:hover:bg-purple-900/50"
           >
             {tag.title}
           </a>

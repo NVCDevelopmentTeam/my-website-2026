@@ -105,7 +105,7 @@
 </script>
 
 {#if totalPages > 1}
-  <nav class="mt-8 mb-4 flex items-center justify-center" aria-label="Pagination">
+  <nav class="mb-4 mt-8 flex items-center justify-center" aria-label="Pagination">
     <ul class="inline-flex list-none items-center gap-1">
       <!-- Previous Button -->
       {#if hasPrev}
@@ -113,7 +113,7 @@
           <a
             href={buildUrl(currentPage - 1)}
             data-sveltekit-preload-data="hover"
-            class="inline-flex items-center gap-1.5 rounded border border-gray-400 bg-white px-3 py-2 text-sm font-bold text-gray-950 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-50 dark:hover:bg-gray-700"
+            class="inline-flex items-center gap-1.5 border border-gray-400 rounded bg-white px-3 py-2 text-sm text-gray-950 font-bold transition-colors dark:border-gray-600 dark:bg-gray-800 hover:bg-gray-50 dark:text-gray-50 dark:hover:bg-gray-700"
           >
             <svg
               class="h-4 w-4"
@@ -146,13 +146,13 @@
         >
           {#if num === '...'}
             <span
-              class="inline-flex h-10 w-10 items-center justify-center text-sm font-bold text-gray-950 dark:text-gray-400"
+              class="h-10 w-10 inline-flex items-center justify-center text-sm text-gray-950 font-bold dark:text-gray-400"
             >
               …
             </span>
           {:else if num === currentPage}
             <span
-              class="inline-flex h-10 w-10 cursor-default items-center justify-center rounded border border-sky-950 bg-sky-950 text-sm font-black text-white dark:border-sky-400 dark:bg-sky-400 dark:text-gray-950"
+              class="h-10 w-10 inline-flex cursor-default items-center justify-center border border-sky-950 rounded bg-sky-950 text-sm text-white font-black dark:border-sky-400 dark:bg-sky-400 dark:text-gray-950"
               aria-current="page"
               aria-label="Trang {num}"
             >
@@ -162,7 +162,7 @@
             <a
               href={buildUrl(num)}
               data-sveltekit-preload-data="hover"
-              class="inline-flex h-10 w-10 items-center justify-center rounded border border-gray-400 bg-white text-sm font-bold text-gray-950 transition-colors hover:border-gray-500 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-50 dark:hover:border-gray-400 dark:hover:bg-gray-700"
+              class="h-10 w-10 inline-flex items-center justify-center border border-gray-400 rounded bg-white text-sm text-gray-950 font-bold transition-colors dark:border-gray-600 hover:border-gray-500 dark:bg-gray-800 hover:bg-gray-50 dark:text-gray-50 dark:hover:border-gray-400 dark:hover:bg-gray-700"
               aria-label="Trang {num}"
             >
               {num}
@@ -177,7 +177,7 @@
           <a
             href={buildUrl(currentPage + 1)}
             data-sveltekit-preload-data="hover"
-            class="inline-flex items-center gap-1.5 rounded border border-gray-400 bg-white px-3 py-2 text-sm font-bold text-gray-950 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-50 dark:hover:bg-gray-700"
+            class="inline-flex items-center gap-1.5 border border-gray-400 rounded bg-white px-3 py-2 text-sm text-gray-950 font-bold transition-colors dark:border-gray-600 dark:bg-gray-800 hover:bg-gray-50 dark:text-gray-50 dark:hover:bg-gray-700"
             aria-label="Trang sau"
           >
             <span>Sau</span>

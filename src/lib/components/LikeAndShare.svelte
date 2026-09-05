@@ -255,15 +255,15 @@
 </script>
 
 <div
-  class="flex flex-wrap items-center gap-3 border-y border-gray-200 py-3 sm:py-4 dark:border-gray-800"
+  class="flex flex-wrap items-center gap-3 border-y border-gray-200 py-3 dark:border-gray-800 sm:py-4"
 >
   <!-- Facebook-Style Like Button -->
   <button
     onclick={toggleLike}
     disabled={hasLiked}
-    class="inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-semibold transition-all select-none {hasLiked
+    class="inline-flex select-none items-center gap-2 rounded-md px-4 py-2 text-sm font-semibold transition-all {hasLiked
       ? 'cursor-default bg-[#E7F3FF] text-[#0866FF] dark:bg-[#0866FF]/20 dark:text-[#4599FF]'
-      : 'bg-[#F0F2F5] text-[#050505] hover:bg-[#E4E6E9] active:scale-95 dark:bg-[#3A3B3C] dark:text-[#E4E6EB] dark:hover:bg-[#4E4F50]'}"
+      : 'bg-[#F0F2F5] text-[#050505] active:scale-95 dark:bg-[#3A3B3C] hover:bg-[#E4E6E9] dark:text-[#E4E6EB] dark:hover:bg-[#4E4F50]'}"
     aria-label="Thích bài viết, hiện có {likes} lượt thích"
     aria-pressed={hasLiked}
   >
@@ -294,7 +294,7 @@
   <!-- Facebook-Style Share Button -->
   <button
     onclick={openDialog}
-    class="inline-flex items-center gap-2 rounded-md bg-[#F0F2F5] px-4 py-2 text-sm font-semibold text-[#050505] transition-all select-none hover:bg-[#E4E6E9] active:scale-95 dark:bg-[#3A3B3C] dark:text-[#E4E6EB] dark:hover:bg-[#4E4F50]"
+    class="inline-flex select-none items-center gap-2 rounded-md bg-[#F0F2F5] px-4 py-2 text-sm text-[#050505] font-semibold transition-all active:scale-95 dark:bg-[#3A3B3C] hover:bg-[#E4E6E9] dark:text-[#E4E6EB] dark:hover:bg-[#4E4F50]"
     aria-label="Chia sẻ bài viết"
   >
     <svg
@@ -322,14 +322,14 @@
     onclick={handleDialogClick}
     aria-labelledby="dialog-title"
     aria-modal="true"
-    class="w-full max-w-sm overflow-hidden rounded-3xl border-0 bg-white p-0 shadow-2xl backdrop:bg-black/60 backdrop:backdrop-blur-xs dark:bg-[#242526]"
+    class="backdrop:backdrop-blur-xs max-w-sm w-full overflow-hidden border-0 rounded-3xl bg-white p-0 shadow-2xl backdrop:bg-black/60 dark:bg-[#242526]"
   >
     <div class="p-5">
       <!-- Modal Header -->
       <div
         class="mb-4 flex items-center justify-between border-b border-gray-200 pb-3 dark:border-gray-700"
       >
-        <h2 id="dialog-title" class="text-base font-bold text-gray-900 dark:text-gray-100">
+        <h2 id="dialog-title" class="text-base text-gray-900 font-bold dark:text-gray-100">
           Chia sẻ lên
         </h2>
         <button
@@ -360,10 +360,10 @@
         <!-- Facebook -->
         <button
           onclick={shareOnFacebook}
-          class="flex flex-col items-center gap-1.5 rounded-2xl p-2.5 text-center transition-colors hover:bg-gray-100 active:scale-95 dark:hover:bg-gray-800"
+          class="flex flex-col items-center gap-1.5 rounded-2xl p-2.5 text-center transition-colors active:scale-95 hover:bg-gray-100 dark:hover:bg-gray-800"
         >
           <div
-            class="flex h-12 w-12 items-center justify-center rounded-full bg-[#0866FF] text-white shadow-sm"
+            class="h-12 w-12 flex items-center justify-center rounded-full bg-[#0866FF] text-white shadow-sm"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -378,16 +378,16 @@
               />
             </svg>
           </div>
-          <span class="text-xs font-medium text-gray-800 dark:text-gray-200">Facebook</span>
+          <span class="text-xs text-gray-800 font-medium dark:text-gray-200">Facebook</span>
         </button>
 
         <!-- Messenger -->
         <button
           onclick={shareOnMessenger}
-          class="flex flex-col items-center gap-1.5 rounded-2xl p-2.5 text-center transition-colors hover:bg-gray-100 active:scale-95 dark:hover:bg-gray-800"
+          class="flex flex-col items-center gap-1.5 rounded-2xl p-2.5 text-center transition-colors active:scale-95 hover:bg-gray-100 dark:hover:bg-gray-800"
         >
           <div
-            class="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-tr from-[#00C6FF] to-[#0078FF] text-white shadow-sm"
+            class="h-12 w-12 flex items-center justify-center rounded-full from-[#00C6FF] to-[#0078FF] bg-gradient-to-tr text-white shadow-sm"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -402,29 +402,29 @@
               />
             </svg>
           </div>
-          <span class="text-xs font-medium text-gray-800 dark:text-gray-200">Messenger</span>
+          <span class="text-xs text-gray-800 font-medium dark:text-gray-200">Messenger</span>
         </button>
 
         <!-- Zalo -->
         <button
           onclick={shareOnZalo}
-          class="flex flex-col items-center gap-1.5 rounded-2xl p-2.5 text-center transition-colors hover:bg-gray-100 active:scale-95 dark:hover:bg-gray-800"
+          class="flex flex-col items-center gap-1.5 rounded-2xl p-2.5 text-center transition-colors active:scale-95 hover:bg-gray-100 dark:hover:bg-gray-800"
         >
           <div
-            class="flex h-12 w-12 items-center justify-center rounded-full bg-[#0068FF] text-xs font-black tracking-tighter text-white italic shadow-sm"
+            class="h-12 w-12 flex items-center justify-center rounded-full bg-[#0068FF] text-xs text-white font-black tracking-tighter italic shadow-sm"
           >
             Zalo
           </div>
-          <span class="text-xs font-medium text-gray-800 dark:text-gray-200">Zalo</span>
+          <span class="text-xs text-gray-800 font-medium dark:text-gray-200">Zalo</span>
         </button>
 
         <!-- Telegram -->
         <button
           onclick={shareOnTelegram}
-          class="flex flex-col items-center gap-1.5 rounded-2xl p-2.5 text-center transition-colors hover:bg-gray-100 active:scale-95 dark:hover:bg-gray-800"
+          class="flex flex-col items-center gap-1.5 rounded-2xl p-2.5 text-center transition-colors active:scale-95 hover:bg-gray-100 dark:hover:bg-gray-800"
         >
           <div
-            class="flex h-12 w-12 items-center justify-center rounded-full bg-[#229ED9] text-white shadow-sm"
+            class="h-12 w-12 flex items-center justify-center rounded-full bg-[#229ED9] text-white shadow-sm"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -439,16 +439,16 @@
               />
             </svg>
           </div>
-          <span class="text-xs font-medium text-gray-800 dark:text-gray-200">Telegram</span>
+          <span class="text-xs text-gray-800 font-medium dark:text-gray-200">Telegram</span>
         </button>
 
         <!-- X (Twitter) -->
         <button
           onclick={shareOnTwitter}
-          class="flex flex-col items-center gap-1.5 rounded-2xl p-2.5 text-center transition-colors hover:bg-gray-100 active:scale-95 dark:hover:bg-gray-800"
+          class="flex flex-col items-center gap-1.5 rounded-2xl p-2.5 text-center transition-colors active:scale-95 hover:bg-gray-100 dark:hover:bg-gray-800"
         >
           <div
-            class="flex h-12 w-12 items-center justify-center rounded-full bg-black text-white shadow-sm dark:bg-white dark:text-black"
+            class="h-12 w-12 flex items-center justify-center rounded-full bg-black text-white shadow-sm dark:bg-white dark:text-black"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -463,16 +463,16 @@
               />
             </svg>
           </div>
-          <span class="text-xs font-medium text-gray-800 dark:text-gray-200">X (Twitter)</span>
+          <span class="text-xs text-gray-800 font-medium dark:text-gray-200">X (Twitter)</span>
         </button>
 
         <!-- Copy link button -->
         <button
           onclick={copyLink}
-          class="flex flex-col items-center gap-1.5 rounded-2xl p-2.5 text-center transition-colors hover:bg-gray-100 active:scale-95 dark:hover:bg-gray-800"
+          class="flex flex-col items-center gap-1.5 rounded-2xl p-2.5 text-center transition-colors active:scale-95 hover:bg-gray-100 dark:hover:bg-gray-800"
         >
           <div
-            class="flex h-12 w-12 items-center justify-center rounded-full shadow-sm transition-all {copySuccess
+            class="h-12 w-12 flex items-center justify-center rounded-full shadow-sm transition-all {copySuccess
               ? 'bg-emerald-600 text-white'
               : 'bg-[#E4E6EB] text-gray-800 dark:bg-[#3A3B3C] dark:text-gray-100'}"
           >
@@ -511,7 +511,7 @@
           </div>
           <span
             class="text-xs font-medium {copySuccess
-              ? 'font-bold text-emerald-600 dark:text-emerald-400'
+              ? 'text-emerald-600 font-bold dark:text-emerald-400'
               : 'text-gray-800 dark:text-gray-200'}"
           >
             {copySuccess ? 'Đã sao chép!' : 'Sao chép link'}
@@ -523,7 +523,7 @@
       <div class="mt-3 border-t border-gray-200 pt-3 dark:border-gray-700">
         <button
           onclick={triggerNativeShare}
-          class="flex w-full items-center justify-center gap-2 rounded-xl bg-gray-100 py-2.5 text-xs font-semibold text-gray-700 transition-colors hover:bg-gray-200 active:scale-98 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+          class="w-full flex items-center justify-center gap-2 rounded-xl bg-gray-100 py-2.5 text-xs text-gray-700 font-semibold transition-colors active:scale-98 dark:bg-gray-800 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

@@ -2,87 +2,28 @@
 <html lang="vi">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#030712" media="(prefers-color-scheme: dark)" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <meta name="theme-color" content="#0052FF" />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
-    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
 
-    <!-- PWA manifest -->
     <link rel="manifest" href="/manifest.json" />
-
-    <!-- Favicon -->
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
-    <!-- PWA meta -->
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
-    <!-- Inline theme script: runs synchronously to prevent FOUC.
-         IMPORTANT: No beforeunload/unload handlers here — preserves BF-cache. -->
+    <!-- Theme: must run before first paint -->
     <script>
-      ;(function () {
-        try {
-          const STORAGE_KEY = 'theme-preference'
+      ;(() => {
+        const saved = localStorage.getItem('theme-preference')
+        const dark =
+          saved === 'dark' ||
+          (saved !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches)
 
-          // 1. Get cached theme (localStorage)
-          let theme = localStorage.getItem(STORAGE_KEY)
-
-          // 2. Fallback to system preference if not set
-          if (!theme || theme === 'auto') {
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-            theme = prefersDark ? 'dark' : 'light'
-          }
-
-          // 3. Apply immediately to avoid FOUC (Flash of Unstyled Content)
-          const root = document.documentElement
-
-          // UnoCSS: use "dark" class
-          if (theme === 'dark') {
-            root.classList.add('dark')
-          } else {
-            root.classList.remove('dark')
-          }
-
-          // optional: data attribute (if using additional CSS vars)
-          root.setAttribute('data-theme', theme)
-
-          // 4. Cache back (ensure sync)
-          localStorage.setItem(STORAGE_KEY, theme)
-
-          // 5. Sync between tabs (cache layer)
-          window.addEventListener('storage', (e) => {
-            if (e.key === STORAGE_KEY) {
-              const newTheme = e.newValue
-              if (newTheme === 'dark') {
-                root.classList.add('dark')
-              } else {
-                root.classList.remove('dark')
-              }
-              root.setAttribute('data-theme', newTheme)
-            }
-          })
-
-          // 6. Defer non-critical logic
-          setTimeout(() => {
-            // example: fetch theme config from API or analytics
-            // fetch('/api/theme-sync')
-
-            // optional: re-check system change if set to auto
-            const media = window.matchMedia('(prefers-color-scheme: dark)')
-            media.addEventListener('change', (e) => {
-              if (localStorage.getItem(STORAGE_KEY) === 'auto') {
-                const newTheme = e.matches ? 'dark' : 'light'
-                root.classList.toggle('dark', newTheme === 'dark')
-                root.setAttribute('data-theme', newTheme)
-              }
-            })
-          }, 0) // defer after initial paint
-        } catch (e) {
-          console.warn('theme init error', e)
-        }
+        document.documentElement.classList.toggle('dark', dark)
       })()
     </script>
     %unocss-svelte-scoped.global% %sveltekit.head%

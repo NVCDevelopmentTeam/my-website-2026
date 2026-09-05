@@ -20,7 +20,7 @@
 <div class="container mx-auto px-4 py-16">
   <div class="mx-auto max-w-3xl">
     <!-- Title -->
-    <h1 class="mb-10 text-center text-4xl font-black text-gray-950 dark:text-gray-50">
+    <h1 class="mb-10 text-center text-4xl text-gray-950 font-black dark:text-gray-50">
       Tất cả thẻ
       <span class="text-2xl text-gray-950 dark:text-gray-50"> ({totalTags || 0}) </span>
     </h1>
@@ -31,7 +31,7 @@
         {#each tags as tag (tag.slug)}
           <a
             href={`/blog/tag/${tag.slug}`}
-            class="group inline-flex items-center gap-2 rounded-full border border-purple-200 bg-purple-50 px-4 py-2 text-sm font-bold text-purple-950 transition-all duration-200 hover:border-purple-300 hover:bg-purple-100 dark:border-purple-800 dark:bg-purple-950/30 dark:text-purple-200 dark:hover:border-purple-700 dark:hover:bg-purple-900/50"
+            class="group inline-flex items-center gap-2 border border-purple-200 rounded-full bg-purple-50 px-4 py-2 text-sm text-purple-950 font-bold transition-all duration-200 dark:border-purple-800 hover:border-purple-300 dark:bg-purple-950/30 hover:bg-purple-100 dark:text-purple-200 dark:hover:border-purple-700 dark:hover:bg-purple-900/50"
           >
             <svg
               class="h-4 w-4 text-purple-800 dark:text-purple-300"
@@ -48,7 +48,7 @@
               {tag.name}
             </span>
             <span
-              class="rounded-full bg-purple-200 px-2 py-0.5 text-xs font-black text-purple-950 dark:bg-purple-900/60 dark:text-purple-50"
+              class="rounded-full bg-purple-200 px-2 py-0.5 text-xs text-purple-950 font-black dark:bg-purple-900/60 dark:text-purple-50"
             >
               {tag.count}
             </span>
@@ -56,7 +56,7 @@
         {/each}
       </div>
     {:else}
-      <p class="text-center text-lg font-bold text-gray-950 italic dark:text-gray-50">
+      <p class="text-center text-lg text-gray-950 font-bold italic dark:text-gray-50">
         Chưa có thẻ nào được gắn cho bài viết.
       </p>
     {/if}

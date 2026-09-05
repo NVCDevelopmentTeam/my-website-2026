@@ -36,12 +36,12 @@
 </script>
 
 <div
-  class="relative flex min-h-screen flex-col bg-white transition-colors duration-300 dark:bg-gray-950"
+  class="relative min-h-screen flex flex-col bg-white transition-colors duration-300 dark:bg-gray-950"
 >
   <!-- Navigation progress bar — uses transform (compositor-only, no reflow) -->
   {#if isLoading}
     <div
-      class="fixed top-0 right-0 left-0 z-[9999] h-1 bg-sky-600 dark:bg-sky-400"
+      class="fixed left-0 right-0 top-0 z-[9999] h-1 bg-sky-600 dark:bg-sky-400"
       style="contain: strict;"
     >
       <div
@@ -52,7 +52,7 @@
 
   <Header allPages={data.allPages} navPages={data.navPages} />
 
-  <div class="mx-auto w-full max-w-7xl px-4 pt-4 sm:px-6 lg:px-8">
+  <div class="mx-auto max-w-7xl w-full px-4 pt-4 lg:px-8 sm:px-6">
     <Breadcrumbs
       allPages={data.allPages}
       categories={data.allCategories}
@@ -61,7 +61,7 @@
     />
   </div>
 
-  <main id="main-content" class="mx-auto w-full max-w-7xl flex-grow px-4 sm:px-6 lg:px-8">
+  <main id="main-content" class="mx-auto max-w-7xl w-full flex-grow px-4 lg:px-8 sm:px-6">
     <div class="py-12 lg:grid lg:grid-cols-12 lg:gap-12">
       <div
         class="transition-opacity duration-150 lg:col-span-8 {isLoading

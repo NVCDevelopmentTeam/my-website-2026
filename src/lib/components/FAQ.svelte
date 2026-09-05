@@ -33,9 +33,9 @@
 
 {#if items.length > 0}
   <section
-    class="my-12 rounded-3xl border border-gray-100 bg-gray-50 p-6 shadow-sm sm:p-8 dark:border-gray-800 dark:bg-gray-900"
+    class="my-12 border border-gray-100 rounded-3xl bg-gray-50 p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900 sm:p-8"
   >
-    <h2 class="mb-8 flex items-center gap-3 text-2xl font-bold text-gray-950 dark:text-white">
+    <h2 class="mb-8 flex items-center gap-3 text-2xl text-gray-950 font-bold dark:text-white">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="24"
@@ -56,11 +56,11 @@
 
     <div class="space-y-6">
       {#each items as item (item.question)}
-        <div class="border-b border-gray-200 pb-6 last:border-0 last:pb-0 dark:border-gray-800">
-          <h3 class="mb-2 text-lg font-black text-gray-950 dark:text-gray-50">
+        <div class="border-b border-gray-200 pb-6 last:border-0 dark:border-gray-800 last:pb-0">
+          <h3 class="mb-2 text-lg text-gray-950 font-black dark:text-gray-50">
             {item.question}
           </h3>
-          <div class="leading-relaxed font-bold text-gray-950 dark:text-gray-50">
+          <div class="text-gray-950 font-bold leading-relaxed dark:text-gray-50">
             {item.answer}
           </div>
         </div>

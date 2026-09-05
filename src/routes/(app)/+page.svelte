@@ -57,7 +57,7 @@
   {#if latestPosts.length > 0}
     <section class="space-y-12">
       <div class="flex items-center gap-4">
-        <h2 class="text-xs font-black tracking-[0.3em] text-gray-950 dark:text-gray-50">
+        <h2 class="text-xs text-gray-950 font-black tracking-[0.3em] dark:text-gray-50">
           bài viết mới
         </h2>
         <div class="h-px flex-grow bg-gray-100 dark:bg-gray-800"></div>
@@ -68,7 +68,7 @@
         <a
           href="/blog"
           data-sveltekit-preload-data="hover"
-          class="inline-flex rounded-full bg-gray-950 px-8 py-4 text-sm font-black text-white shadow-xl transition-transform hover:scale-105 dark:bg-white dark:text-gray-950"
+          class="inline-flex rounded-full bg-gray-950 px-8 py-4 text-sm text-white font-black shadow-xl transition-transform hover:scale-105 dark:bg-white dark:text-gray-950"
         >
           Xem tất cả bài viết
         </a>

@@ -76,7 +76,7 @@
     bind:this={openButtonRef}
     onclick={openMenu}
     aria-haspopup="dialog"
-    class="flex min-h-[48px] min-w-[48px] cursor-pointer items-center justify-center border-0 bg-transparent p-3 text-gray-900 transition-opacity hover:opacity-70 dark:text-gray-100"
+    class="min-h-[48px] min-w-[48px] flex cursor-pointer items-center justify-center border-0 bg-transparent p-3 text-gray-900 transition-opacity dark:text-gray-100 hover:opacity-70"
   >
     <svg
       width="24"
@@ -111,7 +111,7 @@
 
       <!-- Menu Panel -->
       <div
-        class="animate-in slide-in-from-right safe-top safe-bottom safe-x fixed top-0 right-0 bottom-0 w-full max-w-md overflow-y-auto bg-white text-gray-950 shadow-2xl duration-200 dark:bg-gray-950 dark:text-white"
+        class="animate-in slide-in-from-right safe-top safe-bottom safe-x fixed bottom-0 right-0 top-0 max-w-md w-full overflow-y-auto bg-white text-gray-950 shadow-2xl duration-200 dark:bg-gray-950 dark:text-white"
         role="dialog"
         aria-modal="true"
         aria-label="Menu điều hướng"
@@ -120,7 +120,7 @@
         <!-- Close Button -->
         <button
           onclick={closeMenu}
-          class="absolute top-5 right-5 z-10 flex min-h-[48px] min-w-[48px] cursor-pointer items-center justify-center border-0 bg-transparent p-2 text-gray-950 transition-opacity hover:opacity-70 dark:text-white"
+          class="absolute right-5 top-5 z-10 min-h-[48px] min-w-[48px] flex cursor-pointer items-center justify-center border-0 bg-transparent p-2 text-gray-950 transition-opacity dark:text-white hover:opacity-70"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -140,11 +140,11 @@
 
         <!-- Menu Content -->
         <div class="p-8 pt-20">
-          <ul class="m-0 flex w-full list-none flex-col items-start justify-start space-y-1 p-0">
+          <ul class="m-0 w-full flex flex-col list-none items-start justify-start p-0 space-y-1">
             {#each navPages as p (p.slug)}
               <li class="w-full">
                 <a
-                  class="block rounded-lg px-4 py-3 text-lg font-bold -tracking-[0.1px] text-gray-950 no-underline transition-colors hover:bg-gray-100 dark:text-gray-50 dark:hover:bg-gray-900"
+                  class="block rounded-lg px-4 py-3 text-lg text-gray-950 font-bold no-underline transition-colors hover:bg-gray-100 dark:text-gray-50 -tracking-[0.1px] dark:hover:bg-gray-900"
                   class:font-black={isCurrentPage(p.slug)}
                   class:bg-gray-100={isCurrentPage(p.slug)}
                   class:dark:bg-gray-900={isCurrentPage(p.slug)}
@@ -160,7 +160,7 @@
 
             <li class="w-full">
               <a
-                class="block rounded-lg px-4 py-3 text-lg font-bold -tracking-[0.1px] text-gray-950 no-underline transition-colors hover:bg-gray-100 dark:text-gray-50 dark:hover:bg-gray-900"
+                class="block rounded-lg px-4 py-3 text-lg text-gray-950 font-bold no-underline transition-colors hover:bg-gray-100 dark:text-gray-50 -tracking-[0.1px] dark:hover:bg-gray-900"
                 class:font-black={page.url.pathname === '/blog'}
                 class:bg-gray-100={page.url.pathname === '/blog'}
                 class:dark:bg-gray-900={page.url.pathname === '/blog'}
@@ -181,16 +181,16 @@
 
 <!-- Desktop Menu -->
 <nav
-  class="relative hidden rounded-2xl border border-gray-200 bg-white/80 px-4 py-2 shadow-md backdrop-blur-md lg:block dark:border-gray-800 dark:bg-gray-950/80"
+  class="relative hidden border border-gray-200 rounded-2xl bg-white/80 px-4 py-2 shadow-md backdrop-blur-md lg:block dark:border-gray-800 dark:bg-gray-950/80"
   aria-label="Main navigation"
 >
-  <ul class="m-0 flex list-none flex-wrap items-center justify-center gap-3 p-0">
+  <ul class="m-0 flex flex-wrap list-none items-center justify-center gap-3 p-0">
     {#each navPages as p (p.slug)}
       <li>
         <a
           href={getHref(p.slug)}
           data-sveltekit-preload-data="hover"
-          class="inline-block rounded-xl px-4 py-2 font-black text-gray-950 no-underline transition-[background-color,color] duration-300 hover:bg-sky-800 hover:text-white focus:ring-2 focus:ring-sky-800 focus:outline-none dark:text-gray-50 dark:hover:bg-sky-400 dark:hover:text-gray-950"
+          class="inline-block rounded-xl px-4 py-2 text-gray-950 font-black no-underline transition-[background-color,color] duration-300 hover:bg-sky-800 dark:text-gray-50 hover:text-white focus:outline-none focus:ring-2 focus:ring-sky-800 dark:hover:bg-sky-400 dark:hover:text-gray-950"
           class:bg-sky-800={isCurrentPage(p.slug)}
           class:dark:bg-sky-400={isCurrentPage(p.slug)}
           class:text-white={isCurrentPage(p.slug)}
@@ -206,7 +206,7 @@
       <a
         href="/blog"
         data-sveltekit-preload-data="hover"
-        class="inline-block rounded-xl px-4 py-2 font-black text-gray-950 no-underline transition-[background-color,color] duration-300 hover:bg-sky-800 hover:text-white focus:ring-2 focus:ring-sky-800 focus:outline-none dark:text-gray-50 dark:hover:bg-sky-400 dark:hover:text-gray-950"
+        class="inline-block rounded-xl px-4 py-2 text-gray-950 font-black no-underline transition-[background-color,color] duration-300 hover:bg-sky-800 dark:text-gray-50 hover:text-white focus:outline-none focus:ring-2 focus:ring-sky-800 dark:hover:bg-sky-400 dark:hover:text-gray-950"
         class:bg-sky-800={page.url.pathname === '/blog'}
         class:dark:bg-sky-400={page.url.pathname === '/blog'}
         class:text-white={page.url.pathname === '/blog'}

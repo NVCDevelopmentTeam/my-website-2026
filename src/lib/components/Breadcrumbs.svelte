@@ -222,9 +222,9 @@
 {#if crumbs.length > 0}
   <nav
     aria-label="Breadcrumb"
-    class="mb-6 flex overflow-x-auto px-4 py-4 whitespace-nowrap sm:px-6"
+    class="mb-6 flex overflow-x-auto whitespace-nowrap px-4 py-4 sm:px-6"
   >
-    <ol class="flex list-none items-center space-x-2 text-sm text-gray-950 dark:text-gray-50">
+    <ol class="flex list-none items-center text-sm text-gray-950 space-x-2 dark:text-gray-50">
       {#each crumbs as crumb, i (crumb.href)}
         <li class="flex items-center">
           <!-- Separator icon -->
@@ -247,7 +247,7 @@
           <!-- Current page (no link) -->
           {#if crumb.isActive}
             <span
-              class="max-w-[200px] truncate font-black text-gray-950 sm:max-w-md dark:text-gray-50"
+              class="max-w-[200px] truncate text-gray-950 font-black sm:max-w-md dark:text-gray-50"
               aria-current="page"
               title={crumb.name}
             >
@@ -258,7 +258,7 @@
             <a
               href={crumb.href}
               data-sveltekit-preload-data="hover"
-              class="font-bold text-gray-950 transition-colors hover:text-sky-800 dark:text-gray-50 dark:hover:text-sky-400"
+              class="text-gray-950 font-bold transition-colors dark:text-gray-50 hover:text-sky-800 dark:hover:text-sky-400"
               title={crumb.name}
             >
               {crumb.name}

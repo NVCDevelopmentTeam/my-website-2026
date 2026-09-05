@@ -3,15 +3,15 @@
 </script>
 
 <nav class="space-y-3">
-  <h3 class="text-sm font-bold tracking-wider text-gray-950 uppercase dark:text-gray-50">
+  <h3 class="text-sm text-gray-950 font-bold tracking-wider uppercase dark:text-gray-50">
     Kết nối với mình
   </h3>
-  <ul class="flex list-none flex-wrap gap-4">
+  <ul class="flex flex-wrap list-none gap-4">
     {#if siteConfig.social.facebook && siteConfig.social.facebook !== '/'}
       <li>
         <a
           href={siteConfig.social.facebook}
-          class="inline-flex h-12 w-12 items-center justify-center text-gray-950 transition-colors duration-300 hover:text-sky-800 dark:text-gray-50 dark:hover:text-sky-400"
+          class="h-12 w-12 inline-flex items-center justify-center text-gray-950 transition-colors duration-300 dark:text-gray-50 hover:text-sky-800 dark:hover:text-sky-400"
           aria-label="Facebook"
           target="_blank"
           rel="noopener noreferrer"
@@ -37,7 +37,7 @@
       <li>
         <a
           href={siteConfig.social.github}
-          class="inline-flex h-12 w-12 items-center justify-center text-gray-950 transition-colors duration-300 hover:text-gray-900 dark:text-gray-50 dark:hover:text-white"
+          class="h-12 w-12 inline-flex items-center justify-center text-gray-950 transition-colors duration-300 dark:text-gray-50 hover:text-gray-900 dark:hover:text-white"
           aria-label="GitHub"
           target="_blank"
           rel="noopener noreferrer"

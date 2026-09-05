@@ -26,12 +26,12 @@
 
 {#if footerPages.length > 0}
   <div>
-    <ul class="flex list-none flex-col gap-1">
+    <ul class="flex flex-col list-none gap-1">
       {#each footerPages as p (p.slug)}
         <li>
           <a
             href={getHref(p.slug)}
-            class="inline-block rounded-sm px-1 py-2.5 text-sm font-bold text-gray-950 transition-colors duration-200 hover:text-sky-800 focus:ring-2 focus:ring-sky-800 focus:outline-none dark:text-gray-50 dark:hover:text-sky-400 dark:focus:ring-sky-400"
+            class="inline-block rounded-sm px-1 py-2.5 text-sm text-gray-950 font-bold transition-colors duration-200 dark:text-gray-50 hover:text-sky-800 focus:outline-none focus:ring-2 focus:ring-sky-800 dark:hover:text-sky-400 dark:focus:ring-sky-400"
             class:font-black={isCurrentPage(p.slug)}
             class:text-sky-900={isCurrentPage(p.slug)}
             class:dark:text-sky-300={isCurrentPage(p.slug)}

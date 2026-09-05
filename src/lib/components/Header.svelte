@@ -13,7 +13,7 @@
 >
   <div class="w-full">
     <div class="mx-auto max-w-[1340px] px-[clamp(16px,5vw,50px)]">
-      <div class="flex w-full flex-nowrap items-center justify-between py-4">
+      <div class="w-full flex flex-nowrap items-center justify-between py-4">
         <SkipLink />
 
         <Logo pages={allPages} />

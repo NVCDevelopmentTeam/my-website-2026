@@ -24,7 +24,7 @@
 <section class="px-4 py-12">
   <h1 class="mb-16 text-center text-4xl font-black tracking-tight sm:text-5xl">
     <span
-      class="bg-gradient-to-r from-sky-800 to-violet-950 bg-clip-text text-transparent dark:from-sky-400 dark:to-violet-400"
+      class="from-sky-800 to-violet-950 bg-gradient-to-r bg-clip-text text-transparent dark:from-sky-400 dark:to-violet-400"
     >
       Blog
     </span>
@@ -39,7 +39,7 @@
       <Pagination pagination={data.pagination} />
     </div>
   {:else}
-    <p class="text-center text-lg font-bold text-gray-950 italic dark:text-gray-50">
+    <p class="text-center text-lg text-gray-950 font-bold italic dark:text-gray-50">
       Chưa có bài viết nào được đăng.
     </p>
   {/if}

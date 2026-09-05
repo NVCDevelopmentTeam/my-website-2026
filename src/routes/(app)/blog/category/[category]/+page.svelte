@@ -25,11 +25,11 @@
 <SEO {...seoConfig} />
 
 <section class="px-4 py-12">
-  <h1 class="text-3xl font-black text-gray-950 dark:text-gray-50">
+  <h1 class="text-3xl text-gray-950 font-black dark:text-gray-50">
     {category?.title || 'Danh mục'}
   </h1>
 
-  <p class="mt-2 font-bold text-gray-950 dark:text-gray-50">
+  <p class="mt-2 text-gray-950 font-bold dark:text-gray-50">
     Danh mục {category?.title} có {data.pagination?.totalPosts || 0} bài viết
   </p>
 
@@ -41,7 +41,7 @@
       <Pagination pagination={data.pagination} />
     </div>
   {:else}
-    <p class="mt-8 text-center font-bold text-gray-950 italic dark:text-gray-50">
+    <p class="mt-8 text-center text-gray-950 font-bold italic dark:text-gray-50">
       Chưa có posts nào trong danh mục này.
     </p>
   {/if}

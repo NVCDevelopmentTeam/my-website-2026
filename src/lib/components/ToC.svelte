@@ -160,12 +160,13 @@
 
 {#if hasToc}
   <nav
-    class="animate-in slide-in-from-left-5 fade-in my-8 rounded-r-2xl border-l-4 border-blue-800 bg-blue-50/50 p-4 shadow-sm transition-all duration-300 hover:shadow-md sm:p-6 dark:border-blue-400 dark:bg-gray-900
-      {isSticky ? 'lg:sticky lg:top-20' : ''}"
+    class="animate-in slide-in-from-left-5 fade-in my-8 border-l-4 border-blue-800 rounded-r-2xl bg-blue-50/50 p-4 shadow-sm transition-all duration-300 dark:border-blue-400 dark:bg-gray-900 sm:p-6 hover:shadow-md {isSticky
+      ? 'lg:sticky lg:top-20'
+      : ''}"
   >
     <!-- Header with toggle -->
     <div class="mb-4 flex items-center justify-between">
-      <h2 class="m-0 flex items-center gap-2 text-lg font-bold text-gray-950 dark:text-white">
+      <h2 class="m-0 flex items-center gap-2 text-lg text-gray-950 font-bold dark:text-white">
         <svg
           class="h-5 w-5 text-blue-800 dark:text-blue-400"
           fill="none"
@@ -211,7 +212,7 @@
           {@render children()}
         {:else}
           <ul
-            class="m-0 flex max-h-[70vh] list-none flex-col gap-2 overflow-y-auto p-0"
+            class="m-0 max-h-[70vh] flex flex-col list-none gap-2 overflow-y-auto p-0"
             role="list"
           >
             {#each processedToc as h (h.id)}
@@ -223,17 +224,16 @@
                 <a
                   href="#{h.id}"
                   onclick={handleLinkClick}
-                  class="group relative flex items-center gap-2 rounded-xl px-3 py-2 text-sm no-underline transition-all duration-200
-                    {isActive
-                    ? 'bg-white font-bold text-blue-900 shadow-sm before:absolute before:top-1/2 before:left-0 before:h-5 before:w-0.5 before:-translate-y-1/2 before:rounded-full before:bg-current dark:bg-gray-800 dark:text-blue-300'
-                    : 'text-gray-950 hover:bg-white hover:text-blue-800 dark:text-gray-50 dark:hover:bg-gray-800 dark:hover:text-blue-400'}"
+                  class="group relative flex items-center gap-2 rounded-xl px-3 py-2 text-sm no-underline transition-all duration-200 {isActive
+                    ? 'bg-white text-blue-900 font-bold shadow-sm before:absolute before:left-0 before:top-1/2 before:h-5 before:w-0.5 before:rounded-full before:bg-current dark:bg-gray-800 dark:text-blue-300 before:-translate-y-1/2'
+                    : 'text-gray-950 hover:bg-white dark:text-gray-50 hover:text-blue-800 dark:hover:bg-gray-800 dark:hover:text-blue-400'}"
                   aria-current={isActive ? 'location' : undefined}
                 >
                   <span
                     class="flex-shrink-0 transition-all duration-200 {bulletClass}
                       {isActive
                       ? 'scale-110 text-blue-900 opacity-100 dark:text-blue-300'
-                      : 'text-blue-800 opacity-70 group-hover:scale-105 group-hover:opacity-100 dark:text-blue-400'}"
+                      : 'text-blue-800 opacity-70 group-hover:scale-105 dark:text-blue-400 group-hover:opacity-100'}"
                   ></span>
                   <span class="flex-1 transition-transform duration-200 group-hover:translate-x-1">
                     {h.title}

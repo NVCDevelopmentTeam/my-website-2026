@@ -118,7 +118,7 @@
     <article class="animate-fade-in py-10" itemscope itemtype="https://schema.org/BlogPosting">
       <header class="mb-10 space-y-6">
         <h1
-          class="text-3xl leading-tight font-black tracking-tight text-gray-950 sm:text-4xl lg:text-5xl dark:text-white"
+          class="text-3xl text-gray-950 font-black leading-tight tracking-tight lg:text-5xl sm:text-4xl dark:text-white"
           itemprop="headline"
         >
           {metadata.title}
@@ -126,7 +126,7 @@
 
         <!-- Meta info -->
         <div
-          class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm font-bold text-gray-950 dark:text-gray-50"
+          class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-gray-950 font-bold dark:text-gray-50"
         >
           <span itemprop="author" itemscope itemtype="https://schema.org/Person">
             <meta itemprop="name" content={metadata.author || siteConfig.author.name} />
@@ -142,14 +142,14 @@
           <span aria-hidden="true" class="text-gray-300 dark:text-gray-700">|</span>
           <PostCategories post={{ metadata }} />
           <span aria-hidden="true" class="text-gray-300 dark:text-gray-700">|</span>
-          <span class="font-bold text-gray-950 dark:text-gray-200">
+          <span class="text-gray-950 font-bold dark:text-gray-200">
             <span itemprop="timeRequired" content="PT{metadata.readingTime}M">
               {metadata.readingTime} min read
             </span>
           </span>
           {#if views > 0}
             <span aria-hidden="true" class="text-gray-300 dark:text-gray-700">|</span>
-            <span class="font-bold text-gray-950 dark:text-gray-200">
+            <span class="text-gray-950 font-bold dark:text-gray-200">
               {views} views
             </span>
           {/if}
@@ -173,17 +173,7 @@
 
       <!-- Post content -->
       <section
-        class="prose max-w-none prose-neutral dark:prose-invert
-  [&_h1]:font-black [&_h2]:font-black [&_h3]:font-black [&_h4]:font-black
-  [&_h1]:text-gray-950 [&_h2]:text-gray-950 [&_h3]:text-gray-950 [&_h4]:text-gray-950
-  dark:[&_h1]:text-white dark:[&_h2]:text-white dark:[&_h3]:text-white dark:[&_h4]:text-white
-  [&_p]:text-gray-950 dark:[&_p]:text-gray-50
-  [&_a]:font-bold [&_a]:text-sky-900 dark:[&_a]:text-sky-400
-  [&_strong]:text-gray-950 dark:[&_strong]:text-white
-  [&_ol]:text-gray-950 dark:[&_ol]:text-gray-50
-  [&_ul]:text-gray-950 dark:[&_ul]:text-gray-50
-  [&_li]:text-gray-950 dark:[&_li]:text-gray-50
-  [&_img]:rounded-[2rem] [&_img]:shadow-2xl"
+        class="max-w-none prose prose-neutral [&_img]:rounded-[2rem] [&_a]:text-sky-900 [&_h1]:text-gray-950 [&_h2]:text-gray-950 [&_h3]:text-gray-950 [&_h4]:text-gray-950 [&_li]:text-gray-950 [&_ol]:text-gray-950 [&_p]:text-gray-950 [&_strong]:text-gray-950 [&_ul]:text-gray-950 [&_a]:font-bold [&_h1]:font-black [&_h2]:font-black [&_h3]:font-black [&_h4]:font-black [&_img]:shadow-2xl dark:prose-invert dark:[&_a]:text-sky-400 dark:[&_h1]:text-white dark:[&_h2]:text-white dark:[&_h3]:text-white dark:[&_h4]:text-white dark:[&_li]:text-gray-50 dark:[&_ol]:text-gray-50 dark:[&_p]:text-gray-50 dark:[&_strong]:text-white dark:[&_ul]:text-gray-50"
         itemprop="articleBody"
       >
         <PostContent />
