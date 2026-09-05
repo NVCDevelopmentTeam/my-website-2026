@@ -1,3 +1,6 @@
+packages:
+  - '.'
+
 minimumReleaseAgeExclude:
   - '@sveltia/cms@0.205.4'
   - eslint@10.10.0
