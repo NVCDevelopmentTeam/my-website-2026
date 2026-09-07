@@ -9,7 +9,11 @@ var STATIC_FILES = files.filter(function (file) {
   return !file.startsWith('/_') && !file.startsWith('/.')
 })
 var PRERENDERED_HTML = prerendered
-var ALL_ASSETS = [].concat(IMMUTABLE_ASSETS, STATIC_FILES, PRERENDERED_HTML)
+// Only precache the app shell (build + static files) on install — matches
+// SvelteKit's own documented service worker pattern. Prerendered pages are
+// NOT eagerly bulk-fetched here; staleWhileRevalidate() below caches each
+// one lazily, on demand, the first time it's actually visited.
+var ALL_ASSETS = [].concat(IMMUTABLE_ASSETS, STATIC_FILES)
 
 // Install — pre-cache all known assets safely
 self.addEventListener('install', function (event) {
@@ -98,7 +102,10 @@ self.addEventListener('fetch', function (event) {
 })
 
 /**
- * Cache-first: serve from cache, fetch on miss
+ * Cache-first: serve from cache, fetch on miss. Both the initial fetch and
+ * any retry are time-boxed — a bare retry with no timeout can hang for the
+ * browser's default stalled-connection timeout (commonly ~30s) on a weak or
+ * flaky connection, which is exactly the condition this needs to handle well.
  */
 async function cacheFirst(request) {
   var cache = await caches.open(CACHE)
@@ -106,12 +113,31 @@ async function cacheFirst(request) {
   if (cached) return cached
 
   try {
-    var response = await fetch(request)
+    var response = await fetchWithTimeout(request, 8000)
     if (response.ok) cache.put(request, response.clone())
     return response
   } catch {
-    return fetch(request)
+    return new Response('Network error', {
+      status: 504,
+      statusText: 'Gateway Timeout',
+      headers: { 'Content-Type': 'text/plain' }
+    })
   }
+}
+
+/**
+ * fetch() with a hard timeout via AbortController — shared by cacheFirst()
+ * and networkFirstWithTimeout() so no request can hang indefinitely.
+ */
+function fetchWithTimeout(request, timeoutMs) {
+  var controller = new AbortController()
+  var timer = setTimeout(function () {
+    controller.abort()
+  }, timeoutMs)
+
+  return fetch(request, { signal: controller.signal }).finally(function () {
+    clearTimeout(timer)
+  })
 }
 
 /**
@@ -123,7 +149,7 @@ async function staleWhileRevalidate(event) {
   var cache = await caches.open(CACHE)
   var cached = await cache.match(event.request)
 
-  var revalidate = fetch(event.request)
+  var revalidate = fetchWithTimeout(event.request, 8000)
     .then(function (response) {
       if (response.ok) cache.put(event.request, response.clone())
       return response
@@ -135,7 +161,7 @@ async function staleWhileRevalidate(event) {
   event.waitUntil(revalidate)
 
   if (cached) return cached
-  return (await revalidate) ?? fetch(event.request)
+  return (await revalidate) ?? fetchWithTimeout(event.request, 8000)
 }
 
 /**
@@ -145,13 +171,7 @@ async function networkFirstWithTimeout(request, timeoutMs) {
   var cache = await caches.open(CACHE)
 
   try {
-    var controller = new AbortController()
-    var timer = setTimeout(function () {
-      controller.abort()
-    }, timeoutMs)
-
-    var response = await fetch(request, { signal: controller.signal })
-    clearTimeout(timer)
+    var response = await fetchWithTimeout(request, timeoutMs)
     if (response.ok) {
       cache.put(request, response.clone())
     }

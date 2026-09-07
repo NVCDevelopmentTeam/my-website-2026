@@ -75,6 +75,7 @@ function getAllPosts() {
           draft: meta.draft === true || meta.draft === 'true',
           image: meta.image || null,
           toc: meta.toc || [],
+          introHtml: meta.introHtml || '',
           _wordsCount: meta._wordsCount
         }
       }

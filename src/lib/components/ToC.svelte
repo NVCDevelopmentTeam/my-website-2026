@@ -110,6 +110,10 @@
 
   $effect(() => {
     if (browser && post && hasToc) {
+      var handleScroll = () => {
+        isSticky = window.scrollY > 300
+      }
+
       const timer = setTimeout(() => {
         const headingElements = processedToc
           .map((h) => document.getElementById(h.id))
@@ -132,9 +136,6 @@
           headingElements.forEach((el) => observer?.observe(el))
         }
 
-        const handleScroll = () => {
-          isSticky = window.scrollY > 300
-        }
         window.addEventListener('scroll', handleScroll, { passive: true })
 
         if (window.location.hash) {
@@ -145,6 +146,7 @@
       return () => {
         clearTimeout(timer)
         if (observer) observer.disconnect()
+        window.removeEventListener('scroll', handleScroll)
       }
     }
   })

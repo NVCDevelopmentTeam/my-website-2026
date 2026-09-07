@@ -1,4 +1,5 @@
 import { visit } from 'unist-util-visit'
+import { toHtml } from 'hast-util-to-html'
 import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import remarkHeadings from '@vcarl/remark-headings'
 import { slugify } from './src/lib/utils/slugify.js'
@@ -144,6 +145,30 @@ function rehypeExtractToc() {
   }
 }
 
+/* Rehype plugin: extract intro content (everything before the first heading)
+   so it can render before the Table of Contents instead of after it. */
+function rehypeExtractIntro() {
+  return function transformer(tree, file) {
+    var firstHeadingIndex = tree.children.findIndex(function (node) {
+      return node.type === 'element' && /^h[1-6]$/.test(node.tagName)
+    })
+
+    // No heading means no ToC to place the intro before — leave content as one block.
+    if (firstHeadingIndex <= 0) return
+
+    var introNodes = tree.children.slice(0, firstHeadingIndex)
+    var introHtml = toHtml(introNodes)
+
+    if (!file.data.fm) {
+      file.data.fm = {}
+    }
+    file.data.fm.introHtml = introHtml
+
+    // Remove the extracted nodes so they aren't also rendered as part of the main content.
+    tree.children.splice(0, firstHeadingIndex)
+  }
+}
+
 /* Rehype plugin: add security attributes to external links */
 function rehypeExternalLinks() {
   return function transformer(tree) {
@@ -165,7 +190,8 @@ const config = {
     rehypeExtractToc,
     [rehypeAutolinkHeadings, { behavior: 'wrap' }],
     rehypeLazyLoadImages,
-    rehypeExternalLinks
+    rehypeExternalLinks,
+    rehypeExtractIntro
   ]
 }
 

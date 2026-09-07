@@ -11,7 +11,7 @@ export async function load() {
       latestPosts
     }
   } catch (err) {
-    console.error('Error loading hoem page data:', err)
+    console.error('Error loading home page data:', err)
     error(500, 'Internal Server Error')
   }
 }

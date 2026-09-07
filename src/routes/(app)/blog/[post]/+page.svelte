@@ -164,6 +164,16 @@
         <meta itemprop="description" content={metadata.description} />
       </header>
 
+      <!-- Opening paragraph(s) — rendered before the Table of Contents -->
+      {#if metadata.introHtml}
+        <div
+          class="max-w-none prose prose-neutral [&_a]:text-sky-900 [&_p]:text-gray-950 [&_strong]:text-gray-950 [&_a]:font-bold dark:prose-invert dark:[&_a]:text-sky-400 dark:[&_p]:text-gray-50 dark:[&_strong]:text-white"
+        >
+          <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+          {@html metadata.introHtml}
+        </div>
+      {/if}
+
       <!-- Table of Contents — rendered inline before body (no DOM manipulation = no forced reflow) -->
       {#if hasToc}
         <div class="not-prose my-10">
