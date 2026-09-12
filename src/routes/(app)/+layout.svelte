@@ -43,9 +43,10 @@
     <div
       class="fixed left-0 right-0 top-0 z-[9999] h-1 bg-sky-600 dark:bg-sky-400"
       style="contain: strict;"
+      aria-hidden="true"
     >
       <div
-        class="animate-progress h-full w-full origin-left bg-white/40 shadow-[0_0_10px_rgba(255,255,255,0.5)]"
+        class="h-full w-full origin-left bg-white/40 shadow-[0_0_10px_rgba(255,255,255,0.5)] animate-progress"
       ></div>
     </div>
   {/if}

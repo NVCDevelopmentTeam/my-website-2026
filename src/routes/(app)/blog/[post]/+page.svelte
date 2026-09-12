@@ -9,50 +9,35 @@
   import FAQ from '$lib/components/FAQ.svelte'
   import PostNavigation from '$lib/components/PostNavigation.svelte'
   import SEO from '$lib/components/SEO.svelte'
-  import { getSeoConfig, serializeSchema } from '$lib/utils/seo'
+  import { getSeoConfig } from '$lib/utils/seo'
   import { onMount } from 'svelte'
   import { browser } from '$app/environment'
 
   const { data } = $props()
-  const { content: PostContent, metadata } = $derived.by(function () {
-    return data
-  })
+  const { content: PostContent, metadata } = $derived.by(() => data)
 
   const faqs = $derived(metadata?.faqs || [])
   const hasToc = $derived(metadata?.toc && metadata.toc.length > 0)
 
-  /** @type {number} — starts at 0, updated client-side after mount */
   let views = $state(0)
 
-  // Track page views per post using localStorage.
-  // Deferred via setTimeout to run after paint — keeps it off the critical path.
-  onMount(function () {
-    if (!browser || !metadata) return
-
-    // Non-critical: defer 200ms to avoid blocking TBT
-    setTimeout(function () {
-      var viewKey = 'views_' + (metadata.slug || 'unknown')
-      var sessionKey = 'viewed_' + (metadata.slug || 'unknown')
-
-      var currentViews = parseInt(localStorage.getItem(viewKey) || '0', 10)
-
-      // Only increment if not already viewed in this session
-      var alreadyViewed = sessionStorage.getItem(sessionKey)
-      if (!alreadyViewed) {
-        currentViews += 1
-        sessionStorage.setItem(sessionKey, 'true')
-        localStorage.setItem(viewKey, currentViews.toString())
-      }
-
-      views = currentViews
-    }, 200)
+  onMount(() => {
+    if (browser && metadata) {
+      const viewKey = `views_${metadata.slug || 'unknown'}`
+      const currentViews = parseInt(localStorage.getItem(viewKey) || '0', 10)
+      views = currentViews + 1
+      localStorage.setItem(viewKey, views.toString())
+    }
   })
+
+  // Visual ordering of intro / ToC / main content is handled entirely by
+  // CSS (see .post-intro-block / order-toc rules) — no DOM manipulation.
 
   const seoConfig = $derived(
     getSeoConfig({
       title: metadata?.title,
       description: metadata?.description,
-      url: '/blog/' + metadata?.slug,
+      url: `/blog/${metadata?.slug}`,
       image: metadata?.image,
       type: 'article',
       article: {
@@ -66,57 +51,60 @@
 
   const jsonLdString = $derived(
     metadata
-      ? serializeSchema({
+      ? `<script type="application/ld+json">${JSON.stringify({
           '@context': 'https://schema.org',
           '@type': 'BlogPosting',
           headline: metadata.title,
           description: metadata.description,
           image: metadata.image
-            ? siteConfig.siteUrl + metadata.image
-            : siteConfig.siteUrl + '/og-image.jpg',
+            ? `${siteConfig.url}${metadata.image}`
+            : `${siteConfig.url}/og-image.png`,
           datePublished: metadata.date,
           dateModified: metadata.updated || metadata.date,
           author: {
             '@type': 'Person',
             name: metadata.author || siteConfig.author.name,
-            url: siteConfig.siteUrl
+            url: siteConfig.url
           },
           publisher: {
             '@type': 'Organization',
             name: siteConfig.title,
             logo: {
               '@type': 'ImageObject',
-              url: siteConfig.siteUrl + '/logo.png'
+              url: `${siteConfig.url}/logo.png`
             }
           },
           mainEntityOfPage: {
             '@type': 'WebPage',
-            '@id': siteConfig.siteUrl + '/blog/' + metadata.slug
+            '@id': `${siteConfig.url}/blog/${metadata.slug}`
           },
           keywords: metadata.tags?.join(', ') || '',
           articleSection: metadata.categories?.[0] || 'Blog',
           wordCount: metadata.wordCount || 0,
-          timeRequired: 'PT' + (metadata.readingTime || 5) + 'M'
-        })
+          timeRequired: `PT${metadata.readingTime || 5}M`
+        })}</' + 'script>'`
       : ''
   )
 </script>
 
 <SEO {...seoConfig} />
 
-<!-- Structured data for article -->
+<!-- Structured Data for Article -->
 <svelte:head>
   {#if metadata}
     <!-- eslint-disable-next-line svelte/no-at-html-tags -->
     {@html jsonLdString}
-    <link rel="canonical" href="{siteConfig.siteUrl}/blog/{metadata.slug}" />
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="{siteConfig.url}/blog/{metadata.slug}" />
   {/if}
 </svelte:head>
 
 <div class="px-4 sm:px-6">
   {#if metadata}
-    <article class="animate-fade-in py-10" itemscope itemtype="https://schema.org/BlogPosting">
+    <article class="py-10 animate-fade-in" itemscope itemtype="https://schema.org/BlogPosting">
       <header class="mb-10 space-y-6">
+        <!-- Title -->
         <h1
           class="text-3xl text-gray-950 font-black leading-tight tracking-tight lg:text-5xl sm:text-4xl dark:text-white"
           itemprop="headline"
@@ -144,15 +132,13 @@
           <span aria-hidden="true" class="text-gray-300 dark:text-gray-700">|</span>
           <span class="text-gray-950 font-bold dark:text-gray-200">
             <span itemprop="timeRequired" content="PT{metadata.readingTime}M">
-              {metadata.readingTime} min read
+              {metadata.readingTime} phút đọc
             </span>
           </span>
-          {#if views > 0}
-            <span aria-hidden="true" class="text-gray-300 dark:text-gray-700">|</span>
-            <span class="text-gray-950 font-bold dark:text-gray-200">
-              {views} views
-            </span>
-          {/if}
+          <span aria-hidden="true" class="text-gray-300 dark:text-gray-700">|</span>
+          <span class="text-gray-950 font-bold dark:text-gray-200">
+            {views} lượt đọc
+          </span>
         </div>
 
         <div class="flex items-center pt-2">
@@ -160,33 +146,29 @@
         </div>
 
         <!-- Hidden meta for SEO -->
-        <meta itemprop="image" content={metadata.image || '/og-image.jpg'} />
+        <meta itemprop="image" content={metadata.image || '/og-image.png'} />
         <meta itemprop="description" content={metadata.description} />
       </header>
 
-      <!-- Opening paragraph(s) — rendered before the Table of Contents -->
-      {#if metadata.introHtml}
-        <div
-          class="max-w-none prose prose-neutral [&_a]:text-sky-900 [&_p]:text-gray-950 [&_strong]:text-gray-950 [&_a]:font-bold dark:prose-invert dark:[&_a]:text-sky-400 dark:[&_p]:text-gray-50 dark:[&_strong]:text-white"
-        >
-          <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-          {@html metadata.introHtml}
-        </div>
-      {/if}
-
-      <!-- Table of Contents — rendered inline before body (no DOM manipulation = no forced reflow) -->
-      {#if hasToc}
-        <div class="not-prose my-10">
-          <ToC post={{ metadata }} />
-        </div>
-      {/if}
-
-      <!-- Post content -->
+      <!-- Post content — the compiled PostContent has a <slot name="toc">
+           inserted at build time (see rehypeInsertTocSlot in
+           mdsvex.config.js) right between the intro paragraph(s) and the
+           first heading. Filling that slot here makes the ToC a real DOM
+           child at the correct position — true source order matches
+           visual order, no CSS reordering trick, no DOM manipulation. -->
       <section
-        class="max-w-none prose prose-neutral [&_img]:rounded-[2rem] [&_a]:text-sky-900 [&_h1]:text-gray-950 [&_h2]:text-gray-950 [&_h3]:text-gray-950 [&_h4]:text-gray-950 [&_li]:text-gray-950 [&_ol]:text-gray-950 [&_p]:text-gray-950 [&_strong]:text-gray-950 [&_ul]:text-gray-950 [&_a]:font-bold [&_h1]:font-black [&_h2]:font-black [&_h3]:font-black [&_h4]:font-black [&_img]:shadow-2xl dark:prose-invert dark:[&_a]:text-sky-400 dark:[&_h1]:text-white dark:[&_h2]:text-white dark:[&_h3]:text-white dark:[&_h4]:text-white dark:[&_li]:text-gray-50 dark:[&_ol]:text-gray-50 dark:[&_p]:text-gray-50 dark:[&_strong]:text-white dark:[&_ul]:text-gray-50"
+        class="max-w-none prose prose-neutral prose-img:rounded-[2rem] prose-a:text-sky-900 prose-headings:text-gray-950 prose-li:text-gray-950 prose-ol:text-gray-950 prose-p:text-gray-950 prose-strong:text-gray-950 prose-ul:text-gray-950 prose-a:font-bold prose-headings:font-black prose-img:shadow-2xl dark:prose-invert dark:prose-a:text-sky-400 dark:prose-headings:text-white dark:prose-li:text-gray-50 dark:prose-ol:text-gray-50 dark:prose-p:text-gray-50 dark:prose-strong:text-white dark:prose-ul:text-gray-50"
         itemprop="articleBody"
       >
-        <PostContent />
+        <PostContent>
+          {#snippet toc()}
+            {#if hasToc}
+              <nav class="not-prose my-10">
+                <ToC post={{ metadata }} />
+              </nav>
+            {/if}
+          {/snippet}
+        </PostContent>
       </section>
 
       {#if faqs.length > 0}
@@ -196,6 +178,7 @@
       {/if}
 
       <footer class="mt-16 space-y-10">
+        <!-- Tags -->
         <div class="border-t border-gray-100 pt-8 dark:border-gray-800">
           <PostTags post={{ metadata }} />
         </div>

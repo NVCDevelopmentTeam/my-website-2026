@@ -26,6 +26,28 @@ const modernizeMdsvexModuleScript = {
   }
 }
 
+// Preprocessor converting the ToC <slot> marker (inserted by mdsvex.config.js's
+// rehypeInsertTocSlot) into a real Svelte 5 snippet render, and declaring the
+// `toc` prop the compiled component needs to receive it. Runs as a string
+// transform on mdsvex's own output — the only reliable injection point, since
+// mdsvex's script pre-extraction happens before remark/rehype plugins run and
+// does not preserve script/prop declarations inserted via the AST.
+const wireTocSnippet = {
+  name: 'wire-toc-snippet',
+  markup: ({ content: code, filename }) => {
+    if (filename && (filename.endsWith('.md') || filename.endsWith('.svx'))) {
+      if (code.includes('<slot name="toc">')) {
+        code = code.replace(/<slot\s+name="toc"\s*>\s*<\/slot>/, '{@render tocSnippet?.()}')
+        code = code.replace(
+          '</script>',
+          '</script>\n\n<script>\n  let { toc: tocSnippet } = $props()\n</script>'
+        )
+      }
+    }
+    return { code }
+  }
+}
+
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
   extensions: ['.svelte', ...mdsvexExtensions],
@@ -33,6 +55,7 @@ const config = {
     stripSvelteAnnouncer,
     mdsvex(mdsvexConfig),
     modernizeMdsvexModuleScript,
+    wireTocSnippet,
     vitePreprocess()
   ],
 

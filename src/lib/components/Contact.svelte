@@ -138,7 +138,7 @@
   {#if status}
     <div
       aria-live="polite"
-      class="mt-6 animate-fade-in rounded-xl p-4 text-center font-bold {status.includes(
+      class="mt-6 rounded-xl p-4 text-center font-bold animate-fade-in {status.includes(
         'thành công'
       )
         ? 'bg-emerald-50 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-300'

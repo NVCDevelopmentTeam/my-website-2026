@@ -15,7 +15,7 @@ To recreate this project with the same configuration:
 
 ```sh
 # recreate this project
-pnpm dlx sv@0.17.0 create --template demo --no-types --install pnpm my website
+pnpm dlx sv@0.17.0 create --template demo --no-types --install pnpm tt
 ```
 
 ## Developing

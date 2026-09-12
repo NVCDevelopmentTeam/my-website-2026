@@ -1,6 +1,6 @@
 <script>
   import { browser } from '$app/environment'
-  import { onMount } from 'svelte'
+  import { onMount, tick } from 'svelte'
   import { afterNavigate, pushState } from '$app/navigation'
   import { slugify } from '$lib/utils/slugify'
 
@@ -46,37 +46,125 @@
      Methods - similar to methods in Vue
   ----------------------------------------------------- */
 
-  // Scroll to a specific heading ID smoothly and set focus
-  function scrollToId(id, smooth = true) {
-    if (!browser || !id) return false
+  // Fix heading IDs in DOM to match slugified versions
+  function syncHeadingIds() {
+    if (!browser) return
+
+    // Select all headings within the main content area
+    const contentArea = document.querySelector('article') || document.querySelector('main')
+    if (!contentArea) return
+
+    const headings = contentArea.querySelectorAll('h1, h2, h3, h4, h5, h6')
+
+    processedToc.forEach((h) => {
+      // 1. Try to find by ID exactly
+      let foundHeading = document.getElementById(h.id)
+
+      // 2. Try to find by text content if ID not found
+      if (!foundHeading) {
+        for (const el of headings) {
+          // Check text content or nested anchor text (rehype-autolink-headings behavior)
+          const text = el.textContent.trim().toLowerCase()
+          if (text === h.title.toLowerCase()) {
+            foundHeading = el
+            break
+          }
+        }
+      }
+
+      // 3. Try to find by slugified text content
+      if (!foundHeading) {
+        for (const el of headings) {
+          if (slugify(el.textContent.trim()) === h.id) {
+            foundHeading = el
+            break
+          }
+        }
+      }
+
+      // Update ID to match TOC expected ID if found
+      if (foundHeading) {
+        if (foundHeading.id !== h.id) {
+          foundHeading.id = h.id
+        }
+        // Ensure it's focusable for accessibility
+        if (!foundHeading.hasAttribute('tabindex')) {
+          foundHeading.setAttribute('tabindex', '-1')
+        }
+      }
+    })
+  }
+
+  // Scroll to a specific ID with multiple strategies
+  async function scrollToId(id, smooth = true) {
+    if (!browser || !id) return
+
+    // Normalize ID
     const decodedId = decodeURIComponent(id).replace(/^#/, '')
-    const el = document.getElementById(decodedId)
+
+    // Ensure headings are synced first
+    syncHeadingIds()
+
+    // Wait for Svelte to finish any pending updates
+    await tick()
+
+    let el = document.getElementById(decodedId)
+
+    // If not found, try finding by matching data attributes or text content fallback
+    if (!el) {
+      // Try re-syncing in case DOM changed
+      syncHeadingIds()
+      el = document.getElementById(decodedId)
+    }
+
     if (el) {
+      // Use scrollIntoView which respects scroll-margin-top (defined in app.css)
       el.scrollIntoView({
         behavior: smooth ? 'smooth' : 'auto',
         block: 'start'
       })
-      el.setAttribute('tabindex', '-1')
+
+      // Move focus to the element (important for accessibility/skip-to)
       el.focus({ preventScroll: true })
+
       return true
     }
+
     return false
   }
 
   // Handle link click
-  function handleLinkClick(e) {
+  async function handleLinkClick(e) {
     const href = e.currentTarget.getAttribute('href')
     if (href?.startsWith('#')) {
       const id = href.slice(1)
       e.preventDefault()
+
+      // Update URL hash without jumping
       pushState(`#${id}`, {})
-      scrollToId(id)
+
+      // Manual trigger for immediate response
+      const success = await scrollToId(id)
+
+      if (success) {
+        // Set focus to the element for accessibility/skip-link behavior
+        const el = document.getElementById(id)
+        if (el) {
+          el.setAttribute('tabindex', '-1')
+          el.focus({ preventScroll: true })
+        }
+      }
+
+      // Set active immediately
       const found = processedToc.find((h) => h.id === id)
       if (found) activeHeading = found
     }
 
-    if (typeof window !== 'undefined' && window.innerWidth < 1024) {
-      isExpanded = false
+    // Auto-collapse after scroll on mobile
+    if (window.innerWidth < 1024) {
+      setTimeout(() => {
+        isExpanded = false
+      }, 400)
     }
   }
 
@@ -91,62 +179,75 @@
     return (level - minLevel) * 16
   }
 
-  // Visual indent marker style per heading level — returns CSS classes for a
-  // decorative dot (no text glyph), so there is no character in the DOM at
-  // all for assistive tech to potentially pick up.
-  function getBulletClass(level) {
-    if (level <= 2) return 'h-1.5 w-1.5 rounded-full bg-current'
-    if (level === 3) return 'h-1.5 w-1.5 rounded-full border border-current bg-transparent'
-    return 'h-1 w-1 rounded-full border border-current bg-transparent'
+  // Get bullet style
+  function getBullet(level) {
+    if (level <= 2) return '•'
+    if (level === 3) return '◦'
+    return '▪'
   }
 
-  // Navigation hash watcher
-  afterNavigate((nav) => {
+  /* -----------------------------------------------------
+     Lifecycle & Navigation
+  ----------------------------------------------------- */
+
+  // Watch for hash changes
+  function onHashChange() {
+    const hash = window.location.hash.slice(1)
+    if (hash) scrollToId(hash)
+  }
+
+  // Handle navigation (including deep links)
+  afterNavigate(async (nav) => {
     if (nav.to?.url.hash) {
       const hash = nav.to.url.hash.slice(1)
-      setTimeout(() => scrollToId(hash), 200)
+      // Wait a bit for the content to fully render
+      setTimeout(() => scrollToId(hash), 300)
     }
   })
 
   $effect(() => {
     if (browser && post && hasToc) {
-      var handleScroll = () => {
-        isSticky = window.scrollY > 300
+      // 1. Setup IntersectionObserver for active heading detection
+      const headingElements = processedToc.map((h) => document.getElementById(h.id)).filter(Boolean)
+
+      if (headingElements.length > 0) {
+        observer = new IntersectionObserver(
+          (entries) => {
+            // Find the heading that is most "active" (visible at top)
+            const visibleEntries = entries.filter((e) => e.isIntersecting)
+            if (visibleEntries.length > 0) {
+              // Pick the first visible one (topmost)
+              const id = visibleEntries[0].target.id
+              const found = processedToc.find((h) => h.id === id)
+              if (found) activeHeading = found
+            }
+          },
+          {
+            rootMargin: '-80px 0% -80% 0%',
+            threshold: 0.1
+          }
+        )
+
+        headingElements.forEach((el) => observer.observe(el))
       }
 
-      const timer = setTimeout(() => {
-        const headingElements = processedToc
-          .map((h) => document.getElementById(h.id))
-          .filter(Boolean)
+      // 2. Setup scroll listener for sticky state only (less frequent update needed)
+      const handleScroll = () => {
+        isSticky = window.scrollY > 300
+      }
+      window.addEventListener('scroll', handleScroll, { passive: true })
+      window.addEventListener('hashchange', onHashChange)
 
-        if (headingElements.length > 0) {
-          observer = new IntersectionObserver(
-            (entries) => {
-              const visible = entries.find((e) => e.isIntersecting)
-              if (visible) {
-                const found = processedToc.find((h) => h.id === visible.target.id)
-                if (found) activeHeading = found
-              }
-            },
-            {
-              rootMargin: '-80px 0px -70% 0px',
-              threshold: 0.1
-            }
-          )
-          headingElements.forEach((el) => observer?.observe(el))
-        }
-
-        window.addEventListener('scroll', handleScroll, { passive: true })
-
-        if (window.location.hash) {
-          scrollToId(window.location.hash.slice(1))
-        }
-      }, 100)
+      // 3. Initial hash check
+      const currentHash = window.location.hash.slice(1)
+      if (currentHash) {
+        setTimeout(() => scrollToId(currentHash), 500)
+      }
 
       return () => {
-        clearTimeout(timer)
         if (observer) observer.disconnect()
         window.removeEventListener('scroll', handleScroll)
+        window.removeEventListener('hashchange', onHashChange)
       }
     }
   })
@@ -162,13 +263,16 @@
 
 {#if hasToc}
   <nav
-    class="animate-in slide-in-from-left-5 fade-in my-8 border-l-4 border-blue-800 rounded-r-2xl bg-blue-50/50 p-4 shadow-sm transition-all duration-300 dark:border-blue-400 dark:bg-gray-900 sm:p-6 hover:shadow-md {isSticky
+    class="my-8 border-l-4 border-blue-800 rounded-r-2xl bg-blue-50/50 p-4 shadow-sm transition-all duration-300 animate-in fade-in slide-in-from-left-5 dark:border-blue-400 dark:bg-gray-900 sm:p-6 hover:shadow-md {isSticky
       ? 'lg:sticky lg:top-20'
       : ''}"
   >
     <!-- Header with toggle -->
     <div class="mb-4 flex items-center justify-between">
-      <h2 class="m-0 flex items-center gap-2 text-lg text-gray-950 font-bold dark:text-white">
+      <h2
+        id="toc-heading"
+        class="m-0 flex items-center gap-2 text-lg text-gray-950 font-bold dark:text-white"
+      >
         <svg
           class="h-5 w-5 text-blue-800 dark:text-blue-400"
           fill="none"
@@ -209,7 +313,7 @@
 
     <!-- TOC List with smooth transition -->
     {#if isExpanded}
-      <div id="toc-list" class="animate-in fade-in slide-in-from-top-2 duration-200">
+      <div id="toc-list" class="duration-200 animate-in fade-in slide-in-from-top-2">
         {#if children}
           {@render children()}
         {:else}
@@ -220,23 +324,25 @@
             {#each processedToc as h (h.id)}
               {@const indent = getIndent(h.level)}
               {@const isActive = activeHeading?.id === h.id}
-              {@const bulletClass = getBulletClass(h.level)}
+              {@const bullet = getBullet(h.level)}
 
               <li style="margin-left: {indent}px;" class="transition-all duration-200">
                 <a
                   href="#{h.id}"
                   onclick={handleLinkClick}
-                  class="group relative flex items-center gap-2 rounded-xl px-3 py-2 text-sm no-underline transition-all duration-200 {isActive
+                  class="group relative flex items-start gap-2 rounded-xl px-3 py-2 text-sm no-underline transition-all duration-200 {isActive
                     ? 'bg-white text-blue-900 font-bold shadow-sm before:absolute before:left-0 before:top-1/2 before:h-5 before:w-0.5 before:rounded-full before:bg-current dark:bg-gray-800 dark:text-blue-300 before:-translate-y-1/2'
                     : 'text-gray-950 hover:bg-white dark:text-gray-50 hover:text-blue-800 dark:hover:bg-gray-800 dark:hover:text-blue-400'}"
                   aria-current={isActive ? 'location' : undefined}
                 >
                   <span
-                    class="flex-shrink-0 transition-all duration-200 {bulletClass}
-                      {isActive
+                    class="mt-0.5 flex-shrink-0 transition-all duration-200 {isActive
                       ? 'scale-110 text-blue-900 opacity-100 dark:text-blue-300'
                       : 'text-blue-800 opacity-70 group-hover:scale-105 dark:text-blue-400 group-hover:opacity-100'}"
-                  ></span>
+                    aria-hidden="true"
+                  >
+                    {bullet}
+                  </span>
                   <span class="flex-1 transition-transform duration-200 group-hover:translate-x-1">
                     {h.title}
                   </span>

@@ -104,14 +104,14 @@
            and the explicit Close button already cover the keyboard/AT path,
            so this doesn't need its own focusable, announced control. -->
       <div
-        class="animate-in fade-in fixed inset-0 bg-black/60 duration-200"
+        class="fixed inset-0 bg-black/60 duration-200 animate-in fade-in"
         onclick={handleBackdropClick}
         aria-hidden="true"
       ></div>
 
       <!-- Menu Panel -->
       <div
-        class="animate-in slide-in-from-right safe-top safe-bottom safe-x fixed bottom-0 right-0 top-0 max-w-md w-full overflow-y-auto bg-white text-gray-950 shadow-2xl duration-200 dark:bg-gray-950 dark:text-white"
+        class="safe-top safe-bottom safe-x fixed bottom-0 right-0 top-0 max-w-md w-full overflow-y-auto bg-white text-gray-950 shadow-2xl duration-200 animate-in slide-in-from-right dark:bg-gray-950 dark:text-white"
         role="dialog"
         aria-modal="true"
         aria-label="Menu điều hướng"

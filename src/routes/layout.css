@@ -64,6 +64,18 @@ html {
   }
 }
 
+/* View Transitions API (see routes/(app)/+layout.svelte onNavigate) plays a
+   cross-fade by default whenever the browser supports it, regardless of the
+   user's motion preference — disable that animation explicitly for users
+   who have requested reduced motion. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
 body {
   min-height: 100%;
   font-family: var(--font-sans);

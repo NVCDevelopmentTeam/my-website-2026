@@ -30,7 +30,7 @@
         href={postUrl}
         class="ml-2 inline-block text-blue-800 font-bold dark:text-blue-300 hover:underline"
       >
-        →tiếp tục đọc {post.metadata.title}
+        → tiếp tục đọc {post.metadata.title}
       </a>
     </div>
   {:else}

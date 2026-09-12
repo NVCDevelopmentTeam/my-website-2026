@@ -8,7 +8,7 @@
     if (!browser) return
 
     // Check for saved theme or system preference
-    const savedTheme = localStorage.getItem('theme')
+    const savedTheme = localStorage.getItem('theme-preference')
     const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
 
     theme = savedTheme || systemTheme
@@ -29,7 +29,7 @@
       document.documentElement.classList.remove('dark')
     }
 
-    localStorage.setItem('theme', newTheme)
+    localStorage.setItem('theme-preference', newTheme)
     theme = newTheme
   }
 

@@ -71,7 +71,7 @@ export default defineConfig({
         propertyReadSideEffects: false
       }
     },
-    target: ['es2020', 'chrome80', 'safari14', 'firefox78'],
+    target: ['es2022', 'chrome89', 'safari15', 'firefox89'],
     chunkSizeWarningLimit: 600
   }
 })
