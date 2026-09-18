@@ -2,6 +2,7 @@
   import './layout.css'
   import { onMount } from 'svelte'
   import { pushState, afterNavigate } from '$app/navigation'
+  import { dev } from '$app/environment'
   import { siteConfig } from '$lib/config'
 
   let { children } = $props()
@@ -37,6 +38,20 @@
   })
 
   onMount(() => {
+    // Service worker: production only (see svelte.config.js — automatic
+    // registration is disabled there). Running a caching service worker
+    // against Vite's dev server causes stale/mismatched state whenever the
+    // dev server restarts, since its module graph changes every time but an
+    // already-active worker keeps trying to serve fetches against the old
+    // one — this is what caused blank pages that needed a manual hard
+    // navigation to recover from. Deferred via setTimeout so it never
+    // competes with the page's own critical-path work right after load.
+    if (!dev && 'serviceWorker' in navigator) {
+      setTimeout(() => {
+        navigator.serviceWorker.register('/service-worker.js')
+      }, 0)
+    }
+
     // Smooth same-page anchor scrolling via delegation.
     // Cleanup returned from onMount — no beforeunload/unload handlers used.
     function handleAnchorClick(e) {

@@ -80,6 +80,9 @@ const config = {
     },
     version: {
       pollInterval: 0
+    },
+    serviceWorker: {
+      register: false // registered manually in +layout.svelte, production only — see comment there
     }
   }
 }

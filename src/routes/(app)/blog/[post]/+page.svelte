@@ -57,26 +57,26 @@
           headline: metadata.title,
           description: metadata.description,
           image: metadata.image
-            ? `${siteConfig.url}${metadata.image}`
-            : `${siteConfig.url}/og-image.png`,
+            ? `${siteConfig.siteUrl}${metadata.image}`
+            : `${siteConfig.siteUrl}/og-image.jpg`,
           datePublished: metadata.date,
           dateModified: metadata.updated || metadata.date,
           author: {
             '@type': 'Person',
             name: metadata.author || siteConfig.author.name,
-            url: siteConfig.url
+            url: siteConfig.siteUrl
           },
           publisher: {
             '@type': 'Organization',
             name: siteConfig.title,
             logo: {
               '@type': 'ImageObject',
-              url: `${siteConfig.url}/logo.png`
+              url: `${siteConfig.siteUrl}/pwa-512x512.png`
             }
           },
           mainEntityOfPage: {
             '@type': 'WebPage',
-            '@id': `${siteConfig.url}/blog/${metadata.slug}`
+            '@id': `${siteConfig.siteUrl}/blog/${metadata.slug}`
           },
           keywords: metadata.tags?.join(', ') || '',
           articleSection: metadata.categories?.[0] || 'Blog',
@@ -96,7 +96,7 @@
     {@html jsonLdString}
 
     <!-- Canonical URL -->
-    <link rel="canonical" href="{siteConfig.url}/blog/{metadata.slug}" />
+    <link rel="canonical" href="{siteConfig.siteUrl}/blog/{metadata.slug}" />
   {/if}
 </svelte:head>
 
@@ -146,7 +146,7 @@
         </div>
 
         <!-- Hidden meta for SEO -->
-        <meta itemprop="image" content={metadata.image || '/og-image.png'} />
+        <meta itemprop="image" content={metadata.image || '/og-image.jpg'} />
         <meta itemprop="description" content={metadata.description} />
       </header>
 

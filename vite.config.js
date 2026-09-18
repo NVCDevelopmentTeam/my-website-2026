@@ -30,9 +30,11 @@ export default defineConfig({
     cssCodeSplit: true,
     sourcemap: false,
     reportCompressedSize: false,
-    modulePreload: {
-      polyfill: false
-    },
+    // Disabled: the service worker precaches every build asset at install
+    // (see ALL_ASSETS in service-worker.js) and serves them from Cache
+    // Storage, so Chrome discards these hints with "cross-world service
+    // worker resource mismatch" — console noise with no remaining benefit.
+    modulePreload: false,
     rollupOptions: {
       output: {
         manualChunks(id) {

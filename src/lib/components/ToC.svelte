@@ -179,11 +179,15 @@
     return (level - minLevel) * 16
   }
 
-  // Get bullet style
-  function getBullet(level) {
-    if (level <= 2) return '•'
-    if (level === 3) return '◦'
-    return '▪'
+  // Visual indent marker per heading level — returns CSS classes for a
+  // decorative dot rather than a text glyph. Keeping the character out of
+  // the DOM entirely is the only reliable fix: aria-hidden on a text node
+  // inside the <a> is not honoured consistently across all screen
+  // reader/browser pairs, so a screen reader could still read it aloud.
+  function getBulletClass(level) {
+    if (level <= 2) return 'h-1.5 w-1.5 rounded-full bg-current'
+    if (level === 3) return 'h-1.5 w-1.5 rounded-full border border-current bg-transparent'
+    return 'h-1 w-1 rounded-full border border-current bg-transparent'
   }
 
   /* -----------------------------------------------------
@@ -324,7 +328,7 @@
             {#each processedToc as h (h.id)}
               {@const indent = getIndent(h.level)}
               {@const isActive = activeHeading?.id === h.id}
-              {@const bullet = getBullet(h.level)}
+              {@const bulletClass = getBulletClass(h.level)}
 
               <li style="margin-left: {indent}px;" class="transition-all duration-200">
                 <a
@@ -336,13 +340,11 @@
                   aria-current={isActive ? 'location' : undefined}
                 >
                   <span
-                    class="mt-0.5 flex-shrink-0 transition-all duration-200 {isActive
+                    class="flex-shrink-0 transition-all duration-200 {bulletClass} {isActive
                       ? 'scale-110 text-blue-900 opacity-100 dark:text-blue-300'
                       : 'text-blue-800 opacity-70 group-hover:scale-105 dark:text-blue-400 group-hover:opacity-100'}"
                     aria-hidden="true"
-                  >
-                    {bullet}
-                  </span>
+                  ></span>
                   <span class="flex-1 transition-transform duration-200 group-hover:translate-x-1">
                     {h.title}
                   </span>

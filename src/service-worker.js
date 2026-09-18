@@ -1,19 +1,21 @@
 /// <reference types="@sveltejs/kit" />
-import { build, files, prerendered, version } from '$service-worker'
+import { files, prerendered, version } from '$service-worker'
 
 // Unique cache key per deployment
 var CACHE = 'app-' + version
 
-var IMMUTABLE_ASSETS = build
 var STATIC_FILES = files.filter(function (file) {
   return !file.startsWith('/_') && !file.startsWith('/.')
 })
 var PRERENDERED_HTML = prerendered
-// Only precache the app shell (build + static files) on install — matches
+// Only precache static files on install — hashed build assets are served by
 // SvelteKit's own documented service worker pattern. Prerendered pages are
 // NOT eagerly bulk-fetched here; staleWhileRevalidate() below caches each
 // one lazily, on demand, the first time it's actually visited.
-var ALL_ASSETS = [].concat(IMMUTABLE_ASSETS, STATIC_FILES)
+// Only static files are precached. Hashed build assets are intentionally
+// excluded: the fetch handler no longer serves them (see above), so caching
+// them here would download the whole bundle on install for nothing.
+var ALL_ASSETS = [].concat(STATIC_FILES)
 
 // Install — pre-cache all known assets safely
 self.addEventListener('install', function (event) {
@@ -66,11 +68,14 @@ self.addEventListener('fetch', function (event) {
   if (url.origin !== self.location.origin) return
   if (url.pathname.startsWith('/@') || url.pathname.includes('node_modules')) return
 
-  // Immutable hashed JS/CSS — cache-first (permanent)
-  if (url.pathname.startsWith('/_app/immutable/')) {
-    event.respondWith(cacheFirst(event.request))
-    return
-  }
+  // Immutable hashed JS/CSS — deliberately NOT intercepted.
+  // These are content-hashed and preloaded by SvelteKit. If the service
+  // worker answers them from Cache Storage, Chrome discards every preload
+  // hint with "cross-world service worker resource mismatch" and then warns
+  // again that the preload went unused. Letting them fall through to the
+  // browser's own HTTP cache keeps the preloads effective; the hashed
+  // filenames already guarantee correct long-term caching.
+  if (url.pathname.startsWith('/_app/immutable/')) return
 
   // Fonts — cache-first (permanent, eliminates FOIT/CLS)
   if (url.pathname.startsWith('/fonts/')) {
@@ -161,7 +166,19 @@ async function staleWhileRevalidate(event) {
   event.waitUntil(revalidate)
 
   if (cached) return cached
-  return (await revalidate) ?? fetchWithTimeout(event.request, 8000)
+
+  var fresh = await revalidate
+  if (fresh) return fresh
+
+  try {
+    return await fetchWithTimeout(event.request, 8000)
+  } catch {
+    return new Response('Network error', {
+      status: 504,
+      statusText: 'Gateway Timeout',
+      headers: { 'Content-Type': 'text/plain' }
+    })
+  }
 }
 
 /**
