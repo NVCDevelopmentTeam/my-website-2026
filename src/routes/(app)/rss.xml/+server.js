@@ -1,6 +1,6 @@
-import { getFilteredPosts } from '$lib/data/posts'
-import { siteConfig } from '$lib/config'
-import { escapeXml } from '$lib/utils/escapeXml'
+import { getFilteredPosts } from '#lib/data/posts.js'
+import { siteConfig } from '#lib/config.js'
+import { escapeXml } from '#lib/utils/escapeXml.js'
 
 export const prerender = true
 export const trailingSlash = 'never'
@@ -29,9 +29,7 @@ export async function GET({ setHeaders }) {
 
         // Escape XML special characters
         const title = escapeXml(post.metadata?.title || 'Untitled')
-        const description = escapeXml(
-          post.metadata?.description || post.metadata?.excerpt || 'No description available'
-        )
+        const description = escapeXml(post.metadata?.description || 'No description available')
         const author = escapeXml(
           post.metadata?.author || siteConfig.author?.name || siteConfig.title
         )

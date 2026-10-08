@@ -1,9 +1,9 @@
 <script>
-  import { siteConfig } from '$lib/config'
-  import PostsList from '$lib/components/PostsList.svelte'
-  import Pagination from '$lib/components/Pagination.svelte'
-  import SEO from '$lib/components/SEO.svelte'
-  import { getSeoConfig } from '$lib/utils/seo'
+  import { siteConfig } from '#lib/config.js'
+  import PostsList from '#lib/components/PostsList.svelte'
+  import Pagination from '#lib/components/Pagination.svelte'
+  import SEO from '#lib/components/SEO.svelte'
+  import { getSeoConfig } from '#lib/utils/seo.js'
 
   // Get data from server
   let { data } = $props()

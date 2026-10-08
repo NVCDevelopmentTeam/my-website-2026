@@ -4,7 +4,7 @@
   import Menu from './Menu.svelte'
   import ThemeSwitcher from './ThemeSwitcher.svelte'
 
-  /** @type {Object} Props */
+  /** @type {{ allPages?: any[], navPages?: any[] }} */
   let { allPages = [], navPages = [] } = $props()
 </script>
 

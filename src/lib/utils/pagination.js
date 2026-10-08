@@ -1,5 +1,5 @@
-import { siteConfig } from '$lib/config'
-import { building } from '$app/environment'
+import { siteConfig } from '#lib/config.js'
+import { building } from '$app/env'
 
 /**
  * Compute paginated listing parameters from a SvelteKit URL and call
@@ -11,25 +11,20 @@ import { building } from '$app/environment'
  *   - blog/tag/[tag]/+page.js
  *
  * @param {URL}    url           - The request URL (for ?page= query param).
- * @param {Object} [filters={}]  - Extra filters forwarded to `getFilteredPosts`
+ * @param {Object} filters      - Extra filters forwarded to `getFilteredPosts`
  *                                 (e.g. `{ category: 'Tech' }` or `{ tag: 'svelte' }`).
- * @param {typeof import('$lib/data/posts').getFilteredPosts} getFilteredPosts
- * @returns {{ posts: any[], pagination: object }}
+ * @param {typeof import('#lib/data/posts.js').getFilteredPosts} getFilteredPosts
+ * @returns {{ posts: any[], pagination: { currentPage: number, totalPages: number, totalPosts: number, hasPrev: boolean, hasNext: boolean } }}
  */
 export function loadPaginatedPosts(url, filters, getFilteredPosts) {
   const perPage = siteConfig.pagination.postsPerPage
-
   const pageParam = building ? null : url.searchParams.get('page')
   let currentPage = parseInt(pageParam || '1')
+
   if (isNaN(currentPage) || currentPage < 1) currentPage = 1
 
   const offset = (currentPage - 1) * perPage
-
-  const { posts, total, totalPages } = getFilteredPosts({
-    offset,
-    limit: perPage,
-    ...filters
-  })
+  const { posts, total, totalPages } = getFilteredPosts({ offset, limit: perPage, ...filters })
 
   return {
     posts,

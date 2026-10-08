@@ -1,5 +1,14 @@
 /// <reference types="@sveltejs/kit" />
-import { files, prerendered, version } from '$service-worker'
+import { assets, prerendered as prerenderedManifest } from '$app/manifest'
+import { version } from '$app/env'
+
+// SvelteKit 3: the manifest exposes `{ path }` objects instead of plain strings.
+var files = assets.map(function (asset) {
+  return asset.path
+})
+var prerendered = prerenderedManifest.map(function (entry) {
+  return entry.path
+})
 
 // Unique cache key per deployment
 var CACHE = 'app-' + version
@@ -10,7 +19,7 @@ var STATIC_FILES = files.filter(function (file) {
 var PRERENDERED_HTML = prerendered
 // Only precache static files on install — hashed build assets are served by
 // SvelteKit's own documented service worker pattern. Prerendered pages are
-// NOT eagerly bulk-fetched here; staleWhileRevalidate() below caches each
+// NOT eagerly bulk-fetched here; networkFirstWithTimeout() below caches each
 // one lazily, on demand, the first time it's actually visited.
 // Only static files are precached. Hashed build assets are intentionally
 // excluded: the fetch handler no longer serves them (see above), so caching
@@ -90,9 +99,12 @@ self.addEventListener('fetch', function (event) {
       ? normalizedPath.slice(0, -1)
       : normalizedPath
 
-  // Prerendered HTML — stale-while-revalidate (instant paint + fresh data)
+  // Prerendered HTML — network-first with cache fallback (still works offline).
+  // NOT stale-while-revalidate: cached HTML from a previous deploy references
+  // content-hashed /_app/immutable/ files that no longer exist after a new deploy,
+  // which left the page without working JavaScript on the first visit after a deploy.
   if (PRERENDERED_HTML.includes(normalizedPath) || PRERENDERED_HTML.includes(trimmedPath)) {
-    event.respondWith(staleWhileRevalidate(event))
+    event.respondWith(networkFirstWithTimeout(event.request, 3000))
     return
   }
 
@@ -143,42 +155,6 @@ function fetchWithTimeout(request, timeoutMs) {
   return fetch(request, { signal: controller.signal }).finally(function () {
     clearTimeout(timer)
   })
-}
-
-/**
- * Stale-while-revalidate: serve cache instantly, revalidate in background.
- * event.waitUntil() keeps the worker alive for the background fetch even
- * after we've already returned the cached response via respondWith().
- */
-async function staleWhileRevalidate(event) {
-  var cache = await caches.open(CACHE)
-  var cached = await cache.match(event.request)
-
-  var revalidate = fetchWithTimeout(event.request, 8000)
-    .then(function (response) {
-      if (response.ok) cache.put(event.request, response.clone())
-      return response
-    })
-    .catch(function () {
-      return null
-    })
-
-  event.waitUntil(revalidate)
-
-  if (cached) return cached
-
-  var fresh = await revalidate
-  if (fresh) return fresh
-
-  try {
-    return await fetchWithTimeout(event.request, 8000)
-  } catch {
-    return new Response('Network error', {
-      status: 504,
-      statusText: 'Gateway Timeout',
-      headers: { 'Content-Type': 'text/plain' }
-    })
-  }
 }
 
 /**

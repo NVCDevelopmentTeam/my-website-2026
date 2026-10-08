@@ -1,24 +1,22 @@
 <script>
-  import { siteConfig } from '$lib/config'
-  import PostDate from '$lib/components/PostDate.svelte'
-  import PostAuthor from '$lib/components/PostAuthor.svelte'
-  import PostCategories from '$lib/components/PostCategories.svelte'
-  import PostTags from '$lib/components/PostTags.svelte'
-  import LikeAndShare from '$lib/components/LikeAndShare.svelte'
-  import ToC from '$lib/components/ToC.svelte'
-  import FAQ from '$lib/components/FAQ.svelte'
-  import PostNavigation from '$lib/components/PostNavigation.svelte'
-  import SEO from '$lib/components/SEO.svelte'
-  import { getSeoConfig } from '$lib/utils/seo'
+  import { siteConfig } from '#lib/config.js'
+  import PostDate from '#lib/components/PostDate.svelte'
+  import PostAuthor from '#lib/components/PostAuthor.svelte'
+  import PostCategories from '#lib/components/PostCategories.svelte'
+  import PostTags from '#lib/components/PostTags.svelte'
+  import LikeAndShare from '#lib/components/LikeAndShare.svelte'
+  import ToC from '#lib/components/ToC.svelte'
+  import FAQ from '#lib/components/FAQ.svelte'
+  import PostNavigation from '#lib/components/PostNavigation.svelte'
+  import SEO from '#lib/components/SEO.svelte'
+  import { getSeoConfig, serializeSchema } from '#lib/utils/seo.js'
   import { onMount } from 'svelte'
-  import { browser } from '$app/environment'
+  import { browser } from '$app/env'
 
   const { data } = $props()
   const { content: PostContent, metadata } = $derived.by(() => data)
-
-  const faqs = $derived(metadata?.faqs || [])
+  const faqs = $derived(/** @type {Record<string, any>} */ (metadata)?.faqs || [])
   const hasToc = $derived(metadata?.toc && metadata.toc.length > 0)
-
   let views = $state(0)
 
   onMount(() => {
@@ -38,7 +36,7 @@
       title: metadata?.title,
       description: metadata?.description,
       url: `/blog/${metadata?.slug}`,
-      image: metadata?.image,
+      image: metadata?.image ?? undefined,
       type: 'article',
       article: {
         publishedTime: metadata?.date,
@@ -51,7 +49,7 @@
 
   const jsonLdString = $derived(
     metadata
-      ? `<script type="application/ld+json">${JSON.stringify({
+      ? serializeSchema({
           '@context': 'https://schema.org',
           '@type': 'BlogPosting',
           headline: metadata.title,
@@ -80,9 +78,9 @@
           },
           keywords: metadata.tags?.join(', ') || '',
           articleSection: metadata.categories?.[0] || 'Blog',
-          wordCount: metadata.wordCount || 0,
+          wordCount: /** @type {Record<string, any>} */ (metadata).wordCount || 0,
           timeRequired: `PT${metadata.readingTime || 5}M`
-        })}</' + 'script>'`
+        })
       : ''
   )
 </script>
@@ -94,9 +92,6 @@
   {#if metadata}
     <!-- eslint-disable-next-line svelte/no-at-html-tags -->
     {@html jsonLdString}
-
-    <!-- Canonical URL -->
-    <link rel="canonical" href="{siteConfig.siteUrl}/blog/{metadata.slug}" />
   {/if}
 </svelte:head>
 
@@ -131,20 +126,16 @@
           <PostCategories post={{ metadata }} />
           <span aria-hidden="true" class="text-gray-300 dark:text-gray-700">|</span>
           <span class="text-gray-950 font-bold dark:text-gray-200">
-            <span itemprop="timeRequired" content="PT{metadata.readingTime}M">
-              {metadata.readingTime} phút đọc
-            </span>
+            <meta itemprop="timeRequired" content="PT{metadata.readingTime}M" />
+            {metadata.readingTime} phút đọc
           </span>
+
           <span aria-hidden="true" class="text-gray-300 dark:text-gray-700">|</span>
-          <span class="text-gray-950 font-bold dark:text-gray-200">
-            {views} lượt đọc
-          </span>
+
+          <span class="text-gray-950 font-bold dark:text-gray-200">{views} lượt đọc</span>
         </div>
 
-        <div class="flex items-center pt-2">
-          <LikeAndShare />
-        </div>
-
+        <div class="flex items-center pt-2"><LikeAndShare /></div>
         <!-- Hidden meta for SEO -->
         <meta itemprop="image" content={metadata.image || '/og-image.jpg'} />
         <meta itemprop="description" content={metadata.description} />

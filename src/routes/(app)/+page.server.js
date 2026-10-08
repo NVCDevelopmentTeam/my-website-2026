@@ -1,9 +1,9 @@
-import { getFilteredPosts } from '$lib/data/posts'
+import { getFilteredPosts } from '#lib/data/posts.js'
 import { error } from '@sveltejs/kit'
 
 export const prerender = true
 
-/** @type {import('./$types').HomePageServerLoad} */
+/** @type {import('./$types').PageServerLoad} */
 export async function load() {
   try {
     var { posts: latestPosts } = getFilteredPosts({ offset: 0, limit: 3 })

@@ -1,4 +1,6 @@
 .cache
+.svelte-kit
+build
 package.json
 package-lock.json
 public

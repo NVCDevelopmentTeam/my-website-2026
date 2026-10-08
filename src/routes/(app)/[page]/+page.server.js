@@ -1,4 +1,4 @@
-import { getPageBySlug, getAllPages } from '$lib/data/pages'
+import { getPageBySlug, getAllPages } from '#lib/data/pages.js'
 import { error } from '@sveltejs/kit'
 
 export const prerender = true
@@ -12,9 +12,9 @@ export async function entries() {
 export async function load({ params }) {
   const { page: slug } = params
   try {
-    const { metadata } = await getPageBySlug(slug)
-    // only return metadata, not content component
-    return { page: { slug, metadata } }
+    const { metadata, filename } = await getPageBySlug(slug)
+    // only return metadata (+ the real file name), not the content component
+    return { page: { slug, filename, metadata } }
   } catch {
     error(404, `Page not found: ${slug}`)
   }

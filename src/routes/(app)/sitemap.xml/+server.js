@@ -1,7 +1,7 @@
-import { getAllPages } from '$lib/data/pages'
-import { getFilteredPosts, getAllCategories, getAllTags } from '$lib/data/posts'
-import { siteConfig } from '$lib/config'
-import { escapeXml } from '$lib/utils/escapeXml'
+import { getAllPages } from '#lib/data/pages.js'
+import { getFilteredPosts, getAllCategories, getAllTags } from '#lib/data/posts.js'
+import { siteConfig } from '#lib/config.js'
+import { escapeXml } from '#lib/utils/escapeXml.js'
 
 export const prerender = true
 export const trailingSlash = 'never'
@@ -33,6 +33,7 @@ export async function GET({ setHeaders }) {
 
     // Static pages
     const pagesXml = pages
+      .filter((page) => page.slug !== 'index') // the homepage is listed above
       .map(
         (page) => `
   <url>

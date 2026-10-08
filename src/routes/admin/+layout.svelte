@@ -1,7 +1,7 @@
 <script>
-  import logo from '$lib/assets/logo.svg'
-  import SkipLink from '$lib/components/SkipLink.svelte'
-  import { siteConfig } from '$lib/config'
+  import logo from '#lib/assets/logo.svg'
+  import SkipLink from '#lib/components/SkipLink.svelte'
+  import { siteConfig } from '#lib/config.js'
 
   let { children } = $props()
 </script>

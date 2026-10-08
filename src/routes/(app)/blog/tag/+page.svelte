@@ -1,7 +1,7 @@
 <script>
-  import { siteConfig } from '$lib/config'
-  import SEO from '$lib/components/SEO.svelte'
-  import { getSeoConfig } from '$lib/utils/seo'
+  import { siteConfig } from '#lib/config.js'
+  import SEO from '#lib/components/SEO.svelte'
+  import { getSeoConfig } from '#lib/utils/seo.js'
 
   const { data } = $props()
   const { tags, totalTags } = $derived.by(() => data)

@@ -1,5 +1,5 @@
 <script>
-  import { serializeSchema } from '$lib/utils/seo'
+  import { serializeSchema } from '#lib/utils/seo.js'
 
   /**
    * @typedef {Object} FAQItem

@@ -1,18 +1,25 @@
+import { slugify } from '#lib/utils/slugify.js'
+
 // Load only metadata for listing pages
-const modules = import.meta.glob('/src/lib/contents/pages/*.md', {
-  eager: true,
-  import: 'metadata'
-})
+const modules = /** @type {Record<string, Record<string, any>>} */ (
+  import.meta.glob('/src/lib/contents/pages/*.md', {
+    eager: true,
+    import: 'metadata'
+  })
+)
 
 // Full content modules for page rendering
-const contentModules = import.meta.glob('/src/lib/contents/pages/*.md', { eager: true })
+const contentModules = /** @type {Record<string, any>} */ (
+  import.meta.glob('/src/lib/contents/pages/*.md', { eager: true })
+)
 
 /**
  * Parsed list of all markdown pages, generated once at startup.
  */
 export const pages = Object.entries(modules).map(function ([filepath, metadata]) {
-  var filename = filepath.split('/').pop().replace('.md', '')
-  var slug = metadata.slug || filename
+  var filename = (filepath.split('/').pop() ?? '').replace('.md', '')
+  // `slug` may be typed by hand in the CMS (spaces, diacritics, upper case) → normalise
+  var slug = slugify(metadata.slug) || slugify(filename) || filename
   var preview = metadata.description || '...'
 
   return {
@@ -62,13 +69,14 @@ export function getAllPages(options = {}) {
  */
 export function getPageBySlug(slug) {
   var match = Object.entries(contentModules).find(function ([path, module]) {
-    var filename = path.split('/').pop().replace('.md', '')
-    return module.metadata?.slug === slug || filename === slug
+    var filename = (path.split('/').pop() ?? '').replace('.md', '')
+    return (slugify(module.metadata?.slug) || slugify(filename)) === slug || filename === slug
   })
   if (!match) throw new Error('Page not found: ' + slug)
 
   var module = match[1]
   return {
+    filename: (match[0].split('/').pop() ?? '').replace('.md', ''),
     metadata: module.metadata ?? {},
     content: module.default
   }

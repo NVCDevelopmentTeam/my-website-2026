@@ -139,6 +139,7 @@
   }
 
   // Handle backdrop click to dismiss modal
+  /** @param {MouseEvent} event */
   function handleDialogClick(event) {
     if (event.target === dialog) {
       closeDialog()
@@ -146,6 +147,7 @@
   }
 
   // Helper for opening share popups centered
+  /** @param {string} url */
   function openSharePopup(url) {
     if (typeof window === 'undefined') return
     const width = 620
@@ -204,7 +206,7 @@
         })
         closeDialog()
       } catch (err) {
-        if (err.name !== 'AbortError') console.warn(err)
+        if (/** @type {Error} */ (err).name !== 'AbortError') console.warn(err)
       }
     }
   }

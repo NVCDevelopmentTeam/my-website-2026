@@ -1,21 +1,52 @@
-import { siteConfig } from '$lib/config'
-import { slugify } from '$lib/utils/slugify'
-import { truncate } from '$lib/utils/truncate'
-import { parseList } from '$lib/utils/parseList'
-import { toISODate } from '$lib/utils/date'
+import { siteConfig } from '#lib/config.js'
+import { slugify } from '#lib/utils/slugify.js'
+import { truncate } from '#lib/utils/truncate.js'
+import { parseList } from '#lib/utils/parseList.js'
+import { toISODate } from '#lib/utils/date.js'
 
 // Load only metadata for all markdown files to keep the bundle small
-const modules = import.meta.glob('/src/lib/contents/posts/*.md', {
-  eager: true,
-  import: 'metadata'
-})
+/** Frontmatter is free-form (written by hand / via the CMS), so values are untyped */
+const modules = /** @type {Record<string, Record<string, any>>} */ (
+  import.meta.glob('/src/lib/contents/posts/*.md', {
+    eager: true,
+    import: 'metadata'
+  })
+)
+
+/**
+ * @typedef {object} PostMetadata
+ * @property {string} slug
+ * @property {string} title
+ * @property {string} author
+ * @property {string} date - ISO 8601
+ * @property {string} updated - ISO 8601
+ * @property {string[]} categories
+ * @property {string[]} tags
+ * @property {string} description - Meta description (≤160 chars)
+ * @property {string} preview - Longer excerpt for listings
+ * @property {number} readingTime - Minutes
+ * @property {boolean} draft
+ * @property {string | null} image
+ * @property {any[]} toc
+ * @property {number} [_wordsCount]
+ *
+ * @typedef {{ slug: string, rawName: string, timestamp: number, metadata: PostMetadata }} Post
+ * @typedef {{ metadata: { title: string, slug: string, description: string, count: number } }} CategoryItem
+ * @typedef {{ name: string, slug: string, count: number }} TagItem
+ */
 
 /* Cache layer — modules are eagerly loaded once, no TTL needed for static site */
+/** @type {Post[] | null} */
 var cachedPosts = null
+/** @type {CategoryItem[] | null} */
 var cachedCategories = null
+/** @type {TagItem[] | null} */
 var cachedTags = null
 
-/* Get all posts with metadata */
+/**
+ * Get all posts with metadata
+ * @returns {Post[]}
+ */
 function getAllPosts() {
   if (cachedPosts) return cachedPosts
 
@@ -24,7 +55,8 @@ function getAllPosts() {
       var filename = path.split('/').pop()?.replace('.md', '') || 'untitled'
       var meta = metadata || {}
 
-      var slug = meta.slug || slugify(filename)
+      // `slug` may be typed by hand in the CMS (spaces, diacritics, upper case) → normalise
+      var slug = slugify(meta.slug) || slugify(filename)
       var title = meta.title || filename
       var author = meta.author || siteConfig?.author?.name || 'Anonymous'
 
@@ -182,7 +214,11 @@ export function getFilteredPosts({
   }
 }
 
-/* Get single post by slug */
+/**
+ * Get single post by slug
+ * @param {string} slug
+ * @returns {Post}
+ */
 export function getPostBySlug(slug) {
   if (!slug) {
     throw new Error('Slug is required')
@@ -218,15 +254,17 @@ export function getPostBySlug(slug) {
  * deduplicated, counted list sorted by count descending.
  *
  * @param {string} field      - Metadata array key (e.g. 'categories', 'tags').
- * @param {function} mapEntry - `(title, slug, count) => object` formatter.
- * @returns {object[]}
+ * @param {(title: string, slug: string, count: number) => any} mapEntry - formatter.
+ * @returns {any[]}
  */
 function collectByField(field, mapEntry) {
   var posts = getAllPosts()
+  /** @type {Map<string, { title: string, slug: string, count: number }>} */
   var map = new Map()
 
   posts.forEach(function (post) {
-    var items = post.metadata[field] || []
+    /** @type {any[]} */
+    var items = /** @type {Record<string, any>} */ (post.metadata)[field] || []
     items.forEach(function (item) {
       var title = typeof item === 'string' ? item.trim() : ''
       if (!title) return
@@ -249,7 +287,10 @@ function collectByField(field, mapEntry) {
     })
 }
 
-/* Get all categories */
+/**
+ * Get all categories
+ * @returns {CategoryItem[]}
+ */
 export function getAllCategories() {
   if (cachedCategories) return cachedCategories
 
@@ -267,7 +308,10 @@ export function getAllCategories() {
   return cachedCategories
 }
 
-/* Get all tags */
+/**
+ * Get all tags
+ * @returns {TagItem[]}
+ */
 export function getAllTags() {
   if (cachedTags) return cachedTags
 

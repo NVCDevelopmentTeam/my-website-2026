@@ -15,7 +15,21 @@ To recreate this project with the same configuration:
 
 ```sh
 # recreate this project
-pnpm dlx sv@0.17.0 create --template demo --no-types --install pnpm my website
+npx sv@1.1.0 create --template demo --no-types --add enhanced-img --no-install my website
+```
+
+## Adding features
+
+Add features to your project with `sv add`:
+
+```sh
+npx sv add
+```
+
+For example, to add Tailwind CSS:
+
+```sh
+npx sv add tailwindcss
 ```
 
 ## Developing

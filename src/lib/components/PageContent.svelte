@@ -1,12 +1,14 @@
 <script>
   import { page } from '$app/state'
-  import { siteConfig } from '$lib/config'
+  import { siteConfig } from '#lib/config.js'
   import FAQ from './FAQ.svelte'
   import SEO from './SEO.svelte'
-  import { getSeoConfig } from '$lib/utils/seo'
+  import { getSeoConfig } from '#lib/utils/seo.js'
 
   // Receive `data` prop from parent load() result
-  let { data } = $props()
+  // `seo` is switched off by pages that emit their own tags around <PageContent> (the home
+  // page) — two <SEO> blocks on one page produced two different canonicals / og:titles.
+  let { data, seo = true } = $props()
 
   const PageContent = $derived(data?.content || null)
   const metadata = $derived(data?.metadata || {})
@@ -24,7 +26,9 @@
   )
 </script>
 
-<SEO {...seoConfig} />
+{#if seo}
+  <SEO {...seoConfig} />
+{/if}
 
 <section
   class="max-w-none px-4 py-10 prose prose-neutral [&_a]:text-sky-900 [&_h1]:text-gray-950 [&_h2]:text-gray-950 [&_h3]:text-gray-950 [&_h4]:text-gray-950 [&_li]:text-gray-950 [&_ol]:text-gray-950 [&_p]:text-gray-950 [&_strong]:text-gray-950 [&_ul]:text-gray-950 [&_a]:font-bold dark:prose-invert dark:[&_a]:text-sky-400 dark:[&_h1]:text-white dark:[&_h2]:text-white dark:[&_h3]:text-white dark:[&_h4]:text-white dark:[&_li]:text-gray-50 dark:[&_ol]:text-gray-50 dark:[&_p]:text-gray-50 dark:[&_strong]:text-white dark:[&_ul]:text-gray-50"

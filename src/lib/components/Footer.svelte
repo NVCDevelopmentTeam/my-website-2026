@@ -1,5 +1,5 @@
 <script>
-  import { siteConfig } from '$lib/config'
+  import { siteConfig } from '#lib/config.js'
   import LegalMenu from './LegalMenu.svelte'
 
   /**

@@ -1,11 +1,12 @@
 <script>
   import { page } from '$app/state'
-  import { siteConfig } from '$lib/config'
-  import { serializeSchema } from '$lib/utils/seo'
+  import { siteConfig } from '#lib/config.js'
+  import { serializeSchema } from '#lib/utils/seo.js'
 
   let { allPages = [], recentPosts = [], categories = [], tags = [] } = $props()
 
   // Fixed segment name mapping
+  /** @type {Record<string, string>} */
   const NAME_MAPPING = {
     home: 'Trang chủ',
     blog: 'Blog',
@@ -19,11 +20,14 @@
 
   /**
    * Find content title by slug across all data sources
+   * @param {string} segment
+   * @param {string} currentPath
    */
   function findContentBySlug(segment, currentPath) {
     const fullPath = currentPath.substring(1) // Remove leading slash
 
     // Check slug match across multiple formats
+    /** @param {any} itemSlug */
     const isSlugMatch = (itemSlug) => {
       if (!itemSlug) return false
 
@@ -94,6 +98,7 @@
 
   /**
    * Convert slug to readable text
+   * @param {string} slug
    */
   function beautifySlug(slug) {
     try {
@@ -121,6 +126,9 @@
 
   /**
    * Resolve display name for a URL segment
+   * @param {string} segment
+   * @param {string} currentPath
+   * @param {boolean} isLastSegment
    */
   function getSegmentName(segment, currentPath, isLastSegment) {
     // 1. Check fixed mapping first (highest priority)
@@ -169,6 +177,7 @@
     if (path === '/') return []
 
     const segments = path.split('/').filter(Boolean)
+    /** @type {{ name: string, href: string, isActive?: boolean }[]} */
     const result = [{ name: 'Trang chủ', href: '/' }]
 
     let currentPath = ''

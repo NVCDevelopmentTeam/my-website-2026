@@ -1,4 +1,4 @@
-import { getPostBySlug, getFilteredPosts } from '$lib/data/posts'
+import { getPostBySlug, getFilteredPosts } from '#lib/data/posts.js'
 import { error } from '@sveltejs/kit'
 
 export const prerender = true
@@ -37,7 +37,6 @@ export async function load({ params }) {
       prevPost = {
         slug: prev.slug,
         title: prev.metadata?.title || prev.rawName,
-        excerpt: prev.metadata?.excerpt || '',
         date: prev.metadata?.date
       }
     }
@@ -48,7 +47,6 @@ export async function load({ params }) {
       nextPost = {
         slug: next.slug,
         title: next.metadata?.title || next.rawName,
-        excerpt: next.metadata?.excerpt || '',
         date: next.metadata?.date
       }
     }
@@ -66,7 +64,7 @@ export async function load({ params }) {
       }
     }
   } catch (err) {
-    if (!err.message?.includes('Invalid slug')) {
+    if (!(err instanceof Error && err.message.includes('Invalid slug'))) {
       console.error('Error loading post:', err)
     }
     error(404, `Post not found: ${slugOrRaw}`)

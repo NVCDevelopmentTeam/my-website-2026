@@ -1,10 +1,18 @@
 <script>
-  import { browser } from '$app/environment'
+  import { browser } from '$app/env'
   import { onMount, tick } from 'svelte'
-  import { afterNavigate, pushState } from '$app/navigation'
-  import { slugify } from '$lib/utils/slugify'
+  import { afterNavigate, goto } from '$app/navigation'
+  import { slugify } from '#lib/utils/slugify.js'
+
+  /**
+   * @typedef {object} TocItem
+   * @property {string} [id]
+   * @property {string} title
+   * @property {number} [level]
+   */
 
   // Props - Vue.js/Nuxt.js style
+  /** @type {{ post?: any, children?: import('svelte').Snippet | null }} */
   let { post, children = null } = $props()
 
   // Config labels
@@ -15,12 +23,16 @@
   }
 
   // Reactive state - similar to data() in Vue
+  /** @type {Required<TocItem> | null} */
   let activeHeading = $state(null)
+
   let isExpanded = $state(false)
   let isSticky = $state(false)
+  /** @type {IntersectionObserver | null} */
   let observer = null
 
   // Extract TOC from post - support multiple formats
+  /** @type {TocItem[]} */
   let rawToc = $derived(
     Array.isArray(post?.toc)
       ? post.toc
@@ -30,6 +42,7 @@
   )
 
   // Process TOC with slugified IDs - similar to computed in Vue
+  /** @type {Required<TocItem>[]} */
   let processedToc = $derived(
     rawToc.map((item) => ({
       ...item,
@@ -40,6 +53,7 @@
 
   // Computed properties - similar to computed in Vue
   const hasToc = $derived(processedToc.length > 0)
+
   const minLevel = $derived(hasToc ? Math.min(...processedToc.map((h) => h.level)) : 0)
 
   /* -----------------------------------------------------
@@ -52,12 +66,14 @@
 
     // Select all headings within the main content area
     const contentArea = document.querySelector('article') || document.querySelector('main')
+
     if (!contentArea) return
 
     const headings = contentArea.querySelectorAll('h1, h2, h3, h4, h5, h6')
 
     processedToc.forEach((h) => {
       // 1. Try to find by ID exactly
+      /** @type {Element | null} */
       let foundHeading = document.getElementById(h.id)
 
       // 2. Try to find by text content if ID not found
@@ -96,6 +112,10 @@
   }
 
   // Scroll to a specific ID with multiple strategies
+  /**
+   * @param {string} id
+   * @param {boolean} [smooth]
+   */
   async function scrollToId(id, smooth = true) {
     if (!browser || !id) return
 
@@ -134,14 +154,16 @@
   }
 
   // Handle link click
+  /** @param {MouseEvent & { currentTarget: HTMLAnchorElement }} e */
   async function handleLinkClick(e) {
     const href = e.currentTarget.getAttribute('href')
     if (href?.startsWith('#')) {
       const id = href.slice(1)
+
       e.preventDefault()
 
       // Update URL hash without jumping
-      pushState(`#${id}`, {})
+      goto(`#${id}`, { shallow: true })
 
       // Manual trigger for immediate response
       const success = await scrollToId(id)
@@ -174,6 +196,7 @@
   }
 
   // Calculate indentation
+  /** @param {number} level */
   function getIndent(level) {
     if (!hasToc) return 0
     return (level - minLevel) * 16
@@ -184,6 +207,7 @@
   // the DOM entirely is the only reliable fix: aria-hidden on a text node
   // inside the <a> is not honoured consistently across all screen
   // reader/browser pairs, so a screen reader could still read it aloud.
+  /** @param {number} level */
   function getBulletClass(level) {
     if (level <= 2) return 'h-1.5 w-1.5 rounded-full bg-current'
     if (level === 3) return 'h-1.5 w-1.5 rounded-full border border-current bg-transparent'
@@ -202,6 +226,8 @@
 
   // Handle navigation (including deep links)
   afterNavigate(async (nav) => {
+    if (nav.shallow) return
+
     if (nav.to?.url.hash) {
       const hash = nav.to.url.hash.slice(1)
       // Wait a bit for the content to fully render
@@ -212,7 +238,9 @@
   $effect(() => {
     if (browser && post && hasToc) {
       // 1. Setup IntersectionObserver for active heading detection
-      const headingElements = processedToc.map((h) => document.getElementById(h.id)).filter(Boolean)
+      const headingElements = processedToc
+        .map((h) => document.getElementById(h.id))
+        .filter((el) => el !== null)
 
       if (headingElements.length > 0) {
         observer = new IntersectionObserver(
@@ -232,13 +260,14 @@
           }
         )
 
-        headingElements.forEach((el) => observer.observe(el))
+        headingElements.forEach((el) => observer?.observe(el))
       }
 
       // 2. Setup scroll listener for sticky state only (less frequent update needed)
       const handleScroll = () => {
         isSticky = window.scrollY > 300
       }
+
       window.addEventListener('scroll', handleScroll, { passive: true })
       window.addEventListener('hashchange', onHashChange)
 
@@ -289,7 +318,7 @@
             stroke-linejoin="round"
             stroke-width="2"
             d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-          />
+          ></path>
         </svg>
         {labels.title}
       </h2>
@@ -310,7 +339,8 @@
           viewBox="0 0 24 24"
           aria-hidden="true"
         >
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"
+          ></path>
         </svg>
       </button>
     </div>

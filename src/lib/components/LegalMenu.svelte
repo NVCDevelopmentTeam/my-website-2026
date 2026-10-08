@@ -13,11 +13,13 @@
   /**
    * Convert slug to URL.
    * Matches main Menu logic for consistency.
+   * @param {string} slug
    */
   function getHref(slug) {
     return slug === 'index' || slug === '' ? '/' : `/${slug}`
   }
 
+  /** @param {string} slug */
   function isCurrentPage(slug) {
     const href = getHref(slug)
     return page.url.pathname === href

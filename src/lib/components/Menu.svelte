@@ -8,7 +8,9 @@
   let { navPages = [] } = $props()
 
   let isMenuOpen = $state(false)
+  /** @type {HTMLDivElement | null} */
   let containerRef = $state(null)
+  /** @type {HTMLButtonElement | null} */
   let openButtonRef = $state(null)
 
   function openMenu() {
@@ -22,12 +24,14 @@
     }
   }
 
+  /** @param {KeyboardEvent} event */
   function handleMenuKeydown(event) {
     if (event.key === 'Escape' && isMenuOpen) {
       closeMenu()
     }
   }
 
+  /** @param {FocusEvent & { currentTarget: HTMLElement }} event */
   function handleMenuFocusout(event) {
     const container = event.currentTarget
     requestAnimationFrame(() => {
@@ -37,16 +41,19 @@
     })
   }
 
+  /** @param {MouseEvent} event */
   function handleBackdropClick(event) {
     if (event.target === event.currentTarget) {
       closeMenu()
     }
   }
 
+  /** @param {string} slug */
   function getHref(slug) {
     return slug === 'index' || slug === '' ? '/' : `/${slug}`
   }
 
+  /** @param {string} slug */
   function isCurrentPage(slug) {
     const href = getHref(slug)
     return page.url.pathname === href

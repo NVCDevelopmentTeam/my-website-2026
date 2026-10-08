@@ -1,5 +1,5 @@
 <script>
-  import { siteConfig } from '$lib/config'
+  import { siteConfig } from '#lib/config.js'
 
   let {
     post = undefined,
@@ -37,6 +37,7 @@
   // Helpers
   // -----------------------------------------------------
 
+  /** @param {string} slug */
   function getPostUrl(slug) {
     if (!slug) return '#'
 
@@ -46,6 +47,7 @@
     return `${basePath}/${normalizedSlug}`
   }
 
+  /** @param {any} post */
   function getPostTitle(post) {
     return post?.metadata?.title || post?.title || 'Không có tiêu đề'
   }

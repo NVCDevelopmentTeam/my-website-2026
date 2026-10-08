@@ -1,4 +1,4 @@
-import { siteConfig } from '$lib/config'
+import { siteConfig } from '#lib/config.js'
 
 /**
  * Default SEO configuration for the site
@@ -24,8 +24,8 @@ export const defaultSeoConfig = {
   },
   twitter: {
     cardType: 'summary_large_image',
-    site: siteConfig.social.github,
-    handle: siteConfig.social.github,
+    // `twitter:site` must be an X/Twitter @handle (no such account is configured), so it is
+    // intentionally not set — a GitHub URL there is invalid and ignored.
     title: siteConfig.title,
     description: siteConfig.description,
     image: siteConfig.siteUrl + '/og-image.jpg'
@@ -40,14 +40,15 @@ export const defaultSeoConfig = {
  * @param {string} params.url
  * @param {string} [params.image]
  * @param {string} [params.type] - OpenGraph type: 'website' | 'article'
- * @param {Object} [params.article] - Article metadata (publishedTime, modifiedTime, author, tags)
+ * @param {{ publishedTime?: string, modifiedTime?: string, author?: string, tags?: string[] } | null} [params.article] - Article metadata
  */
 export function getSeoConfig({ title, description, url, image, type = 'website', article = null }) {
   var fullTitle = title + ' — ' + siteConfig.title
-  var fullUrl = siteConfig.siteUrl + url
+  var fullUrl = siteConfig.siteUrl + (url === '/' ? '' : url)
   var seoDescription = description || siteConfig.description
   var seoImage = image ? siteConfig.siteUrl + image : siteConfig.siteUrl + '/og-image.jpg'
 
+  /** @type {Record<string, any>} */
   var ogData = {
     ...defaultSeoConfig.openGraph,
     type,
@@ -84,9 +85,10 @@ export function getSeoConfig({ title, description, url, image, type = 'website',
 
 /**
  * Safely serialize JSON-LD schema for injection into HTML.
- * Escapes any `</script` sequence (case-insensitively, since HTML parses
- * script-closing tags case-insensitively and tolerates attributes/whitespace
- * before the final `>`) to prevent breaking out of the <script> element.
+ * Escapes every `<` as the JSON escape `\u003c` (identical value once parsed). That
+ * rules out `</script` (closing the element early) as well as `<!--` followed by
+ * `<script` (the HTML "double escaped" state, where `</script>` no longer closes
+ * the element and the rest of the page is swallowed).
  * @param {Object} schema
  * @returns {string|null}
  */
@@ -94,7 +96,7 @@ export function serializeSchema(schema) {
   if (!schema) return null
   return (
     '<script type="application/ld+json">' +
-    JSON.stringify(schema).replace(/<\/script/gi, '<\\/script') +
+    JSON.stringify(schema).replace(/</g, '\\u003c') +
     '</script>'
   )
 }

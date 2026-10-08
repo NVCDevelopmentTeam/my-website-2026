@@ -4,9 +4,8 @@ allowBuilds:
   esbuild: true
 
 minimumReleaseAgeExclude:
-  - '@sveltia/cms@0.205.4 || 0.207.1 || 0.208.1 || 0.208.2 || 0.210.3 || 0.215.0'
+  - '@sveltia/cms@0.205.4 || 0.207.1 || 0.208.1 || 0.208.2 || 0.210.3 || 0.227.4 || 0.229.0 || 0.230.0 || 0.231.0'
   - eslint@10.10.0
-  - appwrite@27.0.0
   - '@unocss/cli@66.10.1'
   - '@unocss/config@66.10.1'
   - '@unocss/core@66.10.1'
@@ -34,4 +33,6 @@ minimumReleaseAgeExclude:
   - '@unocss/transformer-variant-group@66.10.1'
   - '@unocss/vite@66.10.1'
   - unocss@66.10.1
-  - prettier@3.9.8
+  - '@sveltejs/kit@3.0.1'
+  - svelte@5.57.2
+  - vite@8.3.3

@@ -8,6 +8,10 @@ import { truncate } from './src/lib/utils/truncate.js'
 /* -----------------------------------------------------
    🧩 Helper: Get raw text from node
 ----------------------------------------------------- */
+/**
+ * @param {any} node
+ * @returns {string}
+ */
 function toString(node) {
   if (node.type === 'text') return node.value || ''
   if (node.children) return node.children.map(toString).join('')
@@ -18,7 +22,7 @@ function toString(node) {
    🧩 Remark Plugin - Auto Extract Content
 ----------------------------------------------------- */
 function remarkExtractContent() {
-  return function transformer(tree, file) {
+  return /** @param {any} tree @param {any} file */ function transformer(tree, file) {
     try {
       if (!file.data.fm) {
         file.data.fm = {}
@@ -49,8 +53,9 @@ function remarkExtractContent() {
   }
 }
 
+/** @param {any} tree */
 function extractMetadata(tree) {
-  const contentNodes = tree.children.filter(
+  const contentNodes = /** @type {any[]} */ (tree.children).filter(
     (node) => node.type !== 'yaml' && node.type !== 'heading'
   )
   if (contentNodes.length === 0)
@@ -76,7 +81,7 @@ function extractMetadata(tree) {
    🎯 Remark Plugin - Custom Slug with Vietnamese Support
 ----------------------------------------------------- */
 function remarkSlug() {
-  return function transformer(tree) {
+  return /** @param {any} tree */ function transformer(tree) {
     const usedSlugs = new Map()
 
     visit(tree, 'heading', (node) => {
@@ -106,7 +111,7 @@ function remarkSlug() {
    🧩 Rehype Plugin - Lazy Load Images (excluding first image)
 ----------------------------------------------------- */
 function rehypeLazyLoadImages() {
-  return function transformer(tree) {
+  return /** @param {any} tree */ function transformer(tree) {
     let imgCount = 0
     visit(tree, 'element', (node) => {
       if (node.tagName === 'img') {
@@ -134,7 +139,8 @@ function rehypeLazyLoadImages() {
    🧩 Rehype Plugin - Extract TOC
 ----------------------------------------------------- */
 function rehypeExtractToc() {
-  return function transformer(tree, file) {
+  return /** @param {any} tree @param {any} file */ function transformer(tree, file) {
+    /** @type {any[]} */
     const toc = []
 
     // Walk only the top-level children of the document root.
@@ -142,6 +148,7 @@ function rehypeExtractToc() {
     // those belong to the article introduction, not the main content.
     // The TOC should represent only the main content, which starts at the
     // first heading node.
+    /** @type {any[]} */
     const topLevelNodes = tree.children || []
 
     // Find the index of the first heading among top-level nodes
@@ -203,7 +210,8 @@ function rehypeExtractToc() {
    Svelte losing track of a manually-moved node.
 ----------------------------------------------------- */
 function rehypeInsertTocSlot() {
-  return function transformer(tree) {
+  return /** @param {any} tree */ function transformer(tree) {
+    /** @type {any[]} */
     const topLevelNodes = tree.children || []
     const firstHeadingIndex = topLevelNodes.findIndex(
       (node) => node.type === 'element' && /^h[1-6]$/.test(node.tagName)
@@ -221,10 +229,54 @@ function rehypeInsertTocSlot() {
 }
 
 /* -----------------------------------------------------
+   🧩 Remark Plugin - Safe Content (CMS / Git authored text)
+   mdsvex compiles markdown into a Svelte component, so in prose:
+   - `{...}` is parsed as a Svelte expression: text like {a: 1} breaks the whole build
+     (and {@html ...} injects raw HTML);
+   - raw <script>/<style>/<iframe>… blocks are compiled and run.
+   Content is written by hand in the CMS, so treat it as text: braces are emitted as HTML
+   entities and dangerous raw tags are shown literally. Code blocks / inline code are
+   already escaped by mdsvex and are not touched. Must run AFTER the extraction plugins.
+----------------------------------------------------- */
+const DANGEROUS_HTML = /<\s*\/?\s*(script|style|iframe|object|embed|link|meta)\b/i
+
+/** @param {string} text */
+function escapeHtml(text) {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/{/g, '&#123;')
+    .replace(/}/g, '&#125;')
+}
+
+function remarkSafeContent() {
+  return /** @param {any} tree */ function transformer(tree) {
+    // 1. dangerous raw HTML and Svelte blocks ({@html}, {#if}…) → literal, escaped text.
+    //    (mdsvex emits text nodes unescaped, so escape here and emit as raw html entities)
+    visit(tree, ['html', 'svelteBlock'], (node, index, parent) => {
+      if (!parent || index === undefined) return
+      if (node.type === 'html' && !DANGEROUS_HTML.test(node.value)) return
+      const literal = { type: 'html', value: escapeHtml(node.value) }
+      parent.children[index] =
+        parent.type === 'root' ? { type: 'paragraph', children: [literal] } : literal
+    })
+
+    // 2. braces in prose → entities (emitted as raw HTML, so they are not escaped twice)
+    visit(tree, 'text', (node) => {
+      if (/[{}]/.test(node.value)) {
+        node.type = 'html'
+        node.value = escapeHtml(node.value)
+      }
+    })
+  }
+}
+
+/* -----------------------------------------------------
    🧩 Rehype Plugin - Secure External Links
 ----------------------------------------------------- */
 function rehypeExternalLinks() {
-  return function transformer(tree) {
+  return /** @param {any} tree */ function transformer(tree) {
     visit(tree, 'element', (node) => {
       if (node.tagName === 'a' && node.properties && typeof node.properties.href === 'string') {
         const href = node.properties.href
@@ -239,7 +291,7 @@ function rehypeExternalLinks() {
 
 const config = {
   extensions: ['.svx', '.md'],
-  remarkPlugins: [remarkExtractContent, remarkSlug, remarkHeadings],
+  remarkPlugins: [remarkExtractContent, remarkSlug, remarkHeadings, remarkSafeContent],
   rehypePlugins: [
     rehypeExtractToc,
     rehypeInsertTocSlot,

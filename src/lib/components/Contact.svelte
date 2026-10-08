@@ -1,7 +1,8 @@
 <script>
-  import { siteConfig } from '$lib/config'
+  import { siteConfig } from '#lib/config.js'
   let status = $state('')
 
+  /** @param {SubmitEvent} event */
   const handleSubmit = async (event) => {
     event.preventDefault()
 
@@ -13,7 +14,9 @@
 
     status = 'Đang gửi...'
 
-    const formData = new FormData(event.currentTarget)
+    // Keep the form: `currentTarget` is only available synchronously, before the first await
+    const form = /** @type {HTMLFormElement} */ (event.currentTarget)
+    const formData = new FormData(form)
     const object = Object.fromEntries(formData)
     const json = JSON.stringify(object)
 
@@ -37,7 +40,7 @@
 
       if (result.success) {
         status = 'Gửi thành công! Cảm ơn bạn đã liên hệ.'
-        event.target.reset()
+        form.reset()
       } else {
         status = 'Có lỗi xảy ra, vui lòng thử lại.'
       }

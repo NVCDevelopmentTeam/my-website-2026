@@ -1,5 +1,5 @@
-import { getAllPages } from '$lib/data/pages'
-import { getFilteredPosts, getAllCategories, getAllTags } from '$lib/data/posts'
+import { getAllPages } from '#lib/data/pages.js'
+import { getFilteredPosts, getAllCategories, getAllTags } from '#lib/data/posts.js'
 import { error } from '@sveltejs/kit'
 
 export const prerender = true

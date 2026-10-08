@@ -1,6 +1,6 @@
 <script>
   import { onMount } from 'svelte'
-  import { browser } from '$app/environment'
+  import { browser } from '$app/env'
 
   let theme = $state('light')
 
@@ -9,6 +9,7 @@
 
     // Check for saved theme or system preference
     const savedTheme = localStorage.getItem('theme-preference')
+
     const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
 
     theme = savedTheme || systemTheme
@@ -20,6 +21,7 @@
     }
   })
 
+  /** @param {string} newTheme */
   function applyTheme(newTheme) {
     if (!browser) return
 

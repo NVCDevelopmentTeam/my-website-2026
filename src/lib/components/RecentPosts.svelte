@@ -1,5 +1,5 @@
 <script>
-  import { toDisplayDate } from '$lib/utils/date'
+  import { toDisplayDate } from '#lib/utils/date.js'
 
   /**
    * RecentPosts — mirrors WordPress Twenty Twenty-Five's block-theme
@@ -51,6 +51,7 @@
    * @param {RawPost} post
    */
   function normalizePost(post) {
+    /** @type {Record<string, any>} */
     const meta = post?.metadata || post || {}
     return {
       slug: post?.slug || meta.slug || '',

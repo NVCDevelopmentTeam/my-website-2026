@@ -1,0 +1,37 @@
+# Static site (adapter-static): every page is prerendered at build time and served
+# from Netlify's CDN. No Functions / Edge Functions / server runtime are used.
+[build]
+  command = "pnpm build"
+  publish = "build"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# Content-hashed build assets never change: cache for a year.
+[[headers]]
+  for = "/_app/immutable/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# The service worker must always be revalidated so new deploys reach users.
+[[headers]]
+  for = "/service-worker.js"
+  [headers.values]
+    Cache-Control = "no-cache"
+
+# Safe, AdSense-compatible security headers. No CSP / Permissions-Policy on purpose:
+# a restrictive policy silently blocks Google AdSense scripts and ad frames.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Frame-Options = "SAMEORIGIN"
+
+# The CMS must never be indexed or framed.
+[[headers]]
+  for = "/admin"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    X-Frame-Options = "DENY"
+    Cache-Control = "no-cache"

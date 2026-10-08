@@ -1,5 +1,5 @@
 <script>
-  import PageContent from '$lib/components/PageContent.svelte'
+  import PageContent from '#lib/components/PageContent.svelte'
 
   let { data } = $props()
 </script>

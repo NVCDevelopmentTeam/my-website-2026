@@ -1,5 +1,5 @@
 <script>
-  import { truncate } from '$lib/utils/truncate'
+  import { truncate } from '#lib/utils/truncate.js'
 
   /**
    * PostPreview - Shows preview excerpt for post listings

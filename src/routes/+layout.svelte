@@ -1,19 +1,19 @@
 <script>
   import './layout.css'
   import { onMount } from 'svelte'
-  import { pushState, afterNavigate } from '$app/navigation'
-  import { dev } from '$app/environment'
-  import { siteConfig } from '$lib/config'
+  import { goto, afterNavigate } from '$app/navigation'
+  import { dev } from '$app/env'
+  import { siteConfig } from '#lib/config.js'
 
   let { children } = $props()
-
   let announceA = $state('')
   let announceB = $state('')
   let useA = $state(true)
 
   // Double-buffer live region for accessible navigation announcements.
   // No beforeunload/unload event listeners — preserves BF-cache.
-  afterNavigate(({ type }) => {
+  afterNavigate(({ type, shallow }) => {
+    if (shallow) return
     if (type === 'enter') return
 
     const title = document.title || siteConfig.title
@@ -48,14 +48,49 @@
     // competes with the page's own critical-path work right after load.
     if (!dev && 'serviceWorker' in navigator) {
       setTimeout(() => {
-        navigator.serviceWorker.register('/service-worker.js')
+        navigator.serviceWorker
+          .register('/service-worker.js')
+          .then((registration) => {
+            // Proactively check for a newer worker on every load instead of
+            // waiting for the browser's own periodic check (often 24h+) —
+            // shortens how long a stale worker from a previous deploy can
+            // keep serving mismatched content.
+            registration.update()
+          })
+          .catch(() => {
+            // Progressive enhancement: the site works fully without the
+            // service worker, so a failed registration (flaky network, 404)
+            // must not surface as an uncaught promise rejection in the console.
+          })
       }, 0)
+    } else if (dev && 'serviceWorker' in navigator) {
+      // Dev server: never run a caching worker. One left over from an older version of
+      // the site (or a production preview on this same origin) would keep answering
+      // Vite's module requests with its 3s network-first fallback — slow first compiles
+      // then show up as blank pages (only the URL as the tab title) until it is removed.
+      navigator.serviceWorker
+        .getRegistrations()
+        .then(async (registrations) => {
+          const wasControlled = !!navigator.serviceWorker.controller
+          await Promise.all(registrations.map((registration) => registration.unregister()))
+          if ('caches' in window) {
+            const keys = await caches.keys()
+            await Promise.all(keys.map((key) => caches.delete(key)))
+          }
+          // A page still controlled by the removed worker keeps using it until reloaded
+          if (wasControlled && !sessionStorage.getItem('dev-sw-cleaned')) {
+            sessionStorage.setItem('dev-sw-cleaned', '1')
+            location.reload()
+          }
+        })
+        .catch(() => {})
     }
 
     // Smooth same-page anchor scrolling via delegation.
     // Cleanup returned from onMount — no beforeunload/unload handlers used.
+    /** @param {MouseEvent} e */
     function handleAnchorClick(e) {
-      const link = e.target.closest('a')
+      const link = /** @type {HTMLElement} */ (e.target).closest('a')
       if (!link) return
       const url = new URL(link.href)
       if (url.origin !== window.location.origin) return
@@ -67,7 +102,7 @@
         if (targetElement) {
           e.preventDefault()
           targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' })
-          pushState(hash, {})
+          goto(hash, { shallow: true })
         }
       }
     }
@@ -96,6 +131,8 @@
 </svelte:head>
 
 <!--
+  Outer wrapper has no background of its own: the body carries the page colour and the site
+  background image (layout.css), and each layout draws its own solid surface on top.
   Outer wrapper contains both live regions and page content.
   Live regions are placed AFTER page content (not before) so that pressing
   Home (jump to document top) lands on the actual page heading/content
@@ -107,7 +144,7 @@
   user would navigate again.
 -->
 <div
-  class="min-h-screen flex flex-col bg-white text-gray-950 dark:bg-gray-950 selection:bg-sky-100 dark:text-gray-50 dark:selection:bg-sky-900/30"
+  class="min-h-screen flex flex-col text-gray-950 selection:bg-sky-100 dark:text-gray-50 dark:selection:bg-sky-900/30"
 >
   {@render children?.()}
 

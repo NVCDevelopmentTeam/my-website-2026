@@ -7,7 +7,7 @@
  */
 export function toISODate(value) {
   try {
-    const parsed = new Date(value)
+    const parsed = new Date(value ?? NaN)
     if (!isNaN(parsed.getTime())) {
       return parsed.toISOString()
     }
@@ -25,7 +25,7 @@ export function toISODate(value) {
  */
 export function toDisplayDate(value) {
   try {
-    const parsed = new Date(value)
+    const parsed = new Date(value ?? NaN)
     if (!isNaN(parsed.getTime())) {
       return parsed.toLocaleDateString('vi-VN', {
         day: 'numeric',

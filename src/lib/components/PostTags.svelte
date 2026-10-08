@@ -1,5 +1,5 @@
 <script>
-  import { slugify } from '$lib/utils/slugify'
+  import { slugify } from '#lib/utils/slugify.js'
 
   /**
    * @typedef {Object} Props

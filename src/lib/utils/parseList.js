@@ -7,6 +7,7 @@
  * @returns {string[]}
  */
 export function parseList(value, fallback) {
+  /** @type {string[]} */
   let items = []
 
   if (typeof value === 'string') {

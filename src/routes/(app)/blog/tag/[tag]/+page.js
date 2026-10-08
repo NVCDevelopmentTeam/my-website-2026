@@ -1,7 +1,7 @@
-import { getFilteredPosts, getAllTags } from '$lib/data/posts'
-import { siteConfig } from '$lib/config'
+import { getFilteredPosts, getAllTags } from '#lib/data/posts.js'
+import { siteConfig } from '#lib/config.js'
 import { error, isHttpError } from '@sveltejs/kit'
-import { loadPaginatedPosts } from '$lib/utils/pagination'
+import { loadPaginatedPosts } from '#lib/utils/pagination.js'
 
 export const prerender = true
 

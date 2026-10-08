@@ -1,6 +1,6 @@
 /* ============================================================
    app.css — UnoCSS Global Layer (2026 Standard)
-   Stack: SvelteKit 2 + Svelte 5 + UnoCSS +Appwrite 
+   Stack: SvelteKit 3 + Svelte 5 + UnoCSS + Netlify
    Font: Fira Mono (code), system-ui stack (UI)
    Purpose: Global CSS only, responsive, Lighthouse optimized
 ============================================================ */
@@ -87,6 +87,29 @@ body {
   overflow-y: scroll; /* prevent CLS from scrollbar appearing */
 }
 
+/* ── 4b. SITE BACKGROUND (WordPress "custom background" behaviour) ──
+   The image sits behind the whole page (fixed, covering the viewport) and is visible in
+   the gutters around the boxed page on desktop (see routes/(app)/+layout.svelte). Content
+   always stays on a solid surface, so text contrast is unaffected. It is only requested on
+   wide screens — phones never download it. Replace src/lib/assets/background.webp (also from
+   the CMS media library) to change it; keep it small, it is a decoration. */
+@media (min-width: 1024px) {
+  body {
+    background-image: url('../lib/assets/background.webp?no-inline');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    background-attachment: fixed;
+  }
+
+  /* Dimmed in dark mode so the page does not glare */
+  .dark body {
+    background-image:
+      linear-gradient(rgb(0 0 0 / 0.7), rgb(0 0 0 / 0.7)),
+      url('../lib/assets/background.webp?no-inline');
+  }
+}
+
 /* ── 5. MEDIA / IMAGES ────────────────────────────────────── */
 img,
 video,
@@ -114,6 +137,15 @@ textarea {
 /* Hide the outline only for mouse users, keep it for keyboard users */
 :focus:not(:focus-visible) {
   outline: none;
+}
+
+/* Route announcements are made by the live regions in routes/+layout.svelte, which clear
+   themselves. SvelteKit's own #svelte-announcer announces the very same title a second time
+   (assertive) and — unlike ours — never clears it, so a screen reader finds the page title
+   again at the very end of the page (End key). display:none removes it from the
+   accessibility tree, so the title is announced once. */
+#svelte-announcer {
+  display: none !important;
 }
 
 :focus-visible {

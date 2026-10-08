@@ -1,9 +1,9 @@
 <script>
-  import { slugify } from '$lib/utils/slugify'
+  import { slugify } from '#lib/utils/slugify.js'
 
   /**
    * @typedef {Object} Props
-   * @property {{ metadata: { categories?: (string | { title: string, slug: string })[] } }} post
+   * @property {{ metadata: { categories?: (string | { title?: string, slug?: string, metadata?: { title?: string, slug?: string } })[] } }} post
    */
 
   /** @type {Props} */
@@ -42,7 +42,7 @@
 
         return null
       })
-      .filter(Boolean) // Remove invalid categories
+      .filter((category) => category !== null) // Remove invalid categories
   })
 </script>
 

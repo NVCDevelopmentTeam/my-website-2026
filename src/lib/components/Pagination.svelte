@@ -1,6 +1,6 @@
 <script>
   import { page } from '$app/state'
-  import { siteConfig } from '$lib/config'
+  import { siteConfig } from '#lib/config.js'
 
   // Props from parent component - flexible naming
   let {
@@ -92,6 +92,7 @@
   })
 
   // Build URL - Now using query parameters as requested
+  /** @param {number} pageNum */
   function buildUrl(pageNum) {
     if (pageNum === 1) {
       return baseUrl
@@ -160,7 +161,7 @@
             </span>
           {:else}
             <a
-              href={buildUrl(num)}
+              href={buildUrl(Number(num))}
               data-sveltekit-preload-data="hover"
               class="h-10 w-10 inline-flex items-center justify-center border border-gray-400 rounded bg-white text-sm text-gray-950 font-bold transition-colors dark:border-gray-600 hover:border-gray-500 dark:bg-gray-800 hover:bg-gray-50 dark:text-gray-50 dark:hover:border-gray-400 dark:hover:bg-gray-700"
               aria-label="Trang {num}"

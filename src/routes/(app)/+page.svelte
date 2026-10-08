@@ -1,9 +1,9 @@
 <script>
-  import PageContent from '$lib/components/PageContent.svelte'
-  import PostsList from '$lib/components/PostsList.svelte'
-  import SEO from '$lib/components/SEO.svelte'
-  import { siteConfig } from '$lib/config'
-  import { serializeSchema } from '$lib/utils/seo'
+  import PageContent from '#lib/components/PageContent.svelte'
+  import PostsList from '#lib/components/PostsList.svelte'
+  import SEO from '#lib/components/SEO.svelte'
+  import { siteConfig } from '#lib/config.js'
+  import { serializeSchema } from '#lib/utils/seo.js'
 
   let { data } = $props()
 
@@ -49,7 +49,7 @@
   <!-- Personal Intro Section (Hero) - Clean & Focused -->
   <section class="border-b border-gray-100 py-12 dark:border-gray-800">
     <div class="max-w-none">
-      <PageContent {data} />
+      <PageContent {data} seo={false} />
     </div>
   </section>
 

@@ -1,4 +1,4 @@
-import { loadMarkdownPage } from '$lib/utils/loadMarkdownPage'
+import { loadMarkdownPage } from '#lib/utils/loadMarkdownPage.js'
 import { error } from '@sveltejs/kit'
 
 export async function load({ data }) {

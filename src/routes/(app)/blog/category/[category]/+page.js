@@ -1,6 +1,6 @@
-import { getFilteredPosts, getAllCategories } from '$lib/data/posts'
+import { getFilteredPosts, getAllCategories } from '#lib/data/posts.js'
 import { error, isHttpError } from '@sveltejs/kit'
-import { loadPaginatedPosts } from '$lib/utils/pagination'
+import { loadPaginatedPosts } from '#lib/utils/pagination.js'
 
 export const prerender = true
 

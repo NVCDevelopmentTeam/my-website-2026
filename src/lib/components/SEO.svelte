@@ -1,6 +1,6 @@
 <script>
   import SvelteSeo from 'svelte-seo'
-  import { siteConfig } from '$lib/config'
+  import { siteConfig } from '#lib/config.js'
 
   let { title, description, canonical, openGraph = {}, twitter = {} } = $props()
 
@@ -18,9 +18,25 @@
     card: twitter.card || 'summary_large_image',
     title: twitter.title || title,
     description: twitter.description || description,
-    image: twitter.image,
+    // Cards of type summary_large_image need an image: fall back to the Open Graph one
+    image: twitter.image || og.images?.[0]?.url,
+    site: twitter.site,
     ...twitter
   })
+
+  // svelte-seo renders a tag for every key it receives, even when the value is undefined
+  // (that produced empty `<meta name="twitter:site"/>` tags), so pass only values that exist.
+  const twitterTags = $derived(
+    Object.fromEntries(
+      Object.entries({
+        card: tw.card,
+        site: tw.site,
+        title: tw.title,
+        description: tw.description,
+        image: tw.image
+      }).filter(([, value]) => value)
+    )
+  )
 
   // Keywords derived from tags if available
   const keywords = $derived(
@@ -41,24 +57,17 @@
     site_name: og.site_name,
     images: og.images
   }}
-  twitter={{
-    card: tw.card,
-    site: tw.site,
-    title: tw.title,
-    description: tw.description,
-    image: tw.image
-  }}
-  robots="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
-  additionalMetaTags={[
-    { name: 'googlebot', content: 'index, follow' },
-    // Geo Tags
-    ...(siteConfig.geo
-      ? [
-          { name: 'geo.region', content: siteConfig.geo.region },
-          { name: 'geo.placename', content: siteConfig.geo.placename },
-          { name: 'geo.position', content: siteConfig.geo.position },
-          { name: 'ICBM', content: siteConfig.geo.icbm }
-        ]
-      : [])
-  ]}
+  twitter={twitterTags}
 />
+
+<svelte:head>
+  <!-- svelte-seo has no `robots` / `additionalMetaTags` props, so the extra tags live here.
+       Directives of several robots tags are combined by search engines (index,follow above). -->
+  <meta name="robots" content="max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+  {#if siteConfig.geo}
+    <meta name="geo.region" content={siteConfig.geo.region} />
+    <meta name="geo.placename" content={siteConfig.geo.placename} />
+    <meta name="geo.position" content={siteConfig.geo.position} />
+    <meta name="ICBM" content={siteConfig.geo.icbm} />
+  {/if}
+</svelte:head>

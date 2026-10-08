@@ -1,5 +1,5 @@
 <script>
-  import { siteConfig } from '$lib/config'
+  import { siteConfig } from '#lib/config.js'
   const { post } = $props()
 
   // Get author name, fallback to siteConfig if not available

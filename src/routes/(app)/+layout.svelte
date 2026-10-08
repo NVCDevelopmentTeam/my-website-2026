@@ -1,12 +1,11 @@
 <script>
   import { onNavigate } from '$app/navigation'
-  import Header from '$lib/components/Header.svelte'
-  import Sidebar from '$lib/components/Sidebar.svelte'
-  import Footer from '$lib/components/Footer.svelte'
-  import Breadcrumbs from '$lib/components/Breadcrumbs.svelte'
+  import Header from '#lib/components/Header.svelte'
+  import Sidebar from '#lib/components/Sidebar.svelte'
+  import Footer from '#lib/components/Footer.svelte'
+  import Breadcrumbs from '#lib/components/Breadcrumbs.svelte'
 
   let { children, data } = $props()
-
   let isLoading = $state(false)
 
   // Cache View Transitions API support detection once (avoid repeated DOM reads)
@@ -15,6 +14,8 @@
 
   // View Transitions API integration — BF-cache safe (no beforeunload/unload)
   onNavigate(function (navigation) {
+    if (navigation.shallow) return
+
     isLoading = true
 
     if (!supportsViewTransitions) {
@@ -36,7 +37,7 @@
 </script>
 
 <div
-  class="relative min-h-screen flex flex-col bg-white transition-colors duration-300 dark:bg-gray-950"
+  class="relative min-h-screen flex flex-col bg-white transition-colors duration-300 lg:m-6 xl:mx-auto lg:min-h-[calc(100vh_-_3rem)] xl:max-w-[1400px] xl:w-[calc(100%_-_3rem)] lg:overflow-clip lg:rounded-2xl dark:bg-gray-950 lg:shadow-2xl"
 >
   <!-- Navigation progress bar — uses transform (compositor-only, no reflow) -->
   {#if isLoading}
