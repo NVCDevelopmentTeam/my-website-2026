@@ -9,8 +9,13 @@
 @layer uno-base, uno-components, uno-utilities;
 
 /* ── 2. FIRA MONO — @fontsource already sets font-display: swap ─── */
-@import '@fontsource/fira-mono/400.css';
-@import '@fontsource/fira-mono/700.css';
+/* Only the subsets the site can show: `latin` (English) + `latin-ext` (Vietnamese). The
+   catch-all 400.css / 700.css also pull Cyrillic and Greek @font-face rules (and font files
+   into the deploy) that no page uses. */
+@import '@fontsource/fira-mono/latin-400.css';
+@import '@fontsource/fira-mono/latin-ext-400.css';
+@import '@fontsource/fira-mono/latin-700.css';
+@import '@fontsource/fira-mono/latin-ext-700.css';
 
 /* ── 3. CSS VARIABLES ─────────────────────────────────────── */
 :root {

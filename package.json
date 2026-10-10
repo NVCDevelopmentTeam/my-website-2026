@@ -24,13 +24,13 @@
     "@sveltejs/adapter-static": "^4.0.0",
     "@sveltejs/kit": "^3.0.1",
     "@sveltejs/vite-plugin-svelte": "^7.3.1",
-    "@types/node": "^26.6.4",
+    "@types/node": "^26.6.5",
     "@unocss/eslint-config": "^66.10.5",
     "@unocss/svelte-scoped": "^66.10.5",
     "@vcarl/remark-headings": "^0.1.0",
     "eslint": "^10.12.0",
     "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-svelte": "^3.23.0",
+    "eslint-plugin-svelte": "^3.23.1",
     "globals": "^17.13.0",
     "mdsvex": "^0.12.8",
     "prettier": "^3.9.9",
@@ -38,14 +38,14 @@
     "rehype-autolink-headings": "^7.1.0",
     "svelte": "^5.57.2",
     "svelte-check": "^4.7.6",
-    "svelte-eslint-parser": "^1.8.1",
+    "svelte-eslint-parser": "^1.9.0",
     "svelte-seo": "^2.0.0",
     "unist-util-visit": "^5.1.0",
     "unocss": "^66.10.5",
-    "vite": "^8.3.3"
+    "vite": "^8.3.4"
   },
   "dependencies": {
-    "@sveltia/cms": "^0.231.0"
+    "@sveltia/cms": "^0.233.0"
   },
   "imports": {
     "#lib": "./src/lib/index.js",

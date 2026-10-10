@@ -3,8 +3,13 @@
   // browser and fails while loading the root layout's data (its __data.json does not
   // exist). Errors at that level are rendered by this root error page, outside every
   // layout — without it SvelteKit falls back to a bare "404 Not Found".
-  // Reuse the site's designed error page.
-  import ErrorPage from './(app)/+error.svelte'
+  //
+  // The designed error page is imported on demand: SvelteKit downloads this root error
+  // node on EVERY page view, so statically importing the page (and its stylesheet) here
+  // added three requests to every visit just to be ready for an error that rarely happens.
+  const errorPage = import('./(app)/+error.svelte')
 </script>
 
-<ErrorPage />
+{#await errorPage then { default: ErrorPage }}
+  <ErrorPage />
+{/await}
