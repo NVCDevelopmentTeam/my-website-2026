@@ -230,7 +230,7 @@
 
 {#if crumbs.length > 0}
   <nav
-    aria-label="Breadcrumb"
+    aria-label="Đường dẫn trang"
     class="mb-6 flex overflow-x-auto whitespace-nowrap px-4 py-4 sm:px-6"
   >
     <ol class="flex list-none items-center text-sm text-gray-950 space-x-2 dark:text-gray-50">
@@ -258,7 +258,6 @@
             <span
               class="max-w-[200px] truncate text-gray-950 font-black sm:max-w-md dark:text-gray-50"
               aria-current="page"
-              title={crumb.name}
             >
               {crumb.name}
             </span>
@@ -268,7 +267,6 @@
               href={crumb.href}
               data-sveltekit-preload-data="hover"
               class="text-gray-950 font-bold transition-colors dark:text-gray-50 hover:text-sky-800 dark:hover:text-sky-400"
-              title={crumb.name}
             >
               {crumb.name}
             </a>

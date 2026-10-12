@@ -47,7 +47,7 @@
     </div>
 
     <p class="text-sm text-gray-950 font-bold dark:text-gray-50">
-      Thẻ {tag?.title} có {data.pagination?.totalPosts || 0} bài viết
+      Thẻ {tag?.title} có {data.pagination?.totalPosts || 0} bài viết.
     </p>
   </div>
 

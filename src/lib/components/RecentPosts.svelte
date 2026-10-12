@@ -89,7 +89,7 @@
                 </time>
               {/if}
               {#if post.readingTime}
-                <span class="recent-posts__reading-time">· {post.readingTime} phút đọc</span>
+                <span class="recent-posts__reading-time">{post.readingTime} phút đọc</span>
               {/if}
             </div>
           {/if}
@@ -187,6 +187,15 @@
   }
   :global(.dark) .recent-posts__meta {
     color: #d1d5db;
+  }
+
+  /* Separator drawn with CSS (not in the text): a leading "·" made WAVE report a "possible
+     list", and screen readers would read it out. The "/ ''" part gives it an empty
+     alternative text where supported. */
+  .recent-posts__reading-time::before {
+    content: '·';
+    content: '·' / '';
+    margin-right: 0.4rem;
   }
 
   .recent-posts__view-all {

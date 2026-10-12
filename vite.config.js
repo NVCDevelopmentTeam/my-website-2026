@@ -139,9 +139,6 @@ export default defineConfig({
       },
       version: {
         pollInterval: 0
-      },
-      serviceWorker: {
-        register: false
       }
     })
   ],
@@ -152,10 +149,13 @@ export default defineConfig({
     cssCodeSplit: true,
     sourcemap: false,
     reportCompressedSize: false,
+    // SvelteKit writes its own <link rel="modulepreload"> tags into every page, so Vite's
+    // dynamic-import preload helper would only duplicate them.
     modulePreload: false,
     rollupOptions: {
-      // `manualChunks` removed: Vite 8 (rolldown) rejects it in the service-worker
-      // build; code splitting is left to the bundler.
+      // Code splitting is left to the bundler on purpose: hand-written chunk groups
+      // (`output.codeSplitting.groups`) changed module initialisation order and made
+      // SvelteKit's error handling reload the page in an endless loop on unknown URLs.
       treeshake: {
         moduleSideEffects: (id) => {
           if (id.includes('.css') || id.includes('fontsource')) {

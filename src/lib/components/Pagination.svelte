@@ -106,7 +106,7 @@
 </script>
 
 {#if totalPages > 1}
-  <nav class="mb-4 mt-8 flex items-center justify-center" aria-label="Pagination">
+  <nav class="mb-4 mt-8 flex items-center justify-center" aria-label="Phân trang">
     <ul class="inline-flex list-none items-center gap-1">
       <!-- Previous Button -->
       {#if hasPrev}

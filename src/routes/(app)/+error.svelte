@@ -27,7 +27,7 @@
 
     <a
       href="/"
-      class="mt-6 inline-flex items-center justify-center rounded-lg bg-sky-800 px-6 py-3 text-white font-black transition-colors dark:bg-sky-500 hover:bg-sky-900 focus:outline-none focus:ring-4 focus:ring-sky-400 dark:hover:bg-sky-600"
+      class="mt-6 inline-flex items-center justify-center rounded-lg bg-sky-800 px-6 py-3 text-white font-black transition-colors dark:bg-sky-700 hover:bg-sky-900 focus:outline-none focus:ring-4 focus:ring-sky-400 dark:hover:bg-sky-800"
     >
       ← Quay về trang chủ
     </a>

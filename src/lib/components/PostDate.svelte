@@ -9,7 +9,7 @@
   )
 </script>
 
-<div class="flex items-center gap-1.5">
+<span class="inline-flex items-center gap-1.5">
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width="14"
@@ -30,9 +30,9 @@
     ></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"
     ></line></svg
   >
-  <p class="text-sm text-gray-950 font-bold dark:text-gray-50">
+  <span class="text-sm text-gray-950 font-bold dark:text-gray-50">
     <time datetime={post.metadata.date}>
       {dateString}
     </time>
-  </p>
-</div>
+  </span>
+</span>

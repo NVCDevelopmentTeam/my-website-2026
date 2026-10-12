@@ -154,9 +154,9 @@
         <PostContent>
           {#snippet toc()}
             {#if hasToc}
-              <nav class="not-prose my-10">
+              <div class="not-prose my-10">
                 <ToC post={{ metadata }} />
-              </nav>
+              </div>
             {/if}
           {/snippet}
         </PostContent>

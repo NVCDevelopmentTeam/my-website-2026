@@ -6,7 +6,7 @@
   const author = $derived.by(() => post?.metadata?.author || siteConfig.author.name)
 </script>
 
-<div class="flex items-center gap-1.5">
+<span class="inline-flex items-center gap-1.5">
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width="14"
@@ -22,7 +22,5 @@
     ><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"
     ></circle></svg
   >
-  <p class="text-sm text-gray-950 font-bold dark:text-gray-50">
-    <span>{author}</span>
-  </p>
-</div>
+  <span class="text-sm text-gray-950 font-bold dark:text-gray-50">{author}</span>
+</span>

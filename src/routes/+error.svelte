@@ -10,6 +10,9 @@
   const errorPage = import('./(app)/+error.svelte')
 </script>
 
-{#await errorPage then { default: ErrorPage }}
-  <ErrorPage />
-{/await}
+<!-- Rendered outside every layout, so it supplies the page's only <main> landmark. -->
+<main id="main-content">
+  {#await errorPage then { default: ErrorPage }}
+    <ErrorPage />
+  {/await}
+</main>

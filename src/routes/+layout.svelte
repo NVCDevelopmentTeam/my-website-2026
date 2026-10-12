@@ -2,8 +2,8 @@
   import './layout.css'
   import { onMount } from 'svelte'
   import { goto, afterNavigate } from '$app/navigation'
-  import { dev } from '$app/env'
   import { siteConfig } from '#lib/config.js'
+  import { retireServiceWorkers } from '#lib/utils/retireServiceWorkers.js'
 
   let { children } = $props()
   let announceA = $state('')
@@ -38,53 +38,9 @@
   })
 
   onMount(() => {
-    // Service worker: production only (see svelte.config.js — automatic
-    // registration is disabled there). Running a caching service worker
-    // against Vite's dev server causes stale/mismatched state whenever the
-    // dev server restarts, since its module graph changes every time but an
-    // already-active worker keeps trying to serve fetches against the old
-    // one — this is what caused blank pages that needed a manual hard
-    // navigation to recover from. Deferred via setTimeout so it never
-    // competes with the page's own critical-path work right after load.
-    if (!dev && 'serviceWorker' in navigator) {
-      setTimeout(() => {
-        navigator.serviceWorker
-          .register('/service-worker.js')
-          .then((registration) => {
-            // Proactively check for a newer worker on every load instead of
-            // waiting for the browser's own periodic check (often 24h+) —
-            // shortens how long a stale worker from a previous deploy can
-            // keep serving mismatched content.
-            registration.update()
-          })
-          .catch(() => {
-            // Progressive enhancement: the site works fully without the
-            // service worker, so a failed registration (flaky network, 404)
-            // must not surface as an uncaught promise rejection in the console.
-          })
-      }, 0)
-    } else if (dev && 'serviceWorker' in navigator) {
-      // Dev server: never run a caching worker. One left over from an older version of
-      // the site (or a production preview on this same origin) would keep answering
-      // Vite's module requests with its 3s network-first fallback — slow first compiles
-      // then show up as blank pages (only the URL as the tab title) until it is removed.
-      navigator.serviceWorker
-        .getRegistrations()
-        .then(async (registrations) => {
-          const wasControlled = !!navigator.serviceWorker.controller
-          await Promise.all(registrations.map((registration) => registration.unregister()))
-          if ('caches' in window) {
-            const keys = await caches.keys()
-            await Promise.all(keys.map((key) => caches.delete(key)))
-          }
-          // A page still controlled by the removed worker keeps using it until reloaded
-          if (wasControlled && !sessionStorage.getItem('dev-sw-cleaned')) {
-            sessionStorage.setItem('dev-sw-cleaned', '1')
-            location.reload()
-          }
-        })
-        .catch(() => {})
-    }
+    // The site no longer registers a service worker (caching is done by the server).
+    // Visitors who still have the old one are cleaned up here, once.
+    retireServiceWorkers()
 
     // Smooth same-page anchor scrolling via delegation.
     // Cleanup returned from onMount — no beforeunload/unload handlers used.

@@ -13,11 +13,59 @@
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
-# The service worker must always be revalidated so new deploys reach users.
+# Server-side caching (replaces the browser service worker). Everything below expires by
+# itself, so nothing lingers on the devices of people who stop visiting.
+#   • HTML and data files keep Netlify's default `max-age=0, must-revalidate`: the CDN answers
+#     a conditional request with a tiny 304, and a page can never reference build files of
+#     an older deploy (which a long-lived cached copy of the HTML could).
+#   • Hashed build files (above): one year, immutable.
+#   • Unhashed images and icons: a day, and served stale for a week while they refresh.
+# This URL now serves the retiring worker (static/service-worker.js). It must never be cached,
+# otherwise browsers could not discover it and clean themselves up.
 [[headers]]
   for = "/service-worker.js"
   [headers.values]
     Cache-Control = "no-cache"
+
+[[headers]]
+  for = "/favicon.svg"
+  [headers.values]
+    Cache-Control = "public, max-age=86400, stale-while-revalidate=604800"
+
+[[headers]]
+  for = "/logo.svg"
+  [headers.values]
+    Cache-Control = "public, max-age=86400, stale-while-revalidate=604800"
+
+[[headers]]
+  for = "/og-image.jpg"
+  [headers.values]
+    Cache-Control = "public, max-age=86400, stale-while-revalidate=604800"
+
+[[headers]]
+  for = "/apple-touch-icon.png"
+  [headers.values]
+    Cache-Control = "public, max-age=86400, stale-while-revalidate=604800"
+
+[[headers]]
+  for = "/pwa-192x192.png"
+  [headers.values]
+    Cache-Control = "public, max-age=86400, stale-while-revalidate=604800"
+
+[[headers]]
+  for = "/pwa-512x512.png"
+  [headers.values]
+    Cache-Control = "public, max-age=86400, stale-while-revalidate=604800"
+
+[[headers]]
+  for = "/maskable-512x512.png"
+  [headers.values]
+    Cache-Control = "public, max-age=86400, stale-while-revalidate=604800"
+
+[[headers]]
+  for = "/manifest.json"
+  [headers.values]
+    Cache-Control = "public, max-age=86400, stale-while-revalidate=604800"
 
 # Safe, AdSense-compatible security headers. No CSP / Permissions-Policy on purpose:
 # a restrictive policy silently blocks Google AdSense scripts and ad frames.

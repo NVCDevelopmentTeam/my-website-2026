@@ -2,8 +2,11 @@
   import { siteConfig } from '#lib/config.js'
 </script>
 
-<nav class="space-y-3">
-  <h3 class="text-sm text-gray-950 font-bold tracking-wider uppercase dark:text-gray-50">
+<nav class="space-y-3" aria-labelledby="social-links-heading">
+  <h3
+    id="social-links-heading"
+    class="text-sm text-gray-950 font-bold tracking-wider uppercase dark:text-gray-50"
+  >
     Kết nối với mình
   </h3>
   <ul class="flex flex-wrap list-none gap-4">

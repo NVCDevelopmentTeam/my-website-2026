@@ -18,7 +18,7 @@
 
         <Logo pages={allPages} />
 
-        <nav class="flex flex-nowrap items-center justify-end gap-4" aria-label="Site utilities">
+        <nav class="flex flex-nowrap items-center justify-end gap-4" aria-label="Tiện ích trang">
           <ThemeSwitcher />
           <Menu {navPages} />
         </nav>

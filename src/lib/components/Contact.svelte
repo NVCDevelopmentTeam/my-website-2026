@@ -74,6 +74,7 @@
     tabindex="-1"
     autocomplete="off"
     aria-hidden="true"
+    aria-label="Để trống ô này"
   />
 
   <div class="space-y-2">

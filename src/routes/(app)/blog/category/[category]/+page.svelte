@@ -30,7 +30,7 @@
   </h1>
 
   <p class="mt-2 text-gray-950 font-bold dark:text-gray-50">
-    Danh mục {category?.title} có {data.pagination?.totalPosts || 0} bài viết
+    Danh mục {category?.title} có {data.pagination?.totalPosts || 0} bài viết.
   </p>
 
   {#if posts.length > 0}

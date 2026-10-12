@@ -78,7 +78,7 @@
 </script>
 
 <!-- Mobile Menu -->
-<nav class="flex items-center justify-end lg:hidden" aria-label="Main navigation (mobile)">
+<nav class="flex items-center justify-end lg:hidden" aria-label="Điều hướng chính (di động)">
   <button
     bind:this={openButtonRef}
     onclick={openMenu}
@@ -189,7 +189,7 @@
 <!-- Desktop Menu -->
 <nav
   class="relative hidden border border-gray-200 rounded-2xl bg-white/80 px-4 py-2 shadow-md backdrop-blur-md lg:block dark:border-gray-800 dark:bg-gray-950/80"
-  aria-label="Main navigation"
+  aria-label="Điều hướng chính"
 >
   <ul class="m-0 flex flex-wrap list-none items-center justify-center gap-3 p-0">
     {#each navPages as p (p.slug)}
