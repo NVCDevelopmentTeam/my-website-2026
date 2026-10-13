@@ -11,7 +11,9 @@
   const latestPosts = $derived(data?.latestPosts || [])
 
   // SEO Config
-  const seoTitle = $derived(data.metadata?.title || siteConfig.title)
+  // Same "Trang — Tên site" pattern as every other page, so the site name is part of the
+  // title that browsers and screen readers announce on the home page too
+  const seoTitle = $derived(`${data.metadata?.title || 'Trang chủ'} — ${siteConfig.title}`)
   const seoDescription = $derived(data.metadata?.description || siteConfig.description)
 
   // Structured Data (JSON-LD)
