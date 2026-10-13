@@ -182,7 +182,7 @@
     align-items: center;
     gap: 0.4rem;
     font-family: var(--font-mono);
-    font-size: 0.85rem;
+    font-size: 0.875rem;
     color: #4b5563;
   }
   :global(.dark) .recent-posts__meta {
@@ -202,7 +202,7 @@
     display: inline-block;
     margin-top: 1.5rem;
     font-weight: 700;
-    font-size: 0.85rem;
+    font-size: 0.875rem;
     letter-spacing: 0.02em;
     text-decoration: underline;
     text-decoration-thickness: 1px;

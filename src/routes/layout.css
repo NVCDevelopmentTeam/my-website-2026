@@ -44,6 +44,7 @@
   --c-text: #f5f5f7;
   --c-secondary: #c7c7cf; /* Increased contrast from #a0a0ab */
   --c-muted: #9ca3af; /* Increased contrast from #6b7280 */
+  --c-primary: #38bdf8; /* High-contrast focus outline on dark background (9.1:1, exceeds WCAG AAA) */
 }
 
 /* ── 4. PREFLIGHT / RESET ─────────────────────────────────── */

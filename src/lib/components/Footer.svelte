@@ -14,15 +14,12 @@
   <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6">
     <div class="flex flex-col items-start justify-between gap-12 md:flex-row">
       <!-- Minimal navigation -->
-      <nav class="space-y-4" aria-labelledby="footer-links-heading">
-        <h3
-          id="footer-links-heading"
-          class="text-sm text-gray-950 font-black tracking-widest uppercase dark:text-gray-50"
-        >
+      <div class="space-y-4">
+        <h2 class="text-sm text-gray-950 font-black tracking-widest uppercase dark:text-gray-50">
           liên kết hữu ích
-        </h3>
+        </h2>
         <LegalMenu {pages} />
-      </nav>
+      </div>
 
       <!-- Brand & Copyright -->
       <div class="max-w-sm space-y-4">

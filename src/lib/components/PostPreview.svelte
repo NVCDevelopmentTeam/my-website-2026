@@ -30,14 +30,14 @@
         href={postUrl}
         class="ml-2 inline-block text-blue-800 font-bold dark:text-blue-300 hover:underline"
       >
-        → tiếp tục đọc {post.metadata.title}
+        <span aria-hidden="true">→</span> tiếp tục đọc {post.metadata.title}
       </a>
     </div>
   {:else}
     <p class="text-gray-800 leading-relaxed italic dark:text-gray-300">
       Bài viết chưa có đoạn trích.
       <a href={postUrl} class="ml-2 text-blue-800 font-bold dark:text-blue-300 hover:underline">
-        tiếp tục đọc {post.metadata.title} →
+        tiếp tục đọc {post.metadata.title} <span aria-hidden="true">→</span>
       </a>
     </p>
   {/if}

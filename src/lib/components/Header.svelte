@@ -18,10 +18,10 @@
 
         <Logo pages={allPages} />
 
-        <nav class="flex flex-nowrap items-center justify-end gap-4" aria-label="Tiện ích trang">
+        <div class="flex flex-nowrap items-center justify-end gap-4">
           <ThemeSwitcher />
           <Menu {navPages} />
-        </nav>
+        </div>
       </div>
     </div>
   </div>

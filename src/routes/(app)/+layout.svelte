@@ -63,16 +63,20 @@
     />
   </div>
 
-  <main id="main-content" class="mx-auto max-w-7xl w-full flex-grow px-4 lg:px-8 sm:px-6">
-    <div class="py-12 lg:grid lg:grid-cols-12 lg:gap-12">
+  <main
+    id="main-content"
+    tabindex="-1"
+    class="mx-auto max-w-7xl w-full flex-grow px-4 lg:px-8 sm:px-6 focus:outline-none"
+  >
+    <div class="py-12 md:grid md:grid-cols-12 md:gap-8 lg:gap-12">
       <div
-        class="transition-opacity duration-150 lg:col-span-8 {isLoading
+        class="transition-opacity duration-150 md:col-span-8 {isLoading
           ? 'opacity-90'
           : 'opacity-100'}"
       >
         {@render children?.()}
       </div>
-      <aside class="mt-12 lg:col-span-4 lg:mt-0">
+      <aside class="mt-12 md:col-span-4 md:mt-0">
         <Sidebar categories={data.allCategories} recentPosts={data.recentPosts} />
       </aside>
     </div>

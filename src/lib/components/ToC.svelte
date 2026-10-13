@@ -295,17 +295,14 @@
 </script>
 
 {#if hasToc}
-  <nav
+  <div
     class="my-8 border-l-4 border-blue-800 rounded-r-2xl bg-blue-50/50 p-4 shadow-sm transition-all duration-300 animate-in fade-in slide-in-from-left-5 dark:border-blue-400 dark:bg-gray-900 sm:p-6 hover:shadow-md {isSticky
       ? 'lg:sticky lg:top-20'
       : ''}"
   >
     <!-- Header with toggle -->
     <div class="mb-4 flex items-center justify-between">
-      <h2
-        id="toc-heading"
-        class="m-0 flex items-center gap-2 text-lg text-gray-950 font-bold dark:text-white"
-      >
+      <h2 class="m-0 flex items-center gap-2 text-lg text-gray-950 font-bold dark:text-white">
         <svg
           class="h-5 w-5 text-blue-800 dark:text-blue-400"
           fill="none"
@@ -328,7 +325,6 @@
         class="rounded-xl p-2 transition-colors duration-200 hover:bg-white dark:hover:bg-gray-800"
         aria-label={isExpanded ? labels.collapse : labels.expand}
         aria-expanded={isExpanded}
-        aria-controls="toc-list"
       >
         <svg
           class="h-5 w-5 text-gray-950 transition-transform duration-300 dark:text-gray-50 {isExpanded
@@ -351,10 +347,7 @@
         {#if children}
           {@render children()}
         {:else}
-          <ul
-            class="m-0 max-h-[70vh] flex flex-col list-none gap-2 overflow-y-auto p-0"
-            role="list"
-          >
+          <ul class="m-0 max-h-[70vh] flex flex-col list-none gap-2 overflow-y-auto p-0">
             {#each processedToc as h (h.id)}
               {@const indent = getIndent(h.level)}
               {@const isActive = activeHeading?.id === h.id}
@@ -385,5 +378,5 @@
         {/if}
       </div>
     {/if}
-  </nav>
+  </div>
 {/if}

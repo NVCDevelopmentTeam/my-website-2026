@@ -77,151 +77,153 @@
   })
 </script>
 
-<!-- Mobile Menu -->
-<nav class="flex items-center justify-end lg:hidden" aria-label="Điều hướng chính (di động)">
-  <button
-    bind:this={openButtonRef}
-    onclick={openMenu}
-    aria-haspopup="dialog"
-    class="min-h-[48px] min-w-[48px] flex cursor-pointer items-center justify-center border-0 bg-transparent p-3 text-gray-900 transition-opacity dark:text-gray-100 hover:opacity-70"
+<nav class="flex items-center justify-end" aria-label="Điều hướng chính">
+  <!-- Desktop Menu -->
+  <div
+    class="relative hidden border border-gray-200 rounded-2xl bg-white/80 px-4 py-2 shadow-md backdrop-blur-md lg:block dark:border-gray-800 dark:bg-gray-950/80"
   >
-    <svg
-      width="24"
-      height="24"
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-      focusable="false"
-    >
-      <rect x="4" y="7.5" width="16" height="1.5" fill="currentColor" />
-      <rect x="4" y="15" width="16" height="1.5" fill="currentColor" />
-    </svg>
-    <span class="sr-only">Mở menu điều hướng</span>
-  </button>
+    <ul class="m-0 flex flex-wrap list-none items-center justify-center gap-3 p-0">
+      {#each navPages as p (p.slug)}
+        <li>
+          <a
+            href={getHref(p.slug)}
+            data-sveltekit-preload-data="hover"
+            class="inline-block rounded-xl px-4 py-2 text-gray-950 font-black no-underline transition-[background-color,color] duration-300 hover:bg-sky-800 dark:text-gray-50 hover:text-white focus:outline-none focus:ring-2 focus:ring-sky-800 dark:hover:bg-sky-400 dark:hover:text-gray-950"
+            class:bg-sky-800={isCurrentPage(p.slug)}
+            class:dark:bg-sky-400={isCurrentPage(p.slug)}
+            class:text-white={isCurrentPage(p.slug)}
+            class:dark:text-gray-950={isCurrentPage(p.slug)}
+            aria-current={isCurrentPage(p.slug) ? 'page' : undefined}
+          >
+            {p.metadata.title}
+          </a>
+        </li>
+      {/each}
 
-  {#if isMenuOpen}
-    <div
-      bind:this={containerRef}
-      class="fixed inset-0 z-[100000]"
-      role="presentation"
-      onfocusout={handleMenuFocusout}
-      onkeydown={handleMenuKeydown}
+      <li>
+        <a
+          href="/blog"
+          data-sveltekit-preload-data="hover"
+          class="inline-block rounded-xl px-4 py-2 text-gray-950 font-black no-underline transition-[background-color,color] duration-300 hover:bg-sky-800 dark:text-gray-50 hover:text-white focus:outline-none focus:ring-2 focus:ring-sky-800 dark:hover:bg-sky-400 dark:hover:text-gray-950"
+          class:bg-sky-800={page.url.pathname === '/blog'}
+          class:dark:bg-sky-400={page.url.pathname === '/blog'}
+          class:text-white={page.url.pathname === '/blog'}
+          class:dark:text-gray-950={page.url.pathname === '/blog'}
+          aria-current={page.url.pathname === '/blog' ? 'page' : undefined}
+        >
+          Blog
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div class="flex items-center justify-end lg:hidden">
+    <button
+      bind:this={openButtonRef}
+      onclick={openMenu}
+      aria-expanded={isMenuOpen}
+      class="min-h-[48px] min-w-[48px] flex cursor-pointer items-center justify-center border-0 bg-transparent p-3 text-gray-900 transition-opacity dark:text-gray-100 hover:opacity-70"
     >
-      <!-- Backdrop: click/tap-to-dismiss only — Escape (handleMenuKeydown)
+      <svg
+        width="24"
+        height="24"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <rect x="4" y="7.5" width="16" height="1.5" fill="currentColor" />
+        <rect x="4" y="15" width="16" height="1.5" fill="currentColor" />
+      </svg>
+      <span class="sr-only">Menu</span>
+    </button>
+
+    {#if isMenuOpen}
+      <div
+        bind:this={containerRef}
+        class="fixed inset-0 z-[100000]"
+        role="presentation"
+        onfocusout={handleMenuFocusout}
+        onkeydown={handleMenuKeydown}
+      >
+        <!-- Backdrop: click/tap-to-dismiss only — Escape (handleMenuKeydown)
            and the explicit Close button already cover the keyboard/AT path,
            so this doesn't need its own focusable, announced control. -->
-      <div
-        class="fixed inset-0 bg-black/60 duration-200 animate-in fade-in"
-        onclick={handleBackdropClick}
-        aria-hidden="true"
-      ></div>
+        <div
+          class="fixed inset-0 bg-black/60 duration-200 animate-in fade-in"
+          onclick={handleBackdropClick}
+          aria-hidden="true"
+        ></div>
 
-      <!-- Menu Panel -->
-      <div
-        class="safe-top safe-bottom safe-x fixed bottom-0 right-0 top-0 max-w-md w-full overflow-y-auto bg-white text-gray-950 shadow-2xl duration-200 animate-in slide-in-from-right dark:bg-gray-950 dark:text-white"
-        role="dialog"
-        aria-modal="true"
-        aria-label="Menu điều hướng"
-        tabindex="-1"
-      >
-        <!-- Close Button -->
-        <button
-          onclick={closeMenu}
-          class="absolute right-5 top-5 z-10 min-h-[48px] min-w-[48px] flex cursor-pointer items-center justify-center border-0 bg-transparent p-2 text-gray-950 transition-opacity dark:text-white hover:opacity-70"
+        <!-- Menu Panel -->
+        <div
+          id="mobile-menu-dialog"
+          class="safe-top safe-bottom safe-x fixed bottom-0 right-0 top-0 max-w-md w-full overflow-y-auto bg-white text-gray-950 shadow-2xl duration-200 animate-in slide-in-from-right dark:bg-gray-950 dark:text-white"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Menu"
+          tabindex="-1"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            width="24"
-            height="24"
-            aria-hidden="true"
-            focusable="false"
-            fill="currentColor"
+          <!-- Close Button -->
+          <button
+            onclick={closeMenu}
+            aria-label="Đóng"
+            class="absolute right-5 top-5 z-10 min-h-[48px] min-w-[48px] flex cursor-pointer items-center justify-center border-0 bg-transparent p-2 text-gray-950 transition-opacity dark:text-white hover:opacity-70"
           >
-            <path
-              d="m13.06 12 6.47-6.47-1.06-1.06L12 10.94 5.53 4.47 4.47 5.53 10.94 12l-6.47 6.47 1.06 1.06L12 13.06l6.47 6.47 1.06-1.06L13.06 12Z"
-            />
-          </svg>
-          <span class="sr-only">Đóng</span>
-        </button>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              width="24"
+              height="24"
+              aria-hidden="true"
+              focusable="false"
+              fill="currentColor"
+            >
+              <path
+                d="m13.06 12 6.47-6.47-1.06-1.06L12 10.94 5.53 4.47 4.47 5.53 10.94 12l-6.47 6.47 1.06 1.06L12 13.06l6.47 6.47 1.06-1.06L13.06 12Z"
+              />
+            </svg>
+          </button>
 
-        <!-- Menu Content -->
-        <div class="p-8 pt-20">
-          <ul class="m-0 w-full flex flex-col list-none items-start justify-start p-0 space-y-1">
-            {#each navPages as p (p.slug)}
+          <!-- Menu Content -->
+          <div class="p-8 pt-20">
+            <ul class="m-0 w-full flex flex-col list-none items-start justify-start p-0 space-y-1">
+              {#each navPages as p (p.slug)}
+                <li class="w-full">
+                  <a
+                    class="block rounded-lg px-4 py-3 text-lg text-gray-950 font-bold no-underline transition-colors hover:bg-gray-100 dark:text-gray-50 -tracking-[0.1px] dark:hover:bg-gray-900"
+                    class:font-black={isCurrentPage(p.slug)}
+                    class:bg-gray-100={isCurrentPage(p.slug)}
+                    class:dark:bg-gray-900={isCurrentPage(p.slug)}
+                    href={getHref(p.slug)}
+                    data-sveltekit-preload-data="hover"
+                    aria-current={isCurrentPage(p.slug) ? 'page' : undefined}
+                    onclick={closeMenu}
+                  >
+                    {p.metadata.title}
+                  </a>
+                </li>
+              {/each}
+
               <li class="w-full">
                 <a
                   class="block rounded-lg px-4 py-3 text-lg text-gray-950 font-bold no-underline transition-colors hover:bg-gray-100 dark:text-gray-50 -tracking-[0.1px] dark:hover:bg-gray-900"
-                  class:font-black={isCurrentPage(p.slug)}
-                  class:bg-gray-100={isCurrentPage(p.slug)}
-                  class:dark:bg-gray-900={isCurrentPage(p.slug)}
-                  href={getHref(p.slug)}
+                  class:font-black={page.url.pathname === '/blog'}
+                  class:bg-gray-100={page.url.pathname === '/blog'}
+                  class:dark:bg-gray-900={page.url.pathname === '/blog'}
+                  href="/blog"
                   data-sveltekit-preload-data="hover"
-                  aria-current={isCurrentPage(p.slug) ? 'page' : undefined}
+                  aria-current={page.url.pathname === '/blog' ? 'page' : undefined}
                   onclick={closeMenu}
                 >
-                  {p.metadata.title}
+                  Blog
                 </a>
               </li>
-            {/each}
-
-            <li class="w-full">
-              <a
-                class="block rounded-lg px-4 py-3 text-lg text-gray-950 font-bold no-underline transition-colors hover:bg-gray-100 dark:text-gray-50 -tracking-[0.1px] dark:hover:bg-gray-900"
-                class:font-black={page.url.pathname === '/blog'}
-                class:bg-gray-100={page.url.pathname === '/blog'}
-                class:dark:bg-gray-900={page.url.pathname === '/blog'}
-                href="/blog"
-                data-sveltekit-preload-data="hover"
-                aria-current={page.url.pathname === '/blog' ? 'page' : undefined}
-                onclick={closeMenu}
-              >
-                Blog
-              </a>
-            </li>
-          </ul>
+            </ul>
+          </div>
         </div>
       </div>
-    </div>
-  {/if}
-</nav>
-
-<!-- Desktop Menu -->
-<nav
-  class="relative hidden border border-gray-200 rounded-2xl bg-white/80 px-4 py-2 shadow-md backdrop-blur-md lg:block dark:border-gray-800 dark:bg-gray-950/80"
-  aria-label="Điều hướng chính"
->
-  <ul class="m-0 flex flex-wrap list-none items-center justify-center gap-3 p-0">
-    {#each navPages as p (p.slug)}
-      <li>
-        <a
-          href={getHref(p.slug)}
-          data-sveltekit-preload-data="hover"
-          class="inline-block rounded-xl px-4 py-2 text-gray-950 font-black no-underline transition-[background-color,color] duration-300 hover:bg-sky-800 dark:text-gray-50 hover:text-white focus:outline-none focus:ring-2 focus:ring-sky-800 dark:hover:bg-sky-400 dark:hover:text-gray-950"
-          class:bg-sky-800={isCurrentPage(p.slug)}
-          class:dark:bg-sky-400={isCurrentPage(p.slug)}
-          class:text-white={isCurrentPage(p.slug)}
-          class:dark:text-gray-950={isCurrentPage(p.slug)}
-          aria-current={isCurrentPage(p.slug) ? 'page' : undefined}
-        >
-          {p.metadata.title}
-        </a>
-      </li>
-    {/each}
-
-    <li>
-      <a
-        href="/blog"
-        data-sveltekit-preload-data="hover"
-        class="inline-block rounded-xl px-4 py-2 text-gray-950 font-black no-underline transition-[background-color,color] duration-300 hover:bg-sky-800 dark:text-gray-50 hover:text-white focus:outline-none focus:ring-2 focus:ring-sky-800 dark:hover:bg-sky-400 dark:hover:text-gray-950"
-        class:bg-sky-800={page.url.pathname === '/blog'}
-        class:dark:bg-sky-400={page.url.pathname === '/blog'}
-        class:text-white={page.url.pathname === '/blog'}
-        class:dark:text-gray-950={page.url.pathname === '/blog'}
-        aria-current={page.url.pathname === '/blog' ? 'page' : undefined}
-      >
-        Blog
-      </a>
-    </li>
-  </ul>
+    {/if}
+  </div>
 </nav>

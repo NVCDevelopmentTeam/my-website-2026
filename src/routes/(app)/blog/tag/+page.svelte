@@ -37,6 +37,8 @@
               class="h-4 w-4 text-purple-800 dark:text-purple-300"
               fill="currentColor"
               viewBox="0 0 20 20"
+              aria-hidden="true"
+              focusable="false"
             >
               <path
                 fill-rule="evenodd"
@@ -48,7 +50,7 @@
               {tag.name}
             </span>
             <span
-              class="rounded-full bg-purple-200 px-2 py-0.5 text-xs text-purple-950 font-black dark:bg-purple-900/60 dark:text-purple-50"
+              class="rounded-full bg-purple-200 px-2 py-0.5 text-sm text-purple-950 font-black dark:bg-purple-900/60 dark:text-purple-50"
             >
               {tag.count}
             </span>

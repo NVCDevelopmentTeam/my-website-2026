@@ -2,14 +2,11 @@
   import { siteConfig } from '#lib/config.js'
 </script>
 
-<nav class="space-y-3" aria-labelledby="social-links-heading">
-  <h3
-    id="social-links-heading"
-    class="text-sm text-gray-950 font-bold tracking-wider uppercase dark:text-gray-50"
-  >
+<div class="space-y-3">
+  <h2 class="text-sm text-gray-950 font-bold tracking-wider uppercase dark:text-gray-50">
     Kết nối với mình
-  </h3>
-  <ul class="flex flex-wrap list-none gap-4">
+  </h2>
+  <ul class="m-0 flex flex-wrap list-none gap-4 p-0">
     {#if siteConfig.social.facebook && siteConfig.social.facebook !== '/'}
       <li>
         <a
@@ -64,4 +61,4 @@
       </li>
     {/if}
   </ul>
-</nav>
+</div>

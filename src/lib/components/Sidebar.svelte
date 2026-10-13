@@ -54,7 +54,7 @@
   const currentPath = $derived(page?.url?.pathname || '')
 </script>
 
-<aside class="flex flex-col gap-6">
+<div class="flex flex-col gap-6">
   <!-- Recent Posts Widget -->
   <section
     class="border border-gray-200 rounded-2xl bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
@@ -62,7 +62,7 @@
     <div
       class="mb-4 flex items-center justify-between border-b border-gray-100 pb-3 dark:border-gray-800"
     >
-      <h2 class="text-xs text-gray-950 font-black tracking-widest uppercase dark:text-gray-50">
+      <h2 class="text-sm text-gray-950 font-black tracking-widest uppercase dark:text-gray-50">
         Bài viết gần đây
       </h2>
     </div>
@@ -77,11 +77,11 @@
       <div
         class="mb-4 flex items-center justify-between border-b border-gray-100 pb-3 dark:border-gray-800"
       >
-        <h2 class="text-xs text-gray-950 font-black tracking-widest uppercase dark:text-gray-50">
+        <h2 class="text-sm text-gray-950 font-black tracking-widest uppercase dark:text-gray-50">
           Danh mục
         </h2>
       </div>
-      <ul class="list-none space-y-1.5">
+      <ul class="m-0 list-none p-0 space-y-1.5">
         {#each processedCategories as category (category.slug || category.title)}
           {@const isActive = currentPath.includes(`/blog/category/${category.slug}`)}
           <li>
@@ -96,7 +96,7 @@
                 {category.title}
               </span>
               <span
-                class="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600 font-bold dark:bg-gray-800 group-hover:bg-sky-100 dark:text-gray-400 group-hover:text-sky-800 dark:group-hover:bg-sky-900/60 dark:group-hover:text-sky-200"
+                class="rounded-full bg-gray-100 px-2 py-0.5 text-sm text-gray-700 font-bold dark:bg-gray-800 group-hover:bg-sky-100 dark:text-gray-200 group-hover:text-sky-900 dark:group-hover:bg-sky-900/60 dark:group-hover:text-sky-200"
               >
                 {category.count}
               </span>
@@ -109,7 +109,7 @@
         <a
           href="/blog/category"
           data-sveltekit-preload-data="hover"
-          class="inline-flex items-center gap-1.5 text-xs text-sky-700 font-black tracking-wider uppercase dark:text-sky-400 hover:underline"
+          class="inline-flex items-center gap-1.5 text-sm text-sky-700 font-black tracking-wider uppercase dark:text-sky-400 hover:underline"
         >
           <span>Khám phá tất cả danh mục</span>
           <span aria-hidden="true">→</span>
@@ -124,4 +124,4 @@
   >
     <SocialMenu />
   </section>
-</aside>
+</div>

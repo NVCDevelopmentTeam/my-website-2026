@@ -107,7 +107,7 @@
 
 {#if totalPages > 1}
   <nav class="mb-4 mt-8 flex items-center justify-center" aria-label="Phân trang">
-    <ul class="inline-flex list-none items-center gap-1">
+    <ul class="m-0 inline-flex list-none items-center gap-1 p-0">
       <!-- Previous Button -->
       {#if hasPrev}
         <li>
@@ -147,7 +147,8 @@
         >
           {#if num === '...'}
             <span
-              class="h-10 w-10 inline-flex items-center justify-center text-sm text-gray-950 font-bold dark:text-gray-400"
+              class="h-10 w-10 inline-flex items-center justify-center text-sm text-gray-600 font-bold dark:text-gray-300"
+              aria-hidden="true"
             >
               …
             </span>
@@ -155,7 +156,6 @@
             <span
               class="h-10 w-10 inline-flex cursor-default items-center justify-center border border-sky-950 rounded bg-sky-950 text-sm text-white font-black dark:border-sky-400 dark:bg-sky-400 dark:text-gray-950"
               aria-current="page"
-              aria-label="Trang {num}"
             >
               {num}
             </span>
@@ -164,7 +164,6 @@
               href={buildUrl(Number(num))}
               data-sveltekit-preload-data="hover"
               class="h-10 w-10 inline-flex items-center justify-center border border-gray-400 rounded bg-white text-sm text-gray-950 font-bold transition-colors dark:border-gray-600 hover:border-gray-500 dark:bg-gray-800 hover:bg-gray-50 dark:text-gray-50 dark:hover:border-gray-400 dark:hover:bg-gray-700"
-              aria-label="Trang {num}"
             >
               {num}
             </a>
@@ -179,7 +178,6 @@
             href={buildUrl(currentPage + 1)}
             data-sveltekit-preload-data="hover"
             class="inline-flex items-center gap-1.5 border border-gray-400 rounded bg-white px-3 py-2 text-sm text-gray-950 font-bold transition-colors dark:border-gray-600 dark:bg-gray-800 hover:bg-gray-50 dark:text-gray-50 dark:hover:bg-gray-700"
-            aria-label="Trang sau"
           >
             <span>Sau</span>
             <svg

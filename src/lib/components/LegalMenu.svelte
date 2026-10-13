@@ -28,7 +28,7 @@
 
 {#if footerPages.length > 0}
   <div>
-    <ul class="flex flex-col list-none gap-1">
+    <ul class="m-0 flex flex-col list-none gap-1 p-0">
       {#each footerPages as p (p.slug)}
         <li>
           <a

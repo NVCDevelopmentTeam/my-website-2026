@@ -11,7 +11,7 @@
 </script>
 
 <!-- Rendered outside every layout, so it supplies the page's only <main> landmark. -->
-<main id="main-content">
+<main id="main-content" tabindex="-1" class="focus:outline-none">
   {#await errorPage then { default: ErrorPage }}
     <ErrorPage />
   {/await}

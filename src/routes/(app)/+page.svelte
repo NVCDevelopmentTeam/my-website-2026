@@ -57,12 +57,12 @@
   {#if latestPosts.length > 0}
     <section class="space-y-12">
       <div class="flex items-center gap-4">
-        <h2 class="text-xs text-gray-950 font-black tracking-[0.3em] dark:text-gray-50">
+        <h2 class="text-sm text-gray-950 font-black tracking-[0.3em] dark:text-gray-50">
           bài viết mới
         </h2>
         <div class="h-px flex-grow bg-gray-100 dark:bg-gray-800"></div>
       </div>
-      <PostsList posts={latestPosts} />
+      <PostsList posts={latestPosts} headingLevel={3} />
 
       <div class="pt-8">
         <a

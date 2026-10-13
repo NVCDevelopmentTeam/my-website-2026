@@ -116,9 +116,9 @@
             <PostAuthor post={{ metadata }} />
           </span>
           <span aria-hidden="true" class="text-gray-300 dark:text-gray-700">|</span>
-          <time itemprop="datePublished" datetime={metadata.date}>
+          <span itemprop="datePublished">
             <PostDate post={{ metadata }} />
-          </time>
+          </span>
           {#if metadata.updated}
             <meta itemprop="dateModified" content={metadata.updated} />
           {/if}

@@ -1,12 +1,9 @@
 <script>
   import { onMount } from 'svelte'
-  import { browser } from '$app/env'
 
   let theme = $state('light')
 
   onMount(() => {
-    if (!browser) return
-
     // Check for saved theme or system preference
     const savedTheme = localStorage.getItem('theme-preference')
 
@@ -23,8 +20,6 @@
 
   /** @param {string} newTheme */
   function applyTheme(newTheme) {
-    if (!browser) return
-
     if (newTheme === 'dark') {
       document.documentElement.classList.add('dark')
     } else {
@@ -45,7 +40,6 @@
   onclick={toggleTheme}
   class="min-h-[48px] min-w-[48px] flex items-center justify-center border border-gray-200 rounded-xl bg-gray-50 p-3 text-gray-950 shadow-sm transition-[background-color,color,border-color,box-shadow] duration-200 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-50 hover:text-sky-800 focus:outline-none focus:ring-2 focus:ring-sky-800 dark:hover:text-sky-400 dark:focus:ring-sky-400"
   aria-label={theme === 'light' ? 'Chuyển sang chế độ tối' : 'Chuyển sang chế độ sáng'}
-  title={theme === 'light' ? 'Bật chế độ tối' : 'Bật chế độ sáng'}
 >
   {#if theme === 'light'}
     <svg

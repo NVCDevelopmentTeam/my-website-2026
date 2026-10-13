@@ -1,5 +1,4 @@
 <script>
-  import { page } from '$app/state'
   import logo from '#lib/assets/logo.svg'
   import { siteConfig } from '#lib/config.js'
 
@@ -21,8 +20,6 @@
     href={homeHref}
     data-sveltekit-preload-data="hover"
     class="min-h-[48px] min-w-[48px] flex items-center gap-2 rounded-full p-1.5 text-lg text-gray-950 font-bold transition-colors duration-300 dark:text-gray-50 hover:text-sky-800 focus:outline-none focus:ring-2 focus:ring-sky-800 dark:hover:text-sky-400 dark:focus:ring-sky-400"
-    aria-label={siteConfig.title}
-    aria-current={page.url.pathname === homeHref ? 'page' : undefined}
   >
     <!-- 
 			Performance optimization:
@@ -35,6 +32,6 @@
     >
       <img src={logo} alt="" width="36" height="36" decoding="async" />
     </div>
-    <span class="hidden tracking-wide sm:inline">{siteConfig.title}</span>
+    <span class="sr-only tracking-wide sm:not-sr-only">{siteConfig.title}</span>
   </a>
 </div>

@@ -52,7 +52,7 @@
   <meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
-<main class="mt-10 px-4" aria-live="polite">
+<div class="mt-10 px-4" aria-live="polite">
   {#if cmsError}
     <div role="alert" class="text-center text-red-800 dark:text-red-400">
       <h2 class="text-2xl font-black">Khởi tạo CMS thất bại</h2>
@@ -69,4 +69,4 @@
   {:else}
     <div id="sveltia-cms"></div>
   {/if}
-</main>
+</div>

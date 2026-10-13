@@ -264,10 +264,8 @@
     onclick={toggleLike}
     disabled={hasLiked}
     class="inline-flex select-none items-center gap-2 rounded-md px-4 py-2 text-sm font-semibold transition-all {hasLiked
-      ? 'cursor-default bg-[#E7F3FF] text-[#0866FF] dark:bg-[#0866FF]/20 dark:text-[#4599FF]'
+      ? 'cursor-default bg-[#E7F3FF] text-[#0055d4] dark:bg-[#0055d4]/20 dark:text-[#38bdf8]'
       : 'bg-[#F0F2F5] text-[#050505] active:scale-95 dark:bg-[#3A3B3C] hover:bg-[#E4E6E9] dark:text-[#E4E6EB] dark:hover:bg-[#4E4F50]'}"
-    aria-label="Thích bài viết, hiện có {likes} lượt thích"
-    aria-pressed={hasLiked}
   >
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -287,8 +285,8 @@
     </svg>
     <span>{hasLiked ? 'Đã thích' : 'Thích'}</span>
     {#if likes > 0}
-      <span class="rounded-full bg-black/5 px-2 py-0.5 text-xs font-bold dark:bg-white/10"
-        >{likes}</span
+      <span class="rounded-full bg-black/5 px-2 py-0.5 text-sm font-bold dark:bg-white/10"
+        >{likes}<span class="sr-only"> lượt thích</span></span
       >
     {/if}
   </button>
@@ -297,7 +295,6 @@
   <button
     onclick={openDialog}
     class="inline-flex select-none items-center gap-2 rounded-md bg-[#F0F2F5] px-4 py-2 text-sm text-[#050505] font-semibold transition-all active:scale-95 dark:bg-[#3A3B3C] hover:bg-[#E4E6E9] dark:text-[#E4E6EB] dark:hover:bg-[#4E4F50]"
-    aria-label="Chia sẻ bài viết"
   >
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -323,7 +320,6 @@
     bind:this={dialog}
     onclick={handleDialogClick}
     aria-labelledby="dialog-title"
-    aria-modal="true"
     class="backdrop:backdrop-blur-xs max-w-sm w-full overflow-hidden border-0 rounded-3xl bg-white p-0 shadow-2xl backdrop:bg-black/60 dark:bg-[#242526]"
   >
     <div class="p-5">
@@ -336,8 +332,8 @@
         </h2>
         <button
           onclick={closeDialog}
-          aria-label="Đóng"
-          class="rounded-full p-1.5 text-gray-500 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
+          aria-label="Đóng hộp thoại chia sẻ"
+          class="rounded-full p-1.5 text-gray-600 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -380,7 +376,7 @@
               />
             </svg>
           </div>
-          <span class="text-xs text-gray-800 font-medium dark:text-gray-200">Facebook</span>
+          <span class="text-sm text-gray-800 font-medium dark:text-gray-200">Facebook</span>
         </button>
 
         <!-- Messenger -->
@@ -404,7 +400,7 @@
               />
             </svg>
           </div>
-          <span class="text-xs text-gray-800 font-medium dark:text-gray-200">Messenger</span>
+          <span class="text-sm text-gray-800 font-medium dark:text-gray-200">Messenger</span>
         </button>
 
         <!-- Zalo -->
@@ -413,11 +409,12 @@
           class="flex flex-col items-center gap-1.5 rounded-2xl p-2.5 text-center transition-colors active:scale-95 hover:bg-gray-100 dark:hover:bg-gray-800"
         >
           <div
-            class="h-12 w-12 flex items-center justify-center rounded-full bg-[#0068FF] text-xs text-white font-black tracking-tighter italic shadow-sm"
+            aria-hidden="true"
+            class="h-12 w-12 flex items-center justify-center rounded-full bg-[#0068FF] text-sm text-white font-black tracking-tighter italic shadow-sm"
           >
             Zalo
           </div>
-          <span class="text-xs text-gray-800 font-medium dark:text-gray-200">Zalo</span>
+          <span class="text-sm text-gray-800 font-medium dark:text-gray-200">Zalo</span>
         </button>
 
         <!-- Telegram -->
@@ -441,7 +438,7 @@
               />
             </svg>
           </div>
-          <span class="text-xs text-gray-800 font-medium dark:text-gray-200">Telegram</span>
+          <span class="text-sm text-gray-800 font-medium dark:text-gray-200">Telegram</span>
         </button>
 
         <!-- X (Twitter) -->
@@ -465,7 +462,7 @@
               />
             </svg>
           </div>
-          <span class="text-xs text-gray-800 font-medium dark:text-gray-200">X (Twitter)</span>
+          <span class="text-sm text-gray-800 font-medium dark:text-gray-200">X (Twitter)</span>
         </button>
 
         <!-- Copy link button -->
@@ -512,11 +509,14 @@
             {/if}
           </div>
           <span
-            class="text-xs font-medium {copySuccess
+            class="text-sm font-medium {copySuccess
               ? 'text-emerald-600 font-bold dark:text-emerald-400'
               : 'text-gray-800 dark:text-gray-200'}"
           >
             {copySuccess ? 'Đã sao chép!' : 'Sao chép link'}
+          </span>
+          <span class="sr-only" role="status">
+            {copySuccess ? 'Đã sao chép liên kết vào bộ nhớ tạm' : ''}
           </span>
         </button>
       </div>
@@ -525,7 +525,7 @@
       <div class="mt-3 border-t border-gray-200 pt-3 dark:border-gray-700">
         <button
           onclick={triggerNativeShare}
-          class="w-full flex items-center justify-center gap-2 rounded-xl bg-gray-100 py-2.5 text-xs text-gray-700 font-semibold transition-colors active:scale-98 dark:bg-gray-800 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700"
+          class="w-full flex items-center justify-center gap-2 rounded-xl bg-gray-100 py-2.5 text-sm text-gray-700 font-semibold transition-colors active:scale-98 dark:bg-gray-800 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

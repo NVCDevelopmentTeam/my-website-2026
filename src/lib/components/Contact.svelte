@@ -64,17 +64,16 @@
 
   <input type="hidden" name="access_key" value={siteConfig.author.accessKey} />
 
-  <!-- Honeypot: hidden from real users via .visually-hidden, but bots that
+  <!-- Honeypot: hidden from real users via display: none, but bots that
        auto-fill every field will trip it. Web3Forms silently rejects the
        submission when this field is non-empty. -->
   <input
     type="checkbox"
     name="botcheck"
-    class="sr-only"
     tabindex="-1"
     autocomplete="off"
+    style="display: none;"
     aria-hidden="true"
-    aria-label="Để trống ô này"
   />
 
   <div class="space-y-2">
@@ -134,13 +133,14 @@
 
   <button
     type="submit"
-    class="w-full rounded-xl bg-sky-800 py-4 text-white font-bold shadow-lg transition-all duration-300 active:scale-[0.98] dark:bg-sky-400 hover:bg-sky-900 dark:text-gray-950 focus:ring-4 focus:ring-sky-500/50 dark:hover:bg-sky-300"
+    class="w-full rounded-xl bg-sky-800 py-4 text-white font-bold shadow-lg transition-all duration-300 active:scale-[0.98] dark:bg-sky-400 hover:bg-sky-900 dark:text-gray-950 focus:outline-none focus:ring-4 focus:ring-sky-500/50 dark:hover:bg-sky-300"
   >
     {status === 'Đang gửi...' ? 'Đang gửi tín hiệu...' : 'Gửi lời nhắn'}
   </button>
 
   {#if status}
     <div
+      role="status"
       aria-live="polite"
       class="mt-6 rounded-xl p-4 text-center font-bold animate-fade-in {status.includes(
         'thành công'

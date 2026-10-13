@@ -23,9 +23,7 @@
 
 <section class="px-4 py-12">
   <h1 class="mb-16 text-center text-4xl font-black tracking-tight sm:text-5xl">
-    <span
-      class="from-sky-800 to-violet-950 bg-gradient-to-r bg-clip-text text-transparent dark:from-sky-400 dark:to-violet-400"
-    >
+    <span class="text-sky-900 dark:text-sky-400">
       Blog
     </span>
   </h1>
