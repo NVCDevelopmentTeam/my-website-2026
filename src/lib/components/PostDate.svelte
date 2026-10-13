@@ -1,12 +1,8 @@
 <script>
+  import { toLongDisplayDate } from '#lib/utils/date.js'
+
   const { post } = $props()
-  const dateString = $derived(
-    new Date(post.metadata.date).toLocaleDateString('vi-VN', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric'
-    })
-  )
+  const dateString = $derived(toLongDisplayDate(post.metadata.date))
 </script>
 
 <span class="inline-flex items-center gap-1.5">
