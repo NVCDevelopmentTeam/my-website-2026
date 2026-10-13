@@ -9,7 +9,7 @@
 </script>
 
 <header
-  class="sticky top-0 z-50 w-full border-b border-gray-100 bg-white/90 backdrop-blur-md transition-colors dark:border-gray-800 dark:bg-gray-950/90"
+  class="sticky top-0 z-50 w-full border-b border-gray-100 bg-white transition-colors dark:border-gray-800 dark:bg-gray-950"
 >
   <div class="w-full">
     <div class="mx-auto max-w-[1340px] px-[clamp(16px,5vw,50px)]">

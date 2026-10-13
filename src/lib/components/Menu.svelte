@@ -41,13 +41,6 @@
     })
   }
 
-  /** @param {MouseEvent} event */
-  function handleBackdropClick(event) {
-    if (event.target === event.currentTarget) {
-      closeMenu()
-    }
-  }
-
   /** @param {string} slug */
   function getHref(slug) {
     return slug === 'index' || slug === '' ? '/' : `/${slug}`
@@ -122,7 +115,7 @@
     <button
       bind:this={openButtonRef}
       onclick={openMenu}
-      aria-expanded={isMenuOpen}
+      aria-haspopup="dialog"
       class="min-h-[48px] min-w-[48px] flex cursor-pointer items-center justify-center border-0 bg-transparent p-3 text-gray-900 transition-opacity dark:text-gray-100 hover:opacity-70"
     >
       <svg
@@ -136,7 +129,7 @@
         <rect x="4" y="7.5" width="16" height="1.5" fill="currentColor" />
         <rect x="4" y="15" width="16" height="1.5" fill="currentColor" />
       </svg>
-      <span class="sr-only">Menu</span>
+      <span class="sr-only">Mở menu</span>
     </button>
 
     {#if isMenuOpen}
@@ -147,19 +140,9 @@
         onfocusout={handleMenuFocusout}
         onkeydown={handleMenuKeydown}
       >
-        <!-- Backdrop: click/tap-to-dismiss only — Escape (handleMenuKeydown)
-           and the explicit Close button already cover the keyboard/AT path,
-           so this doesn't need its own focusable, announced control. -->
+        <!-- Full-screen menu overlay -->
         <div
-          class="fixed inset-0 bg-black/60 duration-200 animate-in fade-in"
-          onclick={handleBackdropClick}
-          aria-hidden="true"
-        ></div>
-
-        <!-- Menu Panel -->
-        <div
-          id="mobile-menu-dialog"
-          class="safe-top safe-bottom safe-x fixed bottom-0 right-0 top-0 max-w-md w-full overflow-y-auto bg-white text-gray-950 shadow-2xl duration-200 animate-in slide-in-from-right dark:bg-gray-950 dark:text-white"
+          class="safe-top safe-bottom safe-x fixed inset-0 overflow-y-auto bg-white text-gray-950 duration-150 animate-in fade-in dark:bg-gray-950 dark:text-white"
           role="dialog"
           aria-modal="true"
           aria-label="Menu"
@@ -168,7 +151,7 @@
           <!-- Close Button -->
           <button
             onclick={closeMenu}
-            aria-label="Đóng"
+            aria-label="Đóng menu"
             class="absolute right-5 top-5 z-10 min-h-[48px] min-w-[48px] flex cursor-pointer items-center justify-center border-0 bg-transparent p-2 text-gray-950 transition-opacity dark:text-white hover:opacity-70"
           >
             <svg

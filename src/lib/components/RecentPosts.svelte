@@ -113,10 +113,10 @@
 <style>
   /*
    * WordPress Twenty Twenty-Five design tokens, hand-mirrored:
-   * - Type pairing: system sans-serif (headings/body) + Fira Mono (meta),
+   * - Type pairing: system sans-serif (headings/body) + system monospace (meta),
    *   matching this site's global font stack (see --font-sans/--font-mono
    *   in app.css) rather than T25's own Manrope + Fira Code pairing, since
-   *   this project intentionally ships zero extra webfonts beyond Fira Mono.
+   *   this project ships no webfonts at all.
    * - Link underline: 1px thickness, .1em offset - same values T25's
    *   style.css hardcodes for content links (not nav links).
    * - Focus ring: 2px solid outline, no offset trickery - T25 keeps

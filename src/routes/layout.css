@@ -1,21 +1,12 @@
 /* ============================================================
    app.css — UnoCSS Global Layer (2026 Standard)
    Stack: SvelteKit 3 + Svelte 5 + UnoCSS + Netlify
-   Font: Fira Mono (code), system-ui stack (UI)
+   Font: system fonts only (no webfont requests)
    Purpose: Global CSS only, responsive, Lighthouse optimized
 ============================================================ */
 
 /* ── 1. UnoCSS LAYERS (avoid specificity conflict) ──────── */
 @layer uno-base, uno-components, uno-utilities;
-
-/* ── 2. FIRA MONO — @fontsource already sets font-display: swap ─── */
-/* Only the subsets the site can show: `latin` (English) + `latin-ext` (Vietnamese). The
-   catch-all 400.css / 700.css also pull Cyrillic and Greek @font-face rules (and font files
-   into the deploy) that no page uses. */
-@import '@fontsource/fira-mono/latin-400.css';
-@import '@fontsource/fira-mono/latin-ext-400.css';
-@import '@fontsource/fira-mono/latin-700.css';
-@import '@fontsource/fira-mono/latin-ext-700.css';
 
 /* ── 3. CSS VARIABLES ─────────────────────────────────────── */
 :root {
@@ -31,8 +22,8 @@
     system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
     sans-serif;
   --font-mono:
-    'Fira Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
-    'Courier New', monospace;
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+    monospace;
 
   /* Fluid base font — single source of truth */
   font-size: clamp(0.875rem, 1.5vw, 1rem);
