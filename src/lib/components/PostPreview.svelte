@@ -1,4 +1,5 @@
 <script>
+  import { preloadOnFocus } from '#lib/actions/preloadOnFocus.js'
   import { truncate } from '#lib/utils/truncate.js'
 
   /**
@@ -29,6 +30,7 @@
       <a
         href={postUrl}
         class="ml-2 inline-block text-blue-800 font-bold dark:text-blue-300 hover:underline"
+        use:preloadOnFocus
       >
         <span aria-hidden="true">→</span> tiếp tục đọc {post.metadata.title}
       </a>
@@ -36,7 +38,11 @@
   {:else}
     <p class="text-gray-800 leading-relaxed italic dark:text-gray-300">
       Bài viết chưa có đoạn trích.
-      <a href={postUrl} class="ml-2 text-blue-800 font-bold dark:text-blue-300 hover:underline">
+      <a
+        href={postUrl}
+        class="ml-2 text-blue-800 font-bold dark:text-blue-300 hover:underline"
+        use:preloadOnFocus
+      >
         tiếp tục đọc {post.metadata.title} <span aria-hidden="true">→</span>
       </a>
     </p>

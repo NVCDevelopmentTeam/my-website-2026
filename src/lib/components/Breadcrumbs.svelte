@@ -1,4 +1,5 @@
 <script>
+  import { preloadOnFocus } from '#lib/actions/preloadOnFocus.js'
   import { page } from '$app/state'
   import { siteConfig } from '#lib/config.js'
   import { serializeSchema } from '#lib/utils/seo.js'
@@ -267,6 +268,7 @@
               href={crumb.href}
               data-sveltekit-preload-data="hover"
               class="text-gray-950 font-bold transition-colors dark:text-gray-50 hover:text-sky-800 dark:hover:text-sky-400"
+              use:preloadOnFocus
             >
               {crumb.name}
             </a>

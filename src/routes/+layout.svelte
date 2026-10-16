@@ -1,41 +1,14 @@
 <script>
   import './layout.css'
   import { onMount } from 'svelte'
-  import { goto, afterNavigate } from '$app/navigation'
+  import { goto } from '$app/navigation'
   import { siteConfig } from '#lib/config.js'
   import { retireServiceWorkers } from '#lib/utils/retireServiceWorkers.js'
 
   let { children } = $props()
-  let announceA = $state('')
-  let announceB = $state('')
-  let useA = $state(true)
-
-  // Double-buffer live region for accessible navigation announcements.
-  // No beforeunload/unload event listeners — preserves BF-cache.
-  afterNavigate(({ type, shallow }) => {
-    if (shallow) return
-    if (type === 'enter') return
-
-    const title = document.title || siteConfig.title
-
-    announceA = ''
-    announceB = ''
-
-    requestAnimationFrame(() => {
-      useA = !useA
-      if (useA) {
-        announceA = title
-        setTimeout(() => {
-          announceA = ''
-        }, 150)
-      } else {
-        announceB = title
-        setTimeout(() => {
-          announceB = ''
-        }, 150)
-      }
-    })
-  })
+  // Page changes are announced by SvelteKit's own built-in route announcer (an assertive live
+  // region that reads the new document title after every client-side navigation). A second,
+  // custom announcer used to repeat the title, so screen readers said it twice.
 
   onMount(() => {
     // The site no longer registers a service worker (caching is done by the server).
@@ -89,28 +62,11 @@
 <!--
   Outer wrapper has no background of its own: the body carries the page colour and the site
   background image (layout.css), and each layout draws its own solid surface on top.
-  Outer wrapper contains both live regions and page content.
-  Live regions are placed AFTER page content (not before) so that pressing
-  Home (jump to document top) lands on the actual page heading/content
-  first, not the announcer — a screen reader reading top-to-bottom also
-  reaches the (by-then-cleared) announcer last instead of first.
-  Text auto-clears after 150ms — verified via a real WordPress a11y bug report
-  that VoiceOver needs ~150ms minimum to reliably announce repeated/identical
-  text; long enough to be heard, short enough that it clears well before a
-  user would navigate again.
 -->
 <div
   class="min-h-screen flex flex-col text-gray-950 selection:bg-sky-100 dark:text-gray-50 dark:selection:bg-sky-900/30"
 >
   {@render children?.()}
-
-  <!-- Double-buffer live regions — placed last, see comment above -->
-  <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
-    {announceA}
-  </div>
-  <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
-    {announceB}
-  </div>
 </div>
 
 <style uno:preflights uno:safelist global></style>

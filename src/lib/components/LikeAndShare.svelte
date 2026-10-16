@@ -11,50 +11,6 @@
   const userKey = $derived(`hasLiked_${page.url.pathname}`)
 
   /**
-   * Generate a lightweight browser fingerprint for duplicate-like prevention.
-   * @returns {string}
-   */
-  function getBrowserFingerprint() {
-    try {
-      var parts = []
-
-      // Canvas fingerprint
-      var canvas = document.createElement('canvas')
-      canvas.width = 200
-      canvas.height = 50
-      var ctx = canvas.getContext('2d')
-      if (ctx) {
-        ctx.textBaseline = 'top'
-        ctx.font = '14px Arial'
-        ctx.fillStyle = '#f60'
-        ctx.fillRect(125, 1, 62, 20)
-        ctx.fillStyle = '#069'
-        ctx.fillText('Fingerprint', 2, 15)
-        ctx.fillStyle = 'rgba(102, 204, 0, 0.7)'
-        ctx.fillText('Canvas', 4, 35)
-        parts.push(canvas.toDataURL().slice(-50))
-      }
-
-      // Screen characteristics
-      parts.push(screen.width + 'x' + screen.height)
-      parts.push(screen.colorDepth + '')
-      parts.push(navigator.language || '')
-      parts.push(navigator.hardwareConcurrency + '')
-      parts.push(Intl.DateTimeFormat().resolvedOptions().timeZone || '')
-
-      // Simple hash
-      var str = parts.join('|')
-      var hash = 0
-      for (var i = 0; i < str.length; i++) {
-        hash = ((hash << 5) - hash + str.charCodeAt(i)) | 0
-      }
-      return 'fp_' + Math.abs(hash).toString(36)
-    } catch {
-      return 'fp_fallback'
-    }
-  }
-
-  /**
    * Get cookie value by name
    * @param {string} name
    * @returns {string|null}
@@ -74,33 +30,23 @@
   }
 
   /**
-   * Check if the current visitor has already liked this page.
-   * Triple-check: localStorage + cookie + browser fingerprint. This is
-   * intentionally client-side only — the site is static with no backend,
-   * so it can be bypassed by clearing storage or using incognito mode.
-   * @param {string} fingerprint
+   * Check if the current visitor has already liked this page (localStorage + cookie).
+   * This is intentionally client-side only — the site is static with no backend, so it can be
+   * bypassed by clearing storage or using a private window. No browser fingerprinting is used:
+   * it added nothing over these two checks, cost ~80 ms of main-thread time on phones, and
+   * fingerprinting visitors is a consent problem once analytics or ads are added.
    * @returns {boolean}
    */
-  function checkAlreadyLiked(fingerprint) {
-    var inStorage = localStorage.getItem(userKey) === 'true'
-    var inCookie = getCookie(userKey) === 'true'
-    var fingerprintKey = userKey + '_' + fingerprint
-    var inFpStorage = localStorage.getItem(fingerprintKey) === 'true'
-    return inStorage || inCookie || inFpStorage
+  function checkAlreadyLiked() {
+    return localStorage.getItem(userKey) === 'true' || getCookie(userKey) === 'true'
   }
 
-  /**
-   * Persist the liked state across all mechanisms.
-   * @param {string} fingerprint
-   */
-  function persistLiked(fingerprint) {
+  /** Persist the liked state in both places. */
+  function persistLiked() {
     try {
       setCookie(userKey, 'true')
       localStorage.setItem(userKey, 'true')
       localStorage.setItem(storageKey, likes.toString())
-      var fingerprintKey = userKey + '_' + fingerprint
-      localStorage.setItem(fingerprintKey, 'true')
-      setCookie(fingerprintKey, 'true')
     } catch {
       // localStorage may be blocked (privacy mode)
     }
@@ -112,16 +58,14 @@
   function toggleLike() {
     if (hasLiked) return
 
-    var fingerprint = getBrowserFingerprint()
-
-    if (checkAlreadyLiked(fingerprint)) {
+    if (checkAlreadyLiked()) {
       hasLiked = true
       return
     }
 
     likes += 1
     hasLiked = true
-    persistLiked(fingerprint)
+    persistLiked()
   }
 
   // Open the sharing dialog modal
@@ -235,24 +179,19 @@
     }
   }
 
-  // Restore like state from localStorage/cookie/fingerprint on mount.
-  // Deferred 300ms — fingerprint computation (canvas API) is expensive and non-critical.
+  // Restore like state from localStorage / cookie on mount.
   onMount(function () {
-    setTimeout(function () {
-      try {
-        var savedLikes = localStorage.getItem(storageKey)
-        if (savedLikes) {
-          likes = parseInt(savedLikes, 10) || 0
-        }
-
-        var fingerprint = getBrowserFingerprint()
-        if (checkAlreadyLiked(fingerprint)) {
-          hasLiked = true
-        }
-      } catch {
-        // Storage blocked — silently continue
+    try {
+      var savedLikes = localStorage.getItem(storageKey)
+      if (savedLikes) {
+        likes = parseInt(savedLikes, 10) || 0
       }
-    }, 300)
+      if (checkAlreadyLiked()) {
+        hasLiked = true
+      }
+    } catch {
+      // Storage blocked — silently continue
+    }
   })
 </script>
 
@@ -286,7 +225,7 @@
     <span>{hasLiked ? 'Đã thích' : 'Thích'}</span>
     {#if likes > 0}
       <span class="rounded-full bg-black/5 px-2 py-0.5 text-sm font-bold dark:bg-white/10"
-        >{likes}<span class="sr-only"> lượt thích</span></span
+        >{likes}{' '}<span class="sr-only">lượt thích</span></span
       >
     {/if}
   </button>

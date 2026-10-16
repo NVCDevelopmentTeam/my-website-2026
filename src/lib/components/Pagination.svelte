@@ -1,4 +1,5 @@
 <script>
+  import { preloadOnFocus } from '#lib/actions/preloadOnFocus.js'
   import { page } from '$app/state'
   import { siteConfig } from '#lib/config.js'
 
@@ -115,6 +116,7 @@
             href={buildUrl(currentPage - 1)}
             data-sveltekit-preload-data="hover"
             class="inline-flex items-center gap-1.5 border border-gray-400 rounded bg-white px-3 py-2 text-sm text-gray-950 font-bold transition-colors dark:border-gray-600 dark:bg-gray-800 hover:bg-gray-50 dark:text-gray-50 dark:hover:bg-gray-700"
+            use:preloadOnFocus
           >
             <svg
               class="h-4 w-4"
@@ -164,6 +166,7 @@
               href={buildUrl(Number(num))}
               data-sveltekit-preload-data="hover"
               class="h-10 w-10 inline-flex items-center justify-center border border-gray-400 rounded bg-white text-sm text-gray-950 font-bold transition-colors dark:border-gray-600 hover:border-gray-500 dark:bg-gray-800 hover:bg-gray-50 dark:text-gray-50 dark:hover:border-gray-400 dark:hover:bg-gray-700"
+              use:preloadOnFocus
             >
               {num}
             </a>
@@ -178,6 +181,7 @@
             href={buildUrl(currentPage + 1)}
             data-sveltekit-preload-data="hover"
             class="inline-flex items-center gap-1.5 border border-gray-400 rounded bg-white px-3 py-2 text-sm text-gray-950 font-bold transition-colors dark:border-gray-600 dark:bg-gray-800 hover:bg-gray-50 dark:text-gray-50 dark:hover:bg-gray-700"
+            use:preloadOnFocus
           >
             <span>Sau</span>
             <svg

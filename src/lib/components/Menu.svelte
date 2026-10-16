@@ -1,5 +1,7 @@
 <script>
   import { page } from '$app/state'
+  import { preloadData } from '$app/navigation'
+  import { preloadOnFocus } from '#lib/actions/preloadOnFocus.js'
 
   /**
    * @typedef {Object} Props
@@ -7,6 +9,10 @@
    */
   let { navPages = [] } = $props()
 
+  // Desktop link states: every colour property is set by exactly one class (current OR idle),
+  // never by two competing utilities. Competing utilities (e.g. `text-gray-50` + `text-gray-950`)
+  // are resolved by stylesheet order, which differs between the dev server and the production
+  // build, and left white text on the light-blue current item in dark mode (contrast failure).
   let isMenuOpen = $state(false)
   /** @type {HTMLDivElement | null} */
   let containerRef = $state(null)
@@ -15,11 +21,21 @@
 
   function openMenu() {
     isMenuOpen = true
+    // The visitor is about to pick one of these pages: start loading them now (touch screens
+    // have no hover or focus to do it earlier) so the tap that follows feels instant.
+    for (const href of [...navPages.map((p) => getHref(p.slug)), '/blog']) {
+      preloadData(href).catch(() => {})
+    }
   }
 
-  function closeMenu() {
+  /**
+   * @param {boolean} [restoreFocus] Give focus back to the menu button. Not wanted when a link
+   *   was chosen: the page is about to change and SvelteKit moves focus itself, so focusing the
+   *   button first made screen readers read "Mở menu, button" before the new page.
+   */
+  function closeMenu(restoreFocus = true) {
     isMenuOpen = false
-    if (openButtonRef) {
+    if (restoreFocus && openButtonRef) {
       requestAnimationFrame(() => openButtonRef?.focus())
     }
   }
@@ -35,8 +51,11 @@
   function handleMenuFocusout(event) {
     const container = event.currentTarget
     requestAnimationFrame(() => {
-      if (container && !container.contains(document.activeElement)) {
-        closeMenu()
+      // Focus left the menu (tabbed out, or the chosen link was removed while the page
+      // changes). Close it, but leave focus where it went instead of pulling it back to the
+      // button.
+      if (isMenuOpen && container && !container.contains(document.activeElement)) {
+        closeMenu(false)
       }
     })
   }
@@ -81,11 +100,18 @@
           <a
             href={getHref(p.slug)}
             data-sveltekit-preload-data="hover"
-            class="inline-block rounded-xl px-4 py-2 text-gray-950 font-black no-underline transition-[background-color,color] duration-300 hover:bg-sky-800 dark:text-gray-50 hover:text-white focus:outline-none focus:ring-2 focus:ring-sky-800 dark:hover:bg-sky-400 dark:hover:text-gray-950"
+            class="inline-block rounded-xl px-4 py-2 font-black no-underline transition-[background-color,color] duration-300 focus:outline-none focus:ring-2 focus:ring-sky-800"
             class:bg-sky-800={isCurrentPage(p.slug)}
-            class:dark:bg-sky-400={isCurrentPage(p.slug)}
             class:text-white={isCurrentPage(p.slug)}
+            class:dark:bg-sky-400={isCurrentPage(p.slug)}
             class:dark:text-gray-950={isCurrentPage(p.slug)}
+            class:text-gray-950={!isCurrentPage(p.slug)}
+            class:hover:bg-sky-800={!isCurrentPage(p.slug)}
+            class:hover:text-white={!isCurrentPage(p.slug)}
+            class:dark:text-gray-50={!isCurrentPage(p.slug)}
+            class:dark:hover:bg-sky-400={!isCurrentPage(p.slug)}
+            class:dark:hover:text-gray-950={!isCurrentPage(p.slug)}
+            use:preloadOnFocus
             aria-current={isCurrentPage(p.slug) ? 'page' : undefined}
           >
             {p.metadata.title}
@@ -97,11 +123,18 @@
         <a
           href="/blog"
           data-sveltekit-preload-data="hover"
-          class="inline-block rounded-xl px-4 py-2 text-gray-950 font-black no-underline transition-[background-color,color] duration-300 hover:bg-sky-800 dark:text-gray-50 hover:text-white focus:outline-none focus:ring-2 focus:ring-sky-800 dark:hover:bg-sky-400 dark:hover:text-gray-950"
+          class="inline-block rounded-xl px-4 py-2 font-black no-underline transition-[background-color,color] duration-300 focus:outline-none focus:ring-2 focus:ring-sky-800"
           class:bg-sky-800={page.url.pathname === '/blog'}
-          class:dark:bg-sky-400={page.url.pathname === '/blog'}
           class:text-white={page.url.pathname === '/blog'}
+          class:dark:bg-sky-400={page.url.pathname === '/blog'}
           class:dark:text-gray-950={page.url.pathname === '/blog'}
+          class:text-gray-950={!(page.url.pathname === '/blog')}
+          class:hover:bg-sky-800={!(page.url.pathname === '/blog')}
+          class:hover:text-white={!(page.url.pathname === '/blog')}
+          class:dark:text-gray-50={!(page.url.pathname === '/blog')}
+          class:dark:hover:bg-sky-400={!(page.url.pathname === '/blog')}
+          class:dark:hover:text-gray-950={!(page.url.pathname === '/blog')}
+          use:preloadOnFocus
           aria-current={page.url.pathname === '/blog' ? 'page' : undefined}
         >
           Blog
@@ -150,7 +183,7 @@
         >
           <!-- Close Button -->
           <button
-            onclick={closeMenu}
+            onclick={() => closeMenu()}
             aria-label="Đóng menu"
             class="absolute right-5 top-5 z-10 min-h-[48px] min-w-[48px] flex cursor-pointer items-center justify-center border-0 bg-transparent p-2 text-gray-950 transition-opacity dark:text-white hover:opacity-70"
           >
@@ -181,8 +214,9 @@
                     class:dark:bg-gray-900={isCurrentPage(p.slug)}
                     href={getHref(p.slug)}
                     data-sveltekit-preload-data="hover"
+                    use:preloadOnFocus
                     aria-current={isCurrentPage(p.slug) ? 'page' : undefined}
-                    onclick={closeMenu}
+                    onclick={() => closeMenu(isCurrentPage(p.slug))}
                   >
                     {p.metadata.title}
                   </a>
@@ -197,8 +231,9 @@
                   class:dark:bg-gray-900={page.url.pathname === '/blog'}
                   href="/blog"
                   data-sveltekit-preload-data="hover"
+                  use:preloadOnFocus
                   aria-current={page.url.pathname === '/blog' ? 'page' : undefined}
-                  onclick={closeMenu}
+                  onclick={() => closeMenu(page.url.pathname === '/blog')}
                 >
                   Blog
                 </a>

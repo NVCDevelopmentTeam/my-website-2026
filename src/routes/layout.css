@@ -91,16 +91,24 @@ body {
    wide screens — phones never download it. Replace src/lib/assets/background.webp (also from
    the CMS media library) to change it; keep it small, it is a decoration. */
 @media (min-width: 1024px) {
-  body {
+  /* The image lives on its own fixed layer instead of `background-attachment: fixed` on the
+     body: a fixed-attachment background is repainted on every scroll frame, which made scrolling
+     (and jumping back to the top with the Home key) stutter. A fixed layer is composited by the
+     GPU and not repainted while scrolling. It looks exactly the same. */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
     background-image: url('../lib/assets/background.webp?no-inline');
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
-    background-attachment: fixed;
   }
 
   /* Dimmed in dark mode so the page does not glare */
-  .dark body {
+  .dark body::before {
     background-image:
       linear-gradient(rgb(0 0 0 / 0.7), rgb(0 0 0 / 0.7)),
       url('../lib/assets/background.webp?no-inline');

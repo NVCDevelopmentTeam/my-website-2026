@@ -67,14 +67,10 @@
   <!-- Honeypot: hidden from real users via display: none, but bots that
        auto-fill every field will trip it. Web3Forms silently rejects the
        submission when this field is non-empty. -->
-  <input
-    type="checkbox"
-    name="botcheck"
-    tabindex="-1"
-    autocomplete="off"
-    style="display: none;"
-    aria-hidden="true"
-  />
+  <div hidden>
+    <label for="botcheck">Không đánh dấu ô này</label>
+    <input type="checkbox" id="botcheck" name="botcheck" tabindex="-1" autocomplete="off" />
+  </div>
 
   <div class="space-y-2">
     <label for="name" class="text-sm text-gray-950 font-bold dark:text-gray-50">

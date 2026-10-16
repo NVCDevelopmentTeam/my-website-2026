@@ -1,4 +1,5 @@
 <script>
+  import { preloadOnFocus } from '#lib/actions/preloadOnFocus.js'
   import { toDisplayDate } from '#lib/utils/date.js'
 
   /**
@@ -78,6 +79,7 @@
             href="/blog/{post.slug}"
             data-sveltekit-preload-data="hover"
             class="recent-posts__link wp-block-post-title"
+            use:preloadOnFocus
           >
             {post.title}
           </a>
@@ -97,14 +99,24 @@
       {/each}
     </ul>
 
-    <a href="/blog" data-sveltekit-preload-data="hover" class="recent-posts__view-all">
+    <a
+      href="/blog"
+      data-sveltekit-preload-data="hover"
+      class="recent-posts__view-all"
+      use:preloadOnFocus
+    >
       Xem tất cả bài viết →
     </a>
   </div>
 {:else}
   <div class="recent-posts recent-posts--empty">
     <p class="recent-posts__empty-text has-small-font-size">Chưa có bài viết nào được tìm thấy.</p>
-    <a href="/blog" data-sveltekit-preload-data="hover" class="recent-posts__view-all">
+    <a
+      href="/blog"
+      data-sveltekit-preload-data="hover"
+      class="recent-posts__view-all"
+      use:preloadOnFocus
+    >
       Khám phá trang Blog →
     </a>
   </div>

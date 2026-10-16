@@ -115,22 +115,22 @@
             <meta itemprop="name" content={metadata.author || siteConfig.author.name} />
             <PostAuthor post={{ metadata }} />
           </span>
-          <span aria-hidden="true" class="text-gray-300 dark:text-gray-700">|</span>
+          <span class="h-4 w-px bg-gray-400 dark:bg-gray-500"></span>
           <span itemprop="datePublished">
             <PostDate post={{ metadata }} />
           </span>
           {#if metadata.updated}
             <meta itemprop="dateModified" content={metadata.updated} />
           {/if}
-          <span aria-hidden="true" class="text-gray-300 dark:text-gray-700">|</span>
+          <span class="h-4 w-px bg-gray-400 dark:bg-gray-500"></span>
           <PostCategories post={{ metadata }} />
-          <span aria-hidden="true" class="text-gray-300 dark:text-gray-700">|</span>
+          <span class="h-4 w-px bg-gray-400 dark:bg-gray-500"></span>
           <span class="text-gray-950 font-bold dark:text-gray-200">
             <meta itemprop="timeRequired" content="PT{metadata.readingTime}M" />
             {metadata.readingTime} phút đọc
           </span>
 
-          <span aria-hidden="true" class="text-gray-300 dark:text-gray-700">|</span>
+          <span class="h-4 w-px bg-gray-400 dark:bg-gray-500"></span>
 
           <span class="text-gray-950 font-bold dark:text-gray-200">{views} lượt đọc</span>
         </div>

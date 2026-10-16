@@ -1,4 +1,5 @@
 <script>
+  import { preloadOnFocus } from '#lib/actions/preloadOnFocus.js'
   import { page } from '$app/state'
 
   /**
@@ -33,10 +34,16 @@
         <li>
           <a
             href={getHref(p.slug)}
-            class="inline-block rounded-sm px-1 py-2.5 text-sm text-gray-950 font-bold transition-colors duration-200 dark:text-gray-50 hover:text-sky-800 focus:outline-none focus:ring-2 focus:ring-sky-800 dark:hover:text-sky-400 dark:focus:ring-sky-400"
+            class="inline-block rounded-sm px-1 py-2.5 text-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-sky-800 dark:focus:ring-sky-400"
             class:font-black={isCurrentPage(p.slug)}
             class:text-sky-900={isCurrentPage(p.slug)}
             class:dark:text-sky-300={isCurrentPage(p.slug)}
+            class:font-bold={!isCurrentPage(p.slug)}
+            class:text-gray-950={!isCurrentPage(p.slug)}
+            class:hover:text-sky-800={!isCurrentPage(p.slug)}
+            class:dark:text-gray-50={!isCurrentPage(p.slug)}
+            class:dark:hover:text-sky-400={!isCurrentPage(p.slug)}
+            use:preloadOnFocus
             aria-current={isCurrentPage(p.slug) ? 'page' : undefined}
           >
             {p.metadata.title}

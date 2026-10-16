@@ -39,7 +39,8 @@
 <button
   onclick={toggleTheme}
   class="min-h-[48px] min-w-[48px] flex items-center justify-center border border-gray-200 rounded-xl bg-gray-50 p-3 text-gray-950 shadow-sm transition-[background-color,color,border-color,box-shadow] duration-200 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-50 hover:text-sky-800 focus:outline-none focus:ring-2 focus:ring-sky-800 dark:hover:text-sky-400 dark:focus:ring-sky-400"
-  aria-label={theme === 'light' ? 'Chuyển sang chế độ tối' : 'Chuyển sang chế độ sáng'}
+  aria-label="Bật chế độ tối"
+  aria-pressed={theme === 'dark'}
 >
   {#if theme === 'light'}
     <svg

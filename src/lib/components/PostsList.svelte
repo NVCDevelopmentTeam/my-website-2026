@@ -1,4 +1,5 @@
 <script>
+  import { preloadOnFocus } from '#lib/actions/preloadOnFocus.js'
   import PostDate from './PostDate.svelte'
   import PostAuthor from './PostAuthor.svelte'
   import PostCategories from './PostCategories.svelte'
@@ -14,7 +15,12 @@
       class="group border border-gray-100 rounded-2xl bg-white p-5 shadow-sm transition duration-300 dark:border-gray-700 dark:bg-gray-800 sm:p-6 hover:shadow-xl"
     >
       <article class="h-full flex flex-col">
-        <a href={`/blog/${post.slug}`} data-sveltekit-preload-data="hover" class="block space-y-3">
+        <a
+          href={`/blog/${post.slug}`}
+          data-sveltekit-preload-data="hover"
+          class="block space-y-3"
+          use:preloadOnFocus
+        >
           <svelte:element
             this={`h${headingLevel}`}
             class="text-xl text-gray-950 font-black transition-colors sm:text-2xl dark:text-gray-50 group-hover:text-sky-800 dark:group-hover:text-sky-400"

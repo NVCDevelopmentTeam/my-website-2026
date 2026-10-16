@@ -1,4 +1,5 @@
 <script>
+  import { preloadOnFocus } from '#lib/actions/preloadOnFocus.js'
   import { siteConfig } from '#lib/config.js'
 
   let {
@@ -74,6 +75,7 @@
             rel="prev"
             data-sveltekit-preload-data={prefetchEnabled ? 'hover' : undefined}
             class="line-clamp-2 block text-lg text-sky-800 font-black leading-snug decoration-2 underline-offset-2 transition-all duration-200 dark:text-sky-400 hover:text-sky-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-sky-500 dark:hover:text-sky-300 dark:focus-visible:ring-offset-gray-950"
+            use:preloadOnFocus
           >
             {getPostTitle(prevPost)}
           </a>
@@ -103,6 +105,7 @@
             rel="next"
             data-sveltekit-preload-data={prefetchEnabled ? 'hover' : undefined}
             class="line-clamp-2 block text-lg text-sky-800 font-black leading-snug decoration-2 underline-offset-2 transition-all duration-200 dark:text-sky-400 hover:text-sky-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-sky-500 dark:hover:text-sky-300 dark:focus-visible:ring-offset-gray-950"
+            use:preloadOnFocus
           >
             {getPostTitle(nextPost)}
           </a>
