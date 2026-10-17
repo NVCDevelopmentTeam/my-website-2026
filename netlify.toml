@@ -67,6 +67,28 @@
   [headers.values]
     Cache-Control = "public, max-age=86400, stale-while-revalidate=604800"
 
+# Small crawler files: an hour in the browser, a day stale-while-revalidate. They change rarely and
+# every request for them costs a request credit.
+[[headers]]
+  for = "/robots.txt"
+  [headers.values]
+    Cache-Control = "public, max-age=3600, stale-while-revalidate=86400"
+
+[[headers]]
+  for = "/ads.txt"
+  [headers.values]
+    Cache-Control = "public, max-age=3600, stale-while-revalidate=86400"
+
+[[headers]]
+  for = "/sitemap.xml"
+  [headers.values]
+    Cache-Control = "public, max-age=3600, stale-while-revalidate=86400"
+
+[[headers]]
+  for = "/rss.xml"
+  [headers.values]
+    Cache-Control = "public, max-age=3600, stale-while-revalidate=86400"
+
 # Safe, AdSense-compatible security headers. No CSP / Permissions-Policy on purpose:
 # a restrictive policy silently blocks Google AdSense scripts and ad frames.
 [[headers]]

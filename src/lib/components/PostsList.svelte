@@ -12,7 +12,7 @@
 <ul class="m-0 list-none p-0 space-y-8">
   {#each posts as post (post.slug)}
     <li
-      class="group border border-gray-100 rounded-2xl bg-white p-5 shadow-sm transition duration-300 dark:border-gray-700 dark:bg-gray-800 sm:p-6 hover:shadow-xl"
+      class="group border border-gray-100 rounded-2xl bg-white p-5 shadow-sm transition duration-200 dark:border-gray-700 dark:bg-gray-800 sm:p-6 hover:shadow-xl"
     >
       <article class="h-full flex flex-col">
         <a

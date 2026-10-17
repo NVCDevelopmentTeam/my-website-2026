@@ -11,7 +11,7 @@
       <li>
         <a
           href={siteConfig.social.facebook}
-          class="h-12 w-12 inline-flex items-center justify-center text-gray-950 transition-colors duration-300 dark:text-gray-50 hover:text-sky-800 dark:hover:text-sky-400"
+          class="h-12 w-12 inline-flex items-center justify-center text-gray-950 transition-colors duration-200 dark:text-gray-50 hover:text-sky-800 dark:hover:text-sky-400"
           aria-label="Facebook"
           target="_blank"
           rel="noopener noreferrer"
@@ -37,7 +37,7 @@
       <li>
         <a
           href={siteConfig.social.github}
-          class="h-12 w-12 inline-flex items-center justify-center text-gray-950 transition-colors duration-300 dark:text-gray-50 hover:text-gray-900 dark:hover:text-white"
+          class="h-12 w-12 inline-flex items-center justify-center text-gray-950 transition-colors duration-200 dark:text-gray-50 hover:text-gray-900 dark:hover:text-white"
           aria-label="GitHub"
           target="_blank"
           rel="noopener noreferrer"

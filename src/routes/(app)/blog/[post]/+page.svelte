@@ -109,28 +109,23 @@
 
         <!-- Meta info -->
         <div
-          class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-gray-950 font-bold dark:text-gray-50"
+          class="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-gray-950 font-bold dark:text-gray-50"
         >
           <span itemprop="author" itemscope itemtype="https://schema.org/Person">
             <meta itemprop="name" content={metadata.author || siteConfig.author.name} />
             <PostAuthor post={{ metadata }} />
           </span>
-          <span class="h-4 w-px bg-gray-400 dark:bg-gray-500"></span>
           <span itemprop="datePublished">
             <PostDate post={{ metadata }} />
           </span>
           {#if metadata.updated}
             <meta itemprop="dateModified" content={metadata.updated} />
           {/if}
-          <span class="h-4 w-px bg-gray-400 dark:bg-gray-500"></span>
           <PostCategories post={{ metadata }} />
-          <span class="h-4 w-px bg-gray-400 dark:bg-gray-500"></span>
           <span class="text-gray-950 font-bold dark:text-gray-200">
             <meta itemprop="timeRequired" content="PT{metadata.readingTime}M" />
             {metadata.readingTime} phút đọc
           </span>
-
-          <span class="h-4 w-px bg-gray-400 dark:bg-gray-500"></span>
 
           <span class="text-gray-950 font-bold dark:text-gray-200">{views} lượt đọc</span>
         </div>

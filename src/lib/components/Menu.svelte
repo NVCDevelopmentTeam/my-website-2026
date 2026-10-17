@@ -92,7 +92,7 @@
 <nav class="flex items-center justify-end" aria-label="Điều hướng chính">
   <!-- Desktop Menu -->
   <div
-    class="relative hidden border border-gray-200 rounded-2xl bg-white/80 px-4 py-2 shadow-md backdrop-blur-md lg:block dark:border-gray-800 dark:bg-gray-950/80"
+    class="relative hidden border border-gray-200 rounded-2xl bg-white px-4 py-2 shadow-md md:block dark:border-gray-800 dark:bg-gray-950"
   >
     <ul class="m-0 flex flex-wrap list-none items-center justify-center gap-3 p-0">
       {#each navPages as p (p.slug)}
@@ -100,7 +100,7 @@
           <a
             href={getHref(p.slug)}
             data-sveltekit-preload-data="hover"
-            class="inline-block rounded-xl px-4 py-2 font-black no-underline transition-[background-color,color] duration-300 focus:outline-none focus:ring-2 focus:ring-sky-800"
+            class="inline-block rounded-xl px-4 py-2 font-black no-underline transition-[background-color,color] duration-200 focus:outline-none focus:ring-2 focus:ring-sky-800"
             class:bg-sky-800={isCurrentPage(p.slug)}
             class:text-white={isCurrentPage(p.slug)}
             class:dark:bg-sky-400={isCurrentPage(p.slug)}
@@ -123,7 +123,7 @@
         <a
           href="/blog"
           data-sveltekit-preload-data="hover"
-          class="inline-block rounded-xl px-4 py-2 font-black no-underline transition-[background-color,color] duration-300 focus:outline-none focus:ring-2 focus:ring-sky-800"
+          class="inline-block rounded-xl px-4 py-2 font-black no-underline transition-[background-color,color] duration-200 focus:outline-none focus:ring-2 focus:ring-sky-800"
           class:bg-sky-800={page.url.pathname === '/blog'}
           class:text-white={page.url.pathname === '/blog'}
           class:dark:bg-sky-400={page.url.pathname === '/blog'}
@@ -144,7 +144,7 @@
   </div>
 
   <!-- Mobile Menu -->
-  <div class="flex items-center justify-end lg:hidden">
+  <div class="flex items-center justify-end md:hidden">
     <button
       bind:this={openButtonRef}
       onclick={openMenu}

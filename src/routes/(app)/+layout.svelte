@@ -1,12 +1,27 @@
 <script>
   import { onNavigate } from '$app/navigation'
+  import { navigating } from '$app/state'
   import Header from '#lib/components/Header.svelte'
   import Sidebar from '#lib/components/Sidebar.svelte'
   import Footer from '#lib/components/Footer.svelte'
   import Breadcrumbs from '#lib/components/Breadcrumbs.svelte'
 
   let { children, data } = $props()
-  let isLoading = $state(false)
+
+  // True only when a page change is still loading after 250 ms. Fast changes (the usual case,
+  // thanks to preloading) show nothing; slow ones show the progress bar and tell screen-reader
+  // users that the page is loading. SvelteKit's own announcer then reads the new title.
+  let isSlow = $state(false)
+  $effect(() => {
+    if (!navigating.to) {
+      isSlow = false
+      return
+    }
+    const timer = setTimeout(() => {
+      isSlow = true
+    }, 250)
+    return () => clearTimeout(timer)
+  })
 
   // Cache View Transitions API support detection once (avoid repeated DOM reads)
   const supportsViewTransitions =
@@ -14,33 +29,27 @@
 
   // View Transitions API integration — BF-cache safe (no beforeunload/unload)
   onNavigate(function (navigation) {
-    if (navigation.shallow) return
-
-    isLoading = true
-
-    if (!supportsViewTransitions) {
-      // Still track loading state even without VT support
-      navigation.complete.then(() => {
-        isLoading = false
-      })
-      return
-    }
+    if (navigation.shallow || !supportsViewTransitions) return
+    // No animation at all for people who asked for reduced motion
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
     return new Promise(function (resolve) {
       document.startViewTransition(async function () {
         resolve()
         await navigation.complete
-        isLoading = false
       })
     })
   })
 </script>
 
 <div
-  class="relative min-h-screen flex flex-col bg-white transition-colors duration-300 lg:m-6 xl:mx-auto lg:min-h-[calc(100vh_-_3rem)] xl:max-w-[1400px] xl:w-[calc(100%_-_3rem)] lg:overflow-clip lg:rounded-2xl dark:bg-gray-950 lg:shadow-2xl"
+  class="relative min-h-screen flex flex-col bg-white lg:m-6 xl:mx-auto lg:min-h-[calc(100vh_-_3rem)] xl:max-w-[1400px] xl:w-[calc(100%_-_3rem)] lg:overflow-clip lg:rounded-2xl dark:bg-gray-950 lg:shadow-2xl"
 >
+  <!-- Loading state for screen readers; the new page title is announced by SvelteKit afterwards -->
+  <div role="status" class="sr-only">{isSlow ? 'Đang tải trang' : ''}</div>
+
   <!-- Navigation progress bar — uses transform (compositor-only, no reflow) -->
-  {#if isLoading}
+  {#if isSlow}
     <div
       class="fixed left-0 right-0 top-0 z-[9999] h-1 bg-sky-600 dark:bg-sky-400"
       style="contain: strict;"
@@ -69,11 +78,7 @@
     class="mx-auto max-w-7xl w-full flex-grow px-4 lg:px-8 sm:px-6 focus:outline-none"
   >
     <div class="py-12 md:grid md:grid-cols-12 md:gap-8 lg:gap-12">
-      <div
-        class="transition-opacity duration-150 md:col-span-8 {isLoading
-          ? 'opacity-90'
-          : 'opacity-100'}"
-      >
+      <div class="md:col-span-8">
         {@render children?.()}
       </div>
       <aside class="mt-12 md:col-span-4 md:mt-0">

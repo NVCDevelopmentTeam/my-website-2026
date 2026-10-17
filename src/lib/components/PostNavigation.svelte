@@ -57,7 +57,7 @@
 {#if hasNavigation}
   <nav
     aria-label={labels.navigation}
-    class="mt-12 border-t border-gray-200 pt-8 duration-300 ease-in-out animate-in fade-in slide-in-from-bottom-3 dark:border-gray-800"
+    class="mt-12 border-t border-gray-200 pt-8 duration-200 ease-in-out animate-in fade-in slide-in-from-bottom-3 dark:border-gray-800"
   >
     <div class="flex flex-col items-stretch justify-between gap-6 sm:flex-row">
       <!-- Previous -->

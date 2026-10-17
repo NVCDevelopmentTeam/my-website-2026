@@ -129,7 +129,7 @@
 
   <button
     type="submit"
-    class="w-full rounded-xl bg-sky-800 py-4 text-white font-bold shadow-lg transition-all duration-300 active:scale-[0.98] dark:bg-sky-400 hover:bg-sky-900 dark:text-gray-950 focus:outline-none focus:ring-4 focus:ring-sky-500/50 dark:hover:bg-sky-300"
+    class="w-full rounded-xl bg-sky-800 py-4 text-white font-bold shadow-lg transition-all duration-200 active:scale-[0.98] dark:bg-sky-400 hover:bg-sky-900 dark:text-gray-950 focus:outline-none focus:ring-4 focus:ring-sky-500/50 dark:hover:bg-sky-300"
   >
     {status === 'Đang gửi...' ? 'Đang gửi tín hiệu...' : 'Gửi lời nhắn'}
   </button>

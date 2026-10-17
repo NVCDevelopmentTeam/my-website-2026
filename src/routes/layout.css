@@ -65,6 +65,49 @@ html {
    cross-fade by default whenever the browser supports it, regardless of the
    user's motion preference — disable that animation explicitly for users
    who have requested reduced motion. */
+/* Page-to-page transition: a short cross-fade (the default is 250 ms and captures the whole
+   screen, which is heavy on large and full-screen windows). */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 150ms;
+  animation-timing-function: ease-out;
+}
+
+/* Tell the browser which colour scheme the page is using right now. Without this, browser
+   "force dark" features and dark-mode extensions re-colour a page that already has its own dark
+   theme, which breaks it; with it, form controls and scrollbars also match the site theme. */
+:root {
+  color-scheme: light;
+}
+:root.dark {
+  color-scheme: dark;
+}
+
+/* Windows High Contrast / forced colours: background colours are replaced by the system palette,
+   so the current page in the menu needs a cue that is not a background. */
+@media (forced-colors: active) {
+  nav a[aria-current='page'] {
+    text-decoration: underline;
+    text-decoration-thickness: 3px;
+    text-underline-offset: 4px;
+  }
+}
+
+/* Very long words (an e-mail address, a URL) wrap instead of pushing the page wider than the
+   screen, e.g. on a 320 px phone or with enlarged text. Normal text is not affected. */
+main :where(a, h1, h2, h3, h4, p, li, td, th) {
+  overflow-wrap: anywhere;
+}
+
+/* Theme toggle: change all colours in one frame, no transitions or animations. */
+.theme-switching,
+.theme-switching *,
+.theme-switching *::before,
+.theme-switching *::after {
+  transition: none !important;
+  animation: none !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-group(*),
   ::view-transition-old(*),

@@ -12,8 +12,13 @@
 
   onMount(() => {
     // The site no longer registers a service worker (caching is done by the server).
-    // Visitors who still have the old one are cleaned up here, once.
-    retireServiceWorkers()
+    // Visitors who still have the old one are cleaned up here, once — not needed for the first
+    // paint or any interaction, so it waits for an idle moment instead of competing with start-up.
+    const runCleanup = () => retireServiceWorkers()
+    const hasIdleCallback = typeof window.requestIdleCallback === 'function'
+    const idleHandle = hasIdleCallback
+      ? window.requestIdleCallback(runCleanup, { timeout: 5000 })
+      : setTimeout(runCleanup, 3000)
 
     // Smooth same-page anchor scrolling via delegation.
     // Cleanup returned from onMount — no beforeunload/unload handlers used.
@@ -49,6 +54,8 @@
 
     return () => {
       window.removeEventListener('click', handleAnchorClick, { capture: true })
+      if (hasIdleCallback) window.cancelIdleCallback(/** @type {number} */ (idleHandle))
+      else clearTimeout(idleHandle)
     }
   })
 </script>

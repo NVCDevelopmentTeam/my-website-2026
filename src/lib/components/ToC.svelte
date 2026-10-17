@@ -296,7 +296,7 @@
 
 {#if hasToc}
   <div
-    class="my-8 border-l-4 border-blue-800 rounded-r-2xl bg-blue-50/50 p-4 shadow-sm transition-all duration-300 animate-in fade-in slide-in-from-left-5 dark:border-blue-400 dark:bg-gray-900 sm:p-6 hover:shadow-md {isSticky
+    class="my-8 border-l-4 border-blue-800 rounded-r-2xl bg-blue-50/50 p-4 shadow-sm transition-all duration-200 animate-in fade-in slide-in-from-left-5 dark:border-blue-400 dark:bg-gray-900 sm:p-6 hover:shadow-md {isSticky
       ? 'lg:sticky lg:top-20'
       : ''}"
   >
@@ -327,7 +327,7 @@
         aria-expanded={isExpanded}
       >
         <svg
-          class="h-5 w-5 text-gray-950 transition-transform duration-300 dark:text-gray-50 {isExpanded
+          class="h-5 w-5 text-gray-950 transition-transform duration-200 dark:text-gray-50 {isExpanded
             ? 'rotate-180'
             : ''}"
           fill="none"

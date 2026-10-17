@@ -19,7 +19,7 @@
   <a
     href={homeHref}
     data-sveltekit-preload-data="hover"
-    class="min-h-[48px] min-w-[48px] flex items-center gap-2 rounded-full p-1.5 text-lg text-gray-950 font-bold transition-colors duration-300 dark:text-gray-50 hover:text-sky-800 focus:outline-none focus:ring-2 focus:ring-sky-800 dark:hover:text-sky-400 dark:focus:ring-sky-400"
+    class="min-h-[48px] min-w-[48px] flex items-center gap-2 rounded-full p-1.5 text-lg text-gray-950 font-bold transition-colors duration-200 dark:text-gray-50 hover:text-sky-800 focus:outline-none focus:ring-2 focus:ring-sky-800 dark:hover:text-sky-400 dark:focus:ring-sky-400"
   >
     <!-- 
 			Performance optimization:

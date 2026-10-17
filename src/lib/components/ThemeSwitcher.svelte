@@ -20,11 +20,18 @@
 
   /** @param {string} newTheme */
   function applyTheme(newTheme) {
+    const root = document.documentElement
+    // Switch every colour at once instead of animating hundreds of elements (and the large page
+    // card) through a transition: that made the toggle stutter, most visibly in full screen.
+    root.classList.add('theme-switching')
     if (newTheme === 'dark') {
-      document.documentElement.classList.add('dark')
+      root.classList.add('dark')
     } else {
-      document.documentElement.classList.remove('dark')
+      root.classList.remove('dark')
     }
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => root.classList.remove('theme-switching'))
+    )
 
     localStorage.setItem('theme-preference', newTheme)
     theme = newTheme
