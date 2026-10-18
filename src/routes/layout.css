@@ -99,6 +99,12 @@ main :where(a, h1, h2, h3, h4, p, li, td, th) {
   overflow-wrap: anywhere;
 }
 
+/* SvelteKit's built-in route announcer is replaced by the one in the app layout (one announcement
+   in every window mode instead of two in some of them). */
+#svelte-announcer {
+  display: none;
+}
+
 /* Theme toggle: change all colours in one frame, no transitions or animations. */
 .theme-switching,
 .theme-switching *,

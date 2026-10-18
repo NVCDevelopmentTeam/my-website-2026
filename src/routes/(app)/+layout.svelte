@@ -22,18 +22,27 @@
     return () => clearTimeout(timer)
   })
 
-  // Browser full screen (F11): the tab strip and window title are hidden, and screen readers then
-  // say nothing about the new page. Only in that mode we announce "page title — site title"
-  // ourselves, after the first load and after every page change; in a normal window the browser
-  // and SvelteKit already do it, and saying it twice would be noise.
+  // New page: announce "page title — site title" through one live region, the same way in a normal
+  // window and in browser full screen (F11, where the tab strip and window title are hidden and
+  // screen readers otherwise say nothing). SvelteKit's own announcer is hidden in layout.css so the
+  // title is not read twice. A full page load in a normal window is already announced by the
+  // browser, so only there the first load is skipped. The text is cleared afterwards so that it
+  // does not stay at the start of the page for people reading it line by line.
   const inFullscreen = () =>
     !!document.fullscreenElement ||
     matchMedia('(display-mode: fullscreen)').matches ||
     (outerWidth >= screen.width && outerHeight >= screen.height)
   let arrivedTitle = $state('')
-  afterNavigate(() => {
+  /** @type {ReturnType<typeof setTimeout>} */
+  let announceTimer
+  afterNavigate((navigation) => {
+    if (navigation.type === 'enter' && !inFullscreen()) return
+    clearTimeout(announceTimer)
     arrivedTitle = ''
-    if (inFullscreen()) setTimeout(() => (arrivedTitle = document.title), 100)
+    announceTimer = setTimeout(() => {
+      arrivedTitle = document.title
+      announceTimer = setTimeout(() => (arrivedTitle = ''), 2000)
+    }, 100)
   })
 
   // Cache View Transitions API support detection once (avoid repeated DOM reads)
@@ -58,9 +67,6 @@
 <div
   class="relative min-h-screen flex flex-col bg-white lg:m-6 xl:mx-auto lg:min-h-[calc(100vh_-_3rem)] xl:max-w-[1400px] xl:w-[calc(100%_-_3rem)] lg:overflow-clip lg:rounded-2xl dark:bg-gray-950 lg:shadow-2xl"
 >
-  <!-- Page title announcement for full-screen mode (see above) -->
-  <div role="status" class="sr-only">{arrivedTitle}</div>
-
   <!-- Navigation progress bar — uses transform (compositor-only, no reflow) -->
   {#if isSlow}
     <div
@@ -95,4 +101,7 @@
     </div>
   </main>
   <Footer pages={data.allPages} />
+
+  <!-- Page title announcement (see script) -->
+  <div role="status" class="sr-only">{arrivedTitle}</div>
 </div>
