@@ -87,7 +87,6 @@
           <li>
             <a
               href="/blog/category/{category.slug}"
-              data-sveltekit-preload-data="hover"
               class="group flex items-center justify-between rounded-xl px-3 py-2.5 transition-all duration-200 {isActive
                 ? 'bg-sky-50 text-sky-700 font-black dark:bg-sky-950/50 dark:text-sky-300'
                 : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 hover:text-sky-700 dark:hover:bg-gray-800 dark:hover:text-sky-300'}"
@@ -108,7 +107,6 @@
       <div class="mt-4 border-t border-gray-100 pt-3 dark:border-gray-800">
         <a
           href="/blog/category"
-          data-sveltekit-preload-data="hover"
           class="inline-flex items-center gap-1.5 text-sm text-sky-700 font-black tracking-wider uppercase dark:text-sky-400 hover:underline"
         >
           <span>Khám phá tất cả danh mục</span>

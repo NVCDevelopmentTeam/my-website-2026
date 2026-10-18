@@ -1,7 +1,7 @@
 <script>
   import './layout.css'
   import { onMount } from 'svelte'
-  import { goto } from '$app/navigation'
+  import { goto, preloadData } from '$app/navigation'
   import { siteConfig } from '#lib/config.js'
   import { retireServiceWorkers } from '#lib/utils/retireServiceWorkers.js'
 
@@ -19,6 +19,15 @@
     const idleHandle = hasIdleCallback
       ? window.requestIdleCallback(runCleanup, { timeout: 5000 })
       : setTimeout(runCleanup, 3000)
+
+    // SvelteKit preloads a page on mouse hover and touch; keyboard and screen-reader users never
+    // hover, so start loading a link's page when it receives focus too.
+    /** @param {FocusEvent} e */
+    function preloadFocusedLink(e) {
+      const link = /** @type {Element} */ (e.target).closest?.('a[href^="/"]:not([href^="//"])')
+      if (link) preloadData(/** @type {string} */ (link.getAttribute('href'))).catch(() => {})
+    }
+    document.addEventListener('focusin', preloadFocusedLink)
 
     // Smooth same-page anchor scrolling via delegation.
     // Cleanup returned from onMount — no beforeunload/unload handlers used.
@@ -54,6 +63,7 @@
 
     return () => {
       window.removeEventListener('click', handleAnchorClick, { capture: true })
+      document.removeEventListener('focusin', preloadFocusedLink)
       if (hasIdleCallback) window.cancelIdleCallback(/** @type {number} */ (idleHandle))
       else clearTimeout(idleHandle)
     }

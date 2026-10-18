@@ -1,5 +1,5 @@
 <script>
-  import { onNavigate } from '$app/navigation'
+  import { afterNavigate, onNavigate } from '$app/navigation'
   import { navigating } from '$app/state'
   import Header from '#lib/components/Header.svelte'
   import Sidebar from '#lib/components/Sidebar.svelte'
@@ -21,6 +21,17 @@
       isSlow = true
     }, 250)
     return () => clearTimeout(timer)
+  })
+
+  // In Chrome's full-screen mode (F11) the tab strip and window title are hidden, and screen
+  // readers then say nothing when a page has loaded. Only in that mode we announce the title
+  // ourselves, after the page change or first load; elsewhere the browser and SvelteKit already do
+  // it and saying it twice would be noise.
+  const inFullscreen = () => matchMedia('(display-mode: fullscreen)').matches
+  let arrivedTitle = $state('')
+  afterNavigate(() => {
+    arrivedTitle = ''
+    if (inFullscreen()) setTimeout(() => (arrivedTitle = document.title), 100)
   })
 
   // Cache View Transitions API support detection once (avoid repeated DOM reads)
@@ -46,7 +57,7 @@
   class="relative min-h-screen flex flex-col bg-white lg:m-6 xl:mx-auto lg:min-h-[calc(100vh_-_3rem)] xl:max-w-[1400px] xl:w-[calc(100%_-_3rem)] lg:overflow-clip lg:rounded-2xl dark:bg-gray-950 lg:shadow-2xl"
 >
   <!-- Loading state for screen readers; the new page title is announced by SvelteKit afterwards -->
-  <div role="status" class="sr-only">{isSlow ? 'Đang tải trang' : ''}</div>
+  <div role="status" class="sr-only">{isSlow ? 'Đang tải trang' : arrivedTitle}</div>
 
   <!-- Navigation progress bar — uses transform (compositor-only, no reflow) -->
   {#if isSlow}
@@ -64,12 +75,7 @@
   <Header allPages={data.allPages} navPages={data.navPages} />
 
   <div class="mx-auto max-w-7xl w-full px-4 pt-4 lg:px-8 sm:px-6">
-    <Breadcrumbs
-      allPages={data.allPages}
-      categories={data.allCategories}
-      tags={data.allTags}
-      recentPosts={data.recentPosts}
-    />
+    <Breadcrumbs />
   </div>
 
   <main

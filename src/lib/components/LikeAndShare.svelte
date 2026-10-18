@@ -106,38 +106,23 @@
     closeDialog()
   }
 
-  // Share on Facebook
-  function shareOnFacebook() {
-    const url = encodeURIComponent(window.location.href)
-    openSharePopup(`https://www.facebook.com/sharer/sharer.php?u=${url}`)
+  // Address each network opens for the current page (url and text are already URI-encoded)
+  const SHARE_URLS = {
+    facebook: (/** @type {string} */ url) => `https://www.facebook.com/sharer/sharer.php?u=${url}`,
+    zalo: (/** @type {string} */ url) => `https://chat.zalo.me/share/url?url=${url}`,
+    messenger: (/** @type {string} */ url) =>
+      `https://www.facebook.com/dialog/send?link=${url}&app_id=291494419107518&redirect_uri=${url}`,
+    telegram: (/** @type {string} */ url, /** @type {string} */ text) =>
+      `https://t.me/share/url?url=${url}&text=${text}`,
+    twitter: (/** @type {string} */ url, /** @type {string} */ text) =>
+      `https://twitter.com/intent/tweet?url=${url}&text=${text}`
   }
 
-  // Share on Zalo
-  function shareOnZalo() {
-    const url = encodeURIComponent(window.location.href)
-    openSharePopup(`https://chat.zalo.me/share/url?url=${url}`)
-  }
-
-  // Share on Messenger
-  function shareOnMessenger() {
-    const url = encodeURIComponent(window.location.href)
-    openSharePopup(
-      `https://www.facebook.com/dialog/send?link=${url}&app_id=291494419107518&redirect_uri=${url}`
-    )
-  }
-
-  // Share on Telegram
-  function shareOnTelegram() {
+  /** @param {keyof typeof SHARE_URLS} network */
+  function shareOn(network) {
     const url = encodeURIComponent(window.location.href)
     const text = encodeURIComponent(document.title)
-    openSharePopup(`https://t.me/share/url?url=${url}&text=${text}`)
-  }
-
-  // Share on X (Twitter)
-  function shareOnTwitter() {
-    const url = encodeURIComponent(window.location.href)
-    const text = encodeURIComponent(document.title)
-    openSharePopup(`https://twitter.com/intent/tweet?url=${url}&text=${text}`)
+    openSharePopup(SHARE_URLS[network](url, text))
   }
 
   // Native share option inside dialog
@@ -296,7 +281,7 @@
       <div class="grid grid-cols-3 gap-3">
         <!-- Facebook -->
         <button
-          onclick={shareOnFacebook}
+          onclick={() => shareOn('facebook')}
           class="flex flex-col items-center gap-1.5 rounded-2xl p-2.5 text-center transition-colors active:scale-95 hover:bg-gray-100 dark:hover:bg-gray-800"
         >
           <div
@@ -320,7 +305,7 @@
 
         <!-- Messenger -->
         <button
-          onclick={shareOnMessenger}
+          onclick={() => shareOn('messenger')}
           class="flex flex-col items-center gap-1.5 rounded-2xl p-2.5 text-center transition-colors active:scale-95 hover:bg-gray-100 dark:hover:bg-gray-800"
         >
           <div
@@ -344,7 +329,7 @@
 
         <!-- Zalo -->
         <button
-          onclick={shareOnZalo}
+          onclick={() => shareOn('zalo')}
           class="flex flex-col items-center gap-1.5 rounded-2xl p-2.5 text-center transition-colors active:scale-95 hover:bg-gray-100 dark:hover:bg-gray-800"
         >
           <div
@@ -358,7 +343,7 @@
 
         <!-- Telegram -->
         <button
-          onclick={shareOnTelegram}
+          onclick={() => shareOn('telegram')}
           class="flex flex-col items-center gap-1.5 rounded-2xl p-2.5 text-center transition-colors active:scale-95 hover:bg-gray-100 dark:hover:bg-gray-800"
         >
           <div
@@ -382,7 +367,7 @@
 
         <!-- X (Twitter) -->
         <button
-          onclick={shareOnTwitter}
+          onclick={() => shareOn('twitter')}
           class="flex flex-col items-center gap-1.5 rounded-2xl p-2.5 text-center transition-colors active:scale-95 hover:bg-gray-100 dark:hover:bg-gray-800"
         >
           <div

@@ -69,7 +69,6 @@
       <div class="pt-8">
         <a
           href="/blog"
-          data-sveltekit-preload-data="hover"
           class="inline-flex rounded-full bg-gray-950 px-8 py-4 text-sm text-white font-black shadow-xl transition-transform hover:scale-105 dark:bg-white dark:text-gray-950"
         >
           Xem tất cả bài viết

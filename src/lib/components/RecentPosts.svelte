@@ -1,5 +1,4 @@
 <script>
-  import { preloadOnFocus } from '#lib/actions/preloadOnFocus.js'
   import { toDisplayDate } from '#lib/utils/date.js'
 
   /**
@@ -75,12 +74,7 @@
     <ul class="recent-posts__list wp-block-post-template">
       {#each safePosts as post (post.slug || post.title)}
         <li class="recent-posts__item wp-block-post">
-          <a
-            href="/blog/{post.slug}"
-            data-sveltekit-preload-data="hover"
-            class="recent-posts__link wp-block-post-title"
-            use:preloadOnFocus
-          >
+          <a href="/blog/{post.slug}" class="recent-posts__link wp-block-post-title">
             {post.title}
           </a>
           {#if post.date || post.readingTime}
@@ -99,26 +93,12 @@
       {/each}
     </ul>
 
-    <a
-      href="/blog"
-      data-sveltekit-preload-data="hover"
-      class="recent-posts__view-all"
-      use:preloadOnFocus
-    >
-      Xem tất cả bài viết →
-    </a>
+    <a href="/blog" class="recent-posts__view-all"> Xem tất cả bài viết → </a>
   </div>
 {:else}
   <div class="recent-posts recent-posts--empty">
     <p class="recent-posts__empty-text has-small-font-size">Chưa có bài viết nào được tìm thấy.</p>
-    <a
-      href="/blog"
-      data-sveltekit-preload-data="hover"
-      class="recent-posts__view-all"
-      use:preloadOnFocus
-    >
-      Khám phá trang Blog →
-    </a>
+    <a href="/blog" class="recent-posts__view-all"> Khám phá trang Blog → </a>
   </div>
 {/if}
 

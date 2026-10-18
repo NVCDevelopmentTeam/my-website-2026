@@ -43,7 +43,6 @@
         <li>
           <a
             href={`/blog/tag/${tag.slug}`}
-            data-sveltekit-preload-data="hover"
             class="border border-purple-200 rounded-full bg-purple-50 px-3 py-1 text-purple-900 font-bold transition-colors dark:border-purple-800 dark:bg-purple-950/30 hover:bg-purple-100 dark:text-purple-300 dark:hover:bg-purple-900/50"
           >
             {tag.title}
