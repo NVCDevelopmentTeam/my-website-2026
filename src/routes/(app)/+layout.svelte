@@ -8,9 +8,8 @@
 
   let { children, data } = $props()
 
-  // True only when a page change is still loading after 250 ms. Fast changes (the usual case,
-  // thanks to preloading) show nothing; slow ones show the progress bar and tell screen-reader
-  // users that the page is loading. SvelteKit's own announcer then reads the new title.
+  // Progress bar only for page changes that are still loading after 250 ms (fast ones, the usual
+  // case thanks to preloading, show nothing).
   let isSlow = $state(false)
   $effect(() => {
     if (!navigating.to) {
@@ -23,11 +22,14 @@
     return () => clearTimeout(timer)
   })
 
-  // In Chrome's full-screen mode (F11) the tab strip and window title are hidden, and screen
-  // readers then say nothing when a page has loaded. Only in that mode we announce the title
-  // ourselves, after the page change or first load; elsewhere the browser and SvelteKit already do
-  // it and saying it twice would be noise.
-  const inFullscreen = () => matchMedia('(display-mode: fullscreen)').matches
+  // Browser full screen (F11): the tab strip and window title are hidden, and screen readers then
+  // say nothing about the new page. Only in that mode we announce "page title — site title"
+  // ourselves, after the first load and after every page change; in a normal window the browser
+  // and SvelteKit already do it, and saying it twice would be noise.
+  const inFullscreen = () =>
+    !!document.fullscreenElement ||
+    matchMedia('(display-mode: fullscreen)').matches ||
+    (outerWidth >= screen.width && outerHeight >= screen.height)
   let arrivedTitle = $state('')
   afterNavigate(() => {
     arrivedTitle = ''
@@ -56,8 +58,8 @@
 <div
   class="relative min-h-screen flex flex-col bg-white lg:m-6 xl:mx-auto lg:min-h-[calc(100vh_-_3rem)] xl:max-w-[1400px] xl:w-[calc(100%_-_3rem)] lg:overflow-clip lg:rounded-2xl dark:bg-gray-950 lg:shadow-2xl"
 >
-  <!-- Loading state for screen readers; the new page title is announced by SvelteKit afterwards -->
-  <div role="status" class="sr-only">{isSlow ? 'Đang tải trang' : arrivedTitle}</div>
+  <!-- Page title announcement for full-screen mode (see above) -->
+  <div role="status" class="sr-only">{arrivedTitle}</div>
 
   <!-- Navigation progress bar — uses transform (compositor-only, no reflow) -->
   {#if isSlow}
