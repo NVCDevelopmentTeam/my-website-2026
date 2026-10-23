@@ -4,8 +4,8 @@
   import Menu from './Menu.svelte'
   import ThemeSwitcher from './ThemeSwitcher.svelte'
 
-  /** @type {{ allPages?: any[], navPages?: any[] }} */
-  let { allPages = [], navPages = [] } = $props()
+  /** @type {{ navPages?: any[] }} */
+  let { navPages = [] } = $props()
 </script>
 
 <header
@@ -16,7 +16,7 @@
       <div class="w-full flex flex-nowrap items-center justify-between py-4">
         <SkipLink />
 
-        <Logo pages={allPages} />
+        <Logo />
 
         <div class="flex flex-nowrap items-center justify-end gap-4">
           <ThemeSwitcher />

@@ -1,5 +1,6 @@
 <script>
   import { browser } from '$app/env'
+  import { scrollBehavior } from '#lib/utils/scroll.js'
   import { onMount, tick } from 'svelte'
   import { afterNavigate, goto } from '$app/navigation'
   import { slugify } from '#lib/utils/slugify.js'
@@ -140,7 +141,7 @@
     if (el) {
       // Use scrollIntoView which respects scroll-margin-top (defined in app.css)
       el.scrollIntoView({
-        behavior: smooth ? 'smooth' : 'auto',
+        behavior: smooth ? scrollBehavior() : 'auto',
         block: 'start'
       })
 

@@ -107,9 +107,9 @@
       <div class="mt-4 border-t border-gray-100 pt-3 dark:border-gray-800">
         <a
           href="/blog/category"
-          class="inline-flex items-center gap-1.5 text-sm text-sky-700 font-black tracking-wider uppercase dark:text-sky-400 hover:underline"
+          class="text-sm text-sky-700 font-black tracking-wider uppercase dark:text-sky-400 hover:underline"
         >
-          <span>Khám phá tất cả danh mục</span>
+          Khám phá tất cả danh mục
           <span aria-hidden="true">→</span>
         </a>
       </div>

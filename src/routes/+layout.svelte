@@ -1,25 +1,19 @@
 <script>
   import './layout.css'
   import { onMount } from 'svelte'
-  import { goto, preloadData } from '$app/navigation'
-  import { siteConfig } from '#lib/config.js'
-  import { retireServiceWorkers } from '#lib/utils/retireServiceWorkers.js'
+  import { afterNavigate, goto, preloadData } from '$app/navigation'
+  import { scrollBehavior } from '#lib/utils/scroll.js'
 
   let { children } = $props()
-  // Page changes are announced by SvelteKit's own built-in route announcer (an assertive live
-  // region that reads the new document title after every client-side navigation). A second,
-  // custom announcer used to repeat the title, so screen readers said it twice.
+
+  // A new page starts at the top (SvelteKit does this too; written out so it is instant, is never
+  // animated, and always happens). Back/forward restore the old position, links with a #hash go
+  // to their target, and a first load keeps whatever the browser restored.
+  afterNavigate(({ type, to }) => {
+    if ((type === 'link' || type === 'goto') && !to?.url.hash) scrollTo(0, 0)
+  })
 
   onMount(() => {
-    // The site no longer registers a service worker (caching is done by the server).
-    // Visitors who still have the old one are cleaned up here, once — not needed for the first
-    // paint or any interaction, so it waits for an idle moment instead of competing with start-up.
-    const runCleanup = () => retireServiceWorkers()
-    const hasIdleCallback = typeof window.requestIdleCallback === 'function'
-    const idleHandle = hasIdleCallback
-      ? window.requestIdleCallback(runCleanup, { timeout: 5000 })
-      : setTimeout(runCleanup, 3000)
-
     // SvelteKit preloads a page on mouse hover and touch; keyboard and screen-reader users never
     // hover, so start loading a link's page when it receives focus too.
     /** @param {FocusEvent} e */
@@ -44,7 +38,7 @@
         const targetElement = document.getElementById(id)
         if (targetElement) {
           e.preventDefault()
-          targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' })
+          targetElement.scrollIntoView({ behavior: scrollBehavior(), block: 'start' })
           goto(hash, { shallow: true })
         }
       }
@@ -57,15 +51,13 @@
       const id = decodeURIComponent(window.location.hash.slice(1))
       const el = document.getElementById(id)
       if (el) {
-        setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300)
+        setTimeout(() => el.scrollIntoView({ behavior: scrollBehavior(), block: 'start' }), 300)
       }
     }
 
     return () => {
       window.removeEventListener('click', handleAnchorClick, { capture: true })
       document.removeEventListener('focusin', preloadFocusedLink)
-      if (hasIdleCallback) window.cancelIdleCallback(/** @type {number} */ (idleHandle))
-      else clearTimeout(idleHandle)
     }
   })
 </script>

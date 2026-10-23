@@ -171,8 +171,8 @@
   .recent-posts__meta {
     margin-top: 0.35rem;
     display: flex;
-    align-items: center;
-    gap: 0.4rem;
+    flex-wrap: wrap;
+    gap: 0 0.75rem;
     font-family: var(--font-mono);
     font-size: 0.875rem;
     color: #4b5563;
@@ -181,13 +181,9 @@
     color: #d1d5db;
   }
 
-  /* Separator drawn with CSS (not in the text): a leading "·" made WAVE report a "possible
-     list", and screen readers would read it out. The "/ ''" part gives it an empty
-     alternative text where supported. */
-  .recent-posts__reading-time::before {
-    content: '·';
-    content: '·' / '';
-    margin-right: 0.4rem;
+  /* The date and the reading time each stay on one line; the row wraps between them. */
+  .recent-posts__meta > * {
+    white-space: nowrap;
   }
 
   .recent-posts__view-all {

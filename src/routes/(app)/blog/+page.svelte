@@ -22,10 +22,8 @@
 <SEO {...seoConfig} />
 
 <section class="px-4 py-12">
-  <h1 class="mb-16 text-center text-4xl font-black tracking-tight sm:text-5xl">
-    <span class="text-sky-900 dark:text-sky-400">
-      Blog
-    </span>
+  <h1 class="mb-16 text-center font-black tracking-tight">
+    <span class="text-sky-900 dark:text-sky-400"> Blog </span>
   </h1>
 
   {#if posts.length > 0}

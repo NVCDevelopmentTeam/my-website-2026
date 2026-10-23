@@ -321,17 +321,3 @@ export function getAllTags() {
 
   return cachedTags
 }
-
-/* Get recent posts */
-export function getRecentPosts(limit = 5) {
-  var posts = getAllPosts()
-  return posts.slice(0, limit)
-}
-
-/* Force reload cache */
-export function reloadCache() {
-  cachedPosts = null
-  cachedCategories = null
-  cachedTags = null
-  getAllPosts()
-}

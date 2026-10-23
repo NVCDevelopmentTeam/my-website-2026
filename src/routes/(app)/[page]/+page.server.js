@@ -1,21 +1,11 @@
-import { getPageBySlug, getAllPages } from '#lib/data/pages.js'
-import { error } from '@sveltejs/kit'
+import { getAllPages } from '#lib/data/pages.js'
 
 export const prerender = true
 
-export async function entries() {
+// Build time only: which pages to generate. Everything else about a page comes from the layout
+// data the browser already has, so opening a page needs no extra data request.
+export function entries() {
   const { pages } = getAllPages()
-  // Exclude 'index' as it's handled by the root route
+  // 'index' is the home page, handled by the root route
   return pages.filter((p) => p.slug !== 'index').map((p) => ({ page: p.slug }))
-}
-
-export async function load({ params }) {
-  const { page: slug } = params
-  try {
-    const { metadata, filename } = await getPageBySlug(slug)
-    // only return metadata (+ the real file name), not the content component
-    return { page: { slug, filename, metadata } }
-  } catch {
-    error(404, `Page not found: ${slug}`)
-  }
 }

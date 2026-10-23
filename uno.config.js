@@ -1,5 +1,5 @@
 // uno.config.js
-import { defineConfig, presetUno, presetTypography } from 'unocss'
+import { defineConfig, presetWind3, presetTypography } from 'unocss'
 
 export default defineConfig({
   // ─────────────────────────────────────────────────────────
@@ -11,7 +11,7 @@ export default defineConfig({
   // PRESETS
   // ─────────────────────────────────────────────────────────
   presets: [
-    presetUno({ dark: 'class' }), // class-based dark mode
+    presetWind3({ dark: 'class' }), // class-based dark mode
     presetTypography()
   ],
 

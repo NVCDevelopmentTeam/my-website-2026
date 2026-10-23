@@ -2,6 +2,7 @@
   import { page } from '$app/state'
   import { siteConfig } from '#lib/config.js'
   import { serializeSchema } from '#lib/utils/seo.js'
+  import { HOME_HREF } from '#lib/utils/url.js'
 
   /** @type {Record<string, string>} Fixed names for the sections of the site */
   const NAMES = {
@@ -51,7 +52,7 @@
     if (places.length === 0) return []
 
     return [
-      { name: 'Trang chủ', href: '/' },
+      { name: 'Trang chủ', href: HOME_HREF },
       ...places.map((segment, i) => {
         const isCurrent = !paginated && i === places.length - 1
         return {
@@ -91,11 +92,10 @@
 </svelte:head>
 
 {#if crumbs.length > 0}
-  <nav
-    aria-label="Đường dẫn trang"
-    class="mb-6 flex overflow-x-auto whitespace-nowrap px-4 py-4 sm:px-6"
-  >
-    <ol class="flex list-none items-center text-sm text-gray-950 space-x-2 dark:text-gray-50">
+  <nav aria-label="Đường dẫn trang" class="mb-6 px-4 py-4 sm:px-6">
+    <ol
+      class="m-0 flex flex-wrap list-none items-center gap-y-1 p-0 text-sm text-gray-950 dark:text-gray-50"
+    >
       {#each crumbs as crumb, i (crumb.href)}
         <li class="flex items-center">
           <!-- Separator icon -->
@@ -117,10 +117,7 @@
 
           <!-- Current page (no link) -->
           {#if crumb.isActive}
-            <span
-              class="max-w-[200px] truncate text-gray-950 font-black sm:max-w-md dark:text-gray-50"
-              aria-current="page"
-            >
+            <span class="text-gray-950 font-black dark:text-gray-50" aria-current="page">
               {crumb.name}
             </span>
             <!-- Link to previous pages -->

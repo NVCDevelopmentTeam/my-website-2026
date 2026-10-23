@@ -13,20 +13,12 @@
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
-# Server-side caching (replaces the browser service worker). Everything below expires by
-# itself, so nothing lingers on the devices of people who stop visiting.
+# Server-side caching. Everything below expires by itself, so nothing lingers on the devices of people who stop visiting.
 #   • HTML and data files keep Netlify's default `max-age=0, must-revalidate`: the CDN answers
 #     a conditional request with a tiny 304, and a page can never reference build files of
 #     an older deploy (which a long-lived cached copy of the HTML could).
 #   • Hashed build files (above): one year, immutable.
 #   • Unhashed images and icons: a day, and served stale for a week while they refresh.
-# This URL now serves the retiring worker (static/service-worker.js). It must never be cached,
-# otherwise browsers could not discover it and clean themselves up.
-[[headers]]
-  for = "/service-worker.js"
-  [headers.values]
-    Cache-Control = "no-cache"
-
 [[headers]]
   for = "/favicon.svg"
   [headers.values]
@@ -66,6 +58,12 @@
   for = "/manifest.json"
   [headers.values]
     Cache-Control = "public, max-age=86400, stale-while-revalidate=604800"
+
+# Likes and reads of the posts: netlify/functions/engagement.mjs (counts, per visitor) and
+# engagement-cleanup.mjs (weekly: removes the data of deleted posts). Stored in this site's own
+# Netlify Blobs; no setup needed (ENGAGEMENT_SECRET is an optional extra, see the function).
+[functions]
+  directory = "netlify/functions"
 
 # Small crawler files: an hour in the browser, a day stale-while-revalidate. They change rarely and
 # every request for them costs a request credit.

@@ -1,71 +1,27 @@
 <script>
   import { onMount } from 'svelte'
-  import { page } from '$app/state'
+  import { hasEngaged, markEngaged, sendEngagement } from '#lib/utils/engagement.js'
 
-  let likes = $state(0)
-  let hasLiked = $state(false)
+  /** @type {{ slug: string, likes?: number | null }} */
+  let { slug, likes = $bindable(null) } = $props()
+
+  // Browser-only state is read after mount, so the first client render equals the prerendered page
+  let mounted = $state(false)
+  onMount(() => (mounted = true))
+
+  // This browser remembers a like only to show it at once; the server counts each visitor once
+  let hasLiked = $derived(mounted && hasEngaged('like', slug))
   let copySuccess = $state(false)
   let dialog = $state()
 
-  const storageKey = $derived(`likes_${page.url.pathname}`)
-  const userKey = $derived(`hasLiked_${page.url.pathname}`)
+  async function toggleLike() {
+    if (hasLiked || likes === null) return
 
-  /**
-   * Get cookie value by name
-   * @param {string} name
-   * @returns {string|null}
-   */
-  function getCookie(name) {
-    var match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'))
-    return match ? match[2] : null
-  }
-
-  /**
-   * Set a persistent cookie.
-   * @param {string} name
-   * @param {string} value
-   */
-  function setCookie(name, value) {
-    document.cookie = name + '=' + value + '; max-age=31536000; path=/; SameSite=Lax'
-  }
-
-  /**
-   * Check if the current visitor has already liked this page (localStorage + cookie).
-   * This is intentionally client-side only — the site is static with no backend, so it can be
-   * bypassed by clearing storage or using a private window. No browser fingerprinting is used:
-   * it added nothing over these two checks, cost ~80 ms of main-thread time on phones, and
-   * fingerprinting visitors is a consent problem once analytics or ads are added.
-   * @returns {boolean}
-   */
-  function checkAlreadyLiked() {
-    return localStorage.getItem(userKey) === 'true' || getCookie(userKey) === 'true'
-  }
-
-  /** Persist the liked state in both places. */
-  function persistLiked() {
-    try {
-      setCookie(userKey, 'true')
-      localStorage.setItem(userKey, 'true')
-      localStorage.setItem(storageKey, likes.toString())
-    } catch {
-      // localStorage may be blocked (privacy mode)
-    }
-  }
-
-  /**
-   * Handle like action — each visitor can only like once per page.
-   */
-  function toggleLike() {
-    if (hasLiked) return
-
-    if (checkAlreadyLiked()) {
-      hasLiked = true
-      return
-    }
-
-    likes += 1
+    const result = await sendEngagement(slug, 'like')
+    if (!result) return
+    markEngaged('like', slug)
     hasLiked = true
-    persistLiked()
+    likes = result.count
   }
 
   // Open the sharing dialog modal
@@ -163,21 +119,6 @@
       console.warn('Failed to copy link:', err)
     }
   }
-
-  // Restore like state from localStorage / cookie on mount.
-  onMount(function () {
-    try {
-      var savedLikes = localStorage.getItem(storageKey)
-      if (savedLikes) {
-        likes = parseInt(savedLikes, 10) || 0
-      }
-      if (checkAlreadyLiked()) {
-        hasLiked = true
-      }
-    } catch {
-      // Storage blocked — silently continue
-    }
-  })
 </script>
 
 <div
@@ -186,7 +127,7 @@
   <!-- Facebook-Style Like Button -->
   <button
     onclick={toggleLike}
-    disabled={hasLiked}
+    disabled={hasLiked || likes === null}
     class="inline-flex select-none items-center gap-2 rounded-md px-4 py-2 text-sm font-semibold transition-all {hasLiked
       ? 'cursor-default bg-[#E7F3FF] text-[#0055d4] dark:bg-[#0055d4]/20 dark:text-[#38bdf8]'
       : 'bg-[#F0F2F5] text-[#050505] active:scale-95 dark:bg-[#3A3B3C] hover:bg-[#E4E6E9] dark:text-[#E4E6EB] dark:hover:bg-[#4E4F50]'}"
@@ -208,10 +149,11 @@
       ></path>
     </svg>
     <span>{hasLiked ? 'Đã thích' : 'Thích'}</span>
-    {#if likes > 0}
-      <span class="rounded-full bg-black/5 px-2 py-0.5 text-sm font-bold dark:bg-white/10"
-        >{likes}{' '}<span class="sr-only">lượt thích</span></span
-      >
+    {#if likes}
+      <span class="rounded-full bg-black/5 px-2 py-0.5 text-sm font-bold dark:bg-white/10">
+        {likes}
+        <span class="sr-only">lượt thích</span>
+      </span>
     {/if}
   </button>
 

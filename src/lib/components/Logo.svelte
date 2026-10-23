@@ -1,25 +1,12 @@
 <script>
   import logo from '#lib/assets/logo.svg'
   import { siteConfig } from '#lib/config.js'
-
-  // Receive explicit pages prop from Header
-  let { pages = [] } = $props()
-
-  // Find the home page href using a clean derived state
-  const homeHref = $derived.by(() => {
-    const homePage = pages.find(
-      (p) => p.slug === 'index' || p.slug === '' || p.metadata?.title?.toLowerCase() === 'trang chủ'
-    )
-    if (homePage && (homePage.slug === 'index' || homePage.slug === '')) return '/'
-    return homePage ? `/${homePage.slug}` : '/'
-  })
+  import { HOME_HREF } from '#lib/utils/url.js'
+  import NavLink from './NavLink.svelte'
 </script>
 
 <div class="m-0 text-base font-bold leading-tight -tracking-[0.5px]">
-  <a
-    href={homeHref}
-    class="min-h-[48px] min-w-[48px] flex items-center gap-2 rounded-full p-1.5 text-lg text-gray-950 font-bold transition-colors duration-200 dark:text-gray-50 hover:text-sky-800 focus:outline-none focus:ring-2 focus:ring-sky-800 dark:hover:text-sky-400 dark:focus:ring-sky-400"
-  >
+  <NavLink href={HOME_HREF} variant="logo">
     <!-- 
 			Performance optimization:
 			- The logo is src/lib/assets/logo.svg (editable from the CMS). It is under Vite's 4 KB
@@ -32,5 +19,5 @@
       <img src={logo} alt="" width="36" height="36" decoding="async" />
     </div>
     <span class="sr-only tracking-wide sm:not-sr-only">{siteConfig.title}</span>
-  </a>
+  </NavLink>
 </div>

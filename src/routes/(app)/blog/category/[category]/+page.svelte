@@ -25,7 +25,7 @@
 <SEO {...seoConfig} />
 
 <section class="px-4 py-12">
-  <h1 class="text-3xl text-gray-950 font-black dark:text-gray-50">
+  <h1 class="text-gray-950 font-black dark:text-gray-50">
     {category?.title || 'Danh mục'}
   </h1>
 

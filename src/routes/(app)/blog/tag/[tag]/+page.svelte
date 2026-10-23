@@ -41,7 +41,7 @@
           clip-rule="evenodd"
         />
       </svg>
-      <h1 class="text-3xl text-gray-950 font-black dark:text-gray-50">
+      <h1 class="text-gray-950 font-black dark:text-gray-50">
         {tag?.title || 'Thẻ'}
       </h1>
     </div>

@@ -1,10 +1,11 @@
 <script>
-  import { afterNavigate, onNavigate } from '$app/navigation'
+  import { onNavigate } from '$app/navigation'
   import { navigating } from '$app/state'
   import Header from '#lib/components/Header.svelte'
   import Sidebar from '#lib/components/Sidebar.svelte'
   import Footer from '#lib/components/Footer.svelte'
   import Breadcrumbs from '#lib/components/Breadcrumbs.svelte'
+  import PageAnnouncer from '#lib/components/PageAnnouncer.svelte'
 
   let { children, data } = $props()
 
@@ -20,29 +21,6 @@
       isSlow = true
     }, 250)
     return () => clearTimeout(timer)
-  })
-
-  // New page: announce "page title — site title" through one live region, the same way in a normal
-  // window and in browser full screen (F11, where the tab strip and window title are hidden and
-  // screen readers otherwise say nothing). SvelteKit's own announcer is hidden in layout.css so the
-  // title is not read twice. A full page load in a normal window is already announced by the
-  // browser, so only there the first load is skipped. The text is cleared afterwards so that it
-  // does not stay at the start of the page for people reading it line by line.
-  const inFullscreen = () =>
-    !!document.fullscreenElement ||
-    matchMedia('(display-mode: fullscreen)').matches ||
-    (outerWidth >= screen.width && outerHeight >= screen.height)
-  let arrivedTitle = $state('')
-  /** @type {ReturnType<typeof setTimeout>} */
-  let announceTimer
-  afterNavigate((navigation) => {
-    if (navigation.type === 'enter' && !inFullscreen()) return
-    clearTimeout(announceTimer)
-    arrivedTitle = ''
-    announceTimer = setTimeout(() => {
-      arrivedTitle = document.title
-      announceTimer = setTimeout(() => (arrivedTitle = ''), 2000)
-    }, 100)
   })
 
   // Cache View Transitions API support detection once (avoid repeated DOM reads)
@@ -80,7 +58,7 @@
     </div>
   {/if}
 
-  <Header allPages={data.allPages} navPages={data.navPages} />
+  <Header navPages={data.navPages} />
 
   <div class="mx-auto max-w-7xl w-full px-4 pt-4 lg:px-8 sm:px-6">
     <Breadcrumbs />
@@ -91,7 +69,7 @@
     tabindex="-1"
     class="mx-auto max-w-7xl w-full flex-grow px-4 lg:px-8 sm:px-6 focus:outline-none"
   >
-    <div class="py-12 md:grid md:grid-cols-12 md:gap-8 lg:gap-12">
+    <div class="py-12 md:grid md:grid-cols-12 lg:gap-12 md:gap-8">
       <div class="md:col-span-8">
         {@render children?.()}
       </div>
@@ -102,6 +80,5 @@
   </main>
   <Footer pages={data.allPages} />
 
-  <!-- Page title announcement (see script) -->
-  <div role="status" class="sr-only">{arrivedTitle}</div>
+  <PageAnnouncer />
 </div>

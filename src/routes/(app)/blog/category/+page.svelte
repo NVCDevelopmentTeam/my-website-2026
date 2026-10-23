@@ -20,7 +20,7 @@
 <div class="container mx-auto px-4 py-16">
   <div class="mx-auto max-w-3xl">
     <!-- Title -->
-    <h1 class="mb-10 text-center text-4xl text-gray-950 font-black dark:text-gray-50">
+    <h1 class="mb-10 text-center text-gray-950 font-black dark:text-gray-50">
       Tất cả danh mục
       <span class="text-2xl text-gray-950 dark:text-gray-50"> ({totalCategories || 0}) </span>
     </h1>

@@ -10,21 +10,42 @@
   import PostNavigation from '#lib/components/PostNavigation.svelte'
   import SEO from '#lib/components/SEO.svelte'
   import { getSeoConfig, serializeSchema } from '#lib/utils/seo.js'
-  import { onMount } from 'svelte'
-  import { browser } from '$app/env'
+  import {
+    fetchEngagement,
+    hasEngaged,
+    markEngaged,
+    sendEngagement,
+    withOwnActions
+  } from '#lib/utils/engagement.js'
 
   const { data } = $props()
   const { content: PostContent, metadata } = $derived.by(() => data)
   const faqs = $derived(/** @type {Record<string, any>} */ (metadata)?.faqs || [])
   const hasToc = $derived(metadata?.toc && metadata.toc.length > 0)
-  let views = $state(0)
+  // Likes and reads of this post, from the site's own counter. null = not available (yet).
+  /** @type {{ likes: number | null, views: number | null }} */
+  let stats = $state({ likes: null, views: null })
 
-  onMount(() => {
-    if (browser && metadata) {
-      const viewKey = `views_${metadata.slug || 'unknown'}`
-      const currentViews = parseInt(localStorage.getItem(viewKey) || '0', 10)
-      views = currentViews + 1
-      localStorage.setItem(viewKey, views.toString())
+  $effect(() => {
+    const slug = metadata?.slug
+    if (!slug) return
+
+    let current = true
+    stats = { likes: null, views: null }
+    ;(async () => {
+      const counts = await fetchEngagement(slug)
+      if (!current || !counts) return
+      stats = withOwnActions(counts, slug)
+
+      // Only the first visit of a visitor is a read; re-reading never adds to it
+      if (hasEngaged('view', slug)) return
+      const result = await sendEngagement(slug, 'view')
+      if (!result) return
+      markEngaged('view', slug)
+      if (current && result.created) stats.views = result.count
+    })()
+    return () => {
+      current = false
     }
   })
 
@@ -101,7 +122,7 @@
       <header class="mb-10 space-y-6">
         <!-- Title -->
         <h1
-          class="text-3xl text-gray-950 font-black leading-tight tracking-tight lg:text-5xl sm:text-4xl dark:text-white"
+          class="text-gray-950 font-black leading-tight tracking-tight dark:text-white"
           itemprop="headline"
         >
           {metadata.title}
@@ -121,16 +142,21 @@
           {#if metadata.updated}
             <meta itemprop="dateModified" content={metadata.updated} />
           {/if}
-          <PostCategories post={{ metadata }} />
           <span class="text-gray-950 font-bold dark:text-gray-200">
             <meta itemprop="timeRequired" content="PT{metadata.readingTime}M" />
             {metadata.readingTime} phút đọc
           </span>
 
-          <span class="text-gray-950 font-bold dark:text-gray-200">{views} lượt đọc</span>
+          {#if stats.views !== null}
+            <span class="text-gray-950 font-bold dark:text-gray-200">{stats.views} lượt đọc</span>
+          {/if}
         </div>
 
-        <div class="flex items-center pt-2"><LikeAndShare /></div>
+        <PostCategories post={{ metadata }} />
+
+        <div class="flex items-center pt-2">
+          <LikeAndShare slug={metadata.slug} bind:likes={stats.likes} />
+        </div>
         <!-- Hidden meta for SEO -->
         <meta itemprop="image" content={metadata.image || '/og-image.jpg'} />
         <meta itemprop="description" content={metadata.description} />

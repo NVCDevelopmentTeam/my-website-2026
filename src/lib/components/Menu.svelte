@@ -1,6 +1,8 @@
 <script>
   import { page } from '$app/state'
-  import { preloadData } from '$app/navigation'
+  import { afterNavigate, preloadData } from '$app/navigation'
+  import NavLink from './NavLink.svelte'
+  import { pageHref } from '#lib/utils/url.js'
 
   /** @type {{ navPages?: { slug: string, metadata: { title: string } }[] }} */
   let { navPages = [] } = $props()
@@ -8,7 +10,7 @@
   // One list drives both the desktop bar and the mobile overlay.
   const items = $derived([
     ...navPages.map((p) => ({
-      href: p.slug === 'index' || p.slug === '' ? '/' : `/${p.slug}`,
+      href: pageHref(p.slug),
       title: p.metadata.title
     })),
     { href: '/blog', title: 'Blog' }
@@ -37,35 +39,37 @@
     if (restoreFocus) requestAnimationFrame(() => openButton?.focus())
   }
 
-  // Lock the page scroll while the overlay is open and move focus into it.
-  $effect(() => {
-    if (!isMenuOpen) return
-    document.documentElement.classList.add('menu-open')
-    requestAnimationFrame(() => overlay?.querySelector('a')?.focus())
-    return () => document.documentElement.classList.remove('menu-open')
-  })
+  // A chosen link keeps the overlay open until the new page has loaded: closing it at once handed
+  // the screen reader back to the old page, which it then described (old title) before the new one.
+  afterNavigate(() => isMenuOpen && closeMenu(false))
+
+  /** Esc closes the overlay; Tab and Shift+Tab cycle inside it (it is modal). @param {KeyboardEvent} e */
+  function onKeydown(e) {
+    if (!isMenuOpen || !overlay) return
+    if (e.key === 'Escape') return closeMenu()
+    if (e.key !== 'Tab') return
+
+    const focusable = /** @type {NodeListOf<HTMLElement>} */ (
+      overlay.querySelectorAll('button, a[href]')
+    )
+    const [first, last] = [focusable[0], focusable[focusable.length - 1]]
+    const edge = e.shiftKey ? first : last
+    if (document.activeElement === edge) {
+      e.preventDefault()
+      ;(e.shiftKey ? last : first).focus()
+    }
+  }
 </script>
 
-<!--
-  Current page: the link itself carries aria-current="page" and the styling is driven by that
-  attribute (aria-[current=page]:). Each colour is set by selectors of different specificity, so
-  the result never depends on stylesheet order.
--->
+<svelte:window onkeydown={onKeydown} />
+
 <nav class="flex items-center justify-end" aria-label="Điều hướng chính">
   <!-- Desktop bar -->
   <ul
     class="m-0 hidden flex-wrap list-none items-center justify-center gap-3 border border-gray-200 rounded-2xl bg-white px-4 py-2 shadow-md md:flex dark:border-gray-800 dark:bg-gray-950"
   >
     {#each items as { href, title } (href)}
-      <li>
-        <a
-          {href}
-          aria-current={page.url.pathname === href ? 'page' : undefined}
-          class="inline-block rounded-xl px-4 py-2 text-gray-950 font-black no-underline transition-[background-color,color] duration-200 hover:bg-sky-800 hover:text-white dark:text-gray-50 dark:hover:bg-sky-400 dark:hover:text-gray-950 aria-[current=page]:bg-sky-800 aria-[current=page]:text-white dark:aria-[current=page]:bg-sky-400 dark:aria-[current=page]:text-gray-950 focus:outline-none focus:ring-2 focus:ring-sky-800"
-        >
-          {title}
-        </a>
-      </li>
+      <li><NavLink {href}>{title}</NavLink></li>
     {/each}
   </ul>
 
@@ -85,8 +89,6 @@
     </button>
 
     {#if isMenuOpen}
-      <!-- Focus leaving the overlay (Tab past the last link, or the chosen link being removed
-           while the page changes) closes it, without pulling focus back to the button. -->
       <div
         bind:this={overlay}
         class="safe-top safe-bottom safe-x fixed inset-0 z-[100000] overflow-y-auto bg-white text-gray-950 duration-150 animate-in fade-in dark:bg-gray-950 dark:text-white"
@@ -94,13 +96,9 @@
         aria-modal="true"
         aria-label="Menu"
         tabindex="-1"
-        onkeydown={(e) => e.key === 'Escape' && closeMenu()}
-        onfocusout={() =>
-          requestAnimationFrame(() => {
-            if (isMenuOpen && !overlay?.contains(document.activeElement)) closeMenu(false)
-          })}
       >
         <button
+          {@attach (button) => button.focus()}
           onclick={() => closeMenu()}
           aria-label="Đóng menu"
           class="absolute right-5 top-5 z-10 min-h-[48px] min-w-[48px] flex cursor-pointer items-center justify-center border-0 bg-transparent p-2 text-gray-950 transition-opacity dark:text-white hover:opacity-70"
@@ -124,14 +122,13 @@
         >
           {#each items as { href, title } (href)}
             <li class="w-full">
-              <a
+              <NavLink
                 {href}
-                aria-current={page.url.pathname === href ? 'page' : undefined}
-                onclick={() => closeMenu(page.url.pathname === href)}
-                class="block rounded-lg px-4 py-3 text-lg text-gray-950 font-bold no-underline transition-colors hover:bg-gray-100 dark:text-gray-50 -tracking-[0.1px] dark:hover:bg-gray-900 aria-[current=page]:bg-gray-100 aria-[current=page]:font-black dark:aria-[current=page]:bg-gray-900"
+                variant="list"
+                onclick={() => href === page.url.pathname && closeMenu()}
               >
                 {title}
-              </a>
+              </NavLink>
             </li>
           {/each}
         </ul>

@@ -51,14 +51,11 @@ html {
   height: 100%;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
-  /* scroll-behavior only on when user doesn't request reduced motion */
-  scroll-behavior: auto;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  html {
-    scroll-behavior: smooth;
-  }
+/* Open menu overlay: the page behind it does not scroll (WordPress does the same). */
+html:has([aria-modal='true']) {
+  overflow: hidden;
 }
 
 /* View Transitions API (see routes/(app)/+layout.svelte onNavigate) plays a
@@ -93,9 +90,19 @@ html {
   }
 }
 
-/* Very long words (an e-mail address, a URL) wrap instead of pushing the page wider than the
-   screen, e.g. on a 320 px phone or with enlarged text. Normal text is not affected. */
-main :where(a, h1, h2, h3, h4, p, li, td, th) {
+/* Line breaking, tuned for Vietnamese (words are separated by spaces, no hyphenation):
+   - headings are balanced, so a title never ends with a lone short word on its last line;
+   - paragraphs avoid a single short word on the last line;
+   - a very long word (an e-mail address, a URL) wraps instead of pushing the page wider than the
+     screen; ordinary text is not affected. */
+main :where(h1, h2, h3, h4) {
+  text-wrap: balance;
+}
+main :where(p, li, td, th) {
+  text-wrap: pretty;
+  overflow-wrap: break-word;
+}
+main :where(a, h1, h2, h3, h4) {
   overflow-wrap: anywhere;
 }
 
