@@ -59,9 +59,8 @@
   [headers.values]
     Cache-Control = "public, max-age=86400, stale-while-revalidate=604800"
 
-# Likes and reads of the posts: netlify/functions/engagement.mjs (counts, per visitor) and
-# engagement-cleanup.mjs (weekly: removes the data of deleted posts). Stored in this site's own
-# Netlify Blobs; no setup needed (ENGAGEMENT_SECRET is an optional extra, see the function).
+# Likes and reads of the posts: netlify/functions/engagement.mjs. Counts per visitor, stored in this
+# site's own Netlify Blobs; the data of deleted posts is cleaned up by itself. No setup needed.
 [functions]
   directory = "netlify/functions"
 

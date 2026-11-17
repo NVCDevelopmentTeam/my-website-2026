@@ -75,6 +75,11 @@ html:has([aria-modal='true']) {
    theme, which breaks it; with it, form controls and scrollbars also match the site theme. */
 :root {
   color-scheme: light;
+
+  /* Fluid sizes: they grow smoothly with the width of the window and with the text size set in
+     the browser (rem), instead of jumping at fixed widths. */
+  --gutter: clamp(1rem, 0.5rem + 2.5vw, 2rem); /* space left and right of the page content */
+  --fs-menu: clamp(1.75rem, 1.25rem + 2.5vw, 2.75rem); /* links of the full-screen menu */
 }
 :root.dark {
   color-scheme: dark;
@@ -102,7 +107,8 @@ main :where(p, li, td, th) {
   text-wrap: pretty;
   overflow-wrap: break-word;
 }
-main :where(a, h1, h2, h3, h4) {
+main :where(a, h1, h2, h3, h4),
+nav[aria-label='Đường dẫn trang'] :where(a, li, span) {
   overflow-wrap: anywhere;
 }
 
@@ -146,7 +152,7 @@ body {
    always stays on a solid surface, so text contrast is unaffected. It is only requested on
    wide screens — phones never download it. Replace src/lib/assets/background.webp (also from
    the CMS media library) to change it; keep it small, it is a decoration. */
-@media (min-width: 1024px) {
+@media (min-width: 64em) {
   /* The image lives on its own fixed layer instead of `background-attachment: fixed` on the
      body: a fixed-attachment background is repainted on every scroll frame, which made scrolling
      (and jumping back to the top with the Home key) stutter. A fixed layer is composited by the

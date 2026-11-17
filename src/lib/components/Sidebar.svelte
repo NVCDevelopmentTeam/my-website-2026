@@ -87,7 +87,7 @@
           <li>
             <a
               href="/blog/category/{category.slug}"
-              class="group flex items-center justify-between rounded-xl px-3 py-2.5 transition-all duration-200 {isActive
+              class="group flex items-center justify-between rounded-xl px-3 py-2.5 transition-colors duration-200 {isActive
                 ? 'bg-sky-50 text-sky-700 font-black dark:bg-sky-950/50 dark:text-sky-300'
                 : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 hover:text-sky-700 dark:hover:bg-gray-800 dark:hover:text-sky-300'}"
             >

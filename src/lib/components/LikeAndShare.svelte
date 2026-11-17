@@ -1,6 +1,6 @@
 <script>
-  import { onMount } from 'svelte'
-  import { hasEngaged, markEngaged, sendEngagement } from '#lib/utils/engagement.js'
+  import { onMount, tick } from 'svelte'
+  import { hasEngaged, sendEngagement, setEngaged } from '#lib/utils/engagement.js'
 
   /** @type {{ slug: string, likes?: number | null }} */
   let { slug, likes = $bindable(null) } = $props()
@@ -9,23 +9,50 @@
   let mounted = $state(false)
   onMount(() => (mounted = true))
 
-  // This browser remembers a like only to show it at once; the server counts each visitor once
-  let hasLiked = $derived(mounted && hasEngaged('like', slug))
+  // Whether this visitor likes the post. This browser remembers it only to show it at once; the
+  // server counts one like per visitor and corrects the state with every answer.
+  let liked = $derived(mounted && hasEngaged('like', slug))
+  let busy = false
   let copySuccess = $state(false)
+  let shareOpen = $state(false)
   let dialog = $state()
 
-  async function toggleLike() {
-    if (hasLiked || likes === null) return
+  // What screen readers hear after a like (a status message, cleared again at once)
+  let announcement = $state('')
+  /** @type {ReturnType<typeof setTimeout>} */
+  let announceTimer
 
-    const result = await sendEngagement(slug, 'like')
-    if (!result) return
-    markEngaged('like', slug)
-    hasLiked = true
+  /** @param {string} text */
+  async function announce(text) {
+    clearTimeout(announceTimer)
+    announcement = ''
+    await tick()
+    announcement = text
+    announceTimer = setTimeout(() => (announcement = ''), 1500)
+  }
+
+  /** @param {number} count */
+  const countText = (count) => (count ? `${count} lượt thích.` : 'Chưa có lượt thích.')
+
+  // Like and unlike with the same button, as on Facebook: a toggle with one like per visitor
+  async function toggleLike() {
+    if (busy || likes === null) return
+    busy = true
+    const wantLike = !liked
+    const result = await sendEngagement(slug, wantLike ? 'like' : 'unlike')
+    busy = false
+
+    if (!result) return announce('Không cập nhật được lượt thích. Vui lòng thử lại.')
+    setEngaged('like', slug, wantLike)
+    liked = wantLike
     likes = result.count
+    announce(`${wantLike ? 'Đã thích bài viết' : 'Đã bỏ thích'}. ${countText(result.count)}`)
   }
 
   // Open the sharing dialog modal
-  function openDialog() {
+  async function openDialog() {
+    shareOpen = true
+    await tick() // the content of the dialog is only rendered while it is open
     if (dialog && typeof dialog.showModal === 'function') {
       dialog.showModal()
     }
@@ -124,12 +151,14 @@
 <div
   class="flex flex-wrap items-center gap-3 border-y border-gray-200 py-3 dark:border-gray-800 sm:py-4"
 >
-  <!-- Facebook-Style Like Button -->
+  <!-- Like: a toggle button (name "Thích", pressed state, number of likes) -->
   <button
+    type="button"
     onclick={toggleLike}
-    disabled={hasLiked || likes === null}
-    class="inline-flex select-none items-center gap-2 rounded-md px-4 py-2 text-sm font-semibold transition-all {hasLiked
-      ? 'cursor-default bg-[#E7F3FF] text-[#0055d4] dark:bg-[#0055d4]/20 dark:text-[#38bdf8]'
+    aria-pressed={liked}
+    disabled={likes === null}
+    class="inline-flex select-none items-center gap-2 rounded-md px-4 py-2 text-sm font-semibold transition-colors {liked
+      ? 'bg-[#E7F3FF] text-[#0055d4] dark:bg-[#0055d4]/20 dark:text-[#38bdf8]'
       : 'bg-[#F0F2F5] text-[#050505] active:scale-95 dark:bg-[#3A3B3C] hover:bg-[#E4E6E9] dark:text-[#E4E6EB] dark:hover:bg-[#4E4F50]'}"
   >
     <svg
@@ -137,7 +166,7 @@
       width="18"
       height="18"
       viewBox="0 0 24 24"
-      fill={hasLiked ? 'currentColor' : 'none'}
+      fill={liked ? 'currentColor' : 'none'}
       stroke="currentColor"
       stroke-width="2"
       stroke-linecap="round"
@@ -148,7 +177,7 @@
         d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"
       ></path>
     </svg>
-    <span>{hasLiked ? 'Đã thích' : 'Thích'}</span>
+    <span>Thích</span>
     {#if likes}
       <span class="rounded-full bg-black/5 px-2 py-0.5 text-sm font-bold dark:bg-white/10">
         {likes}
@@ -156,11 +185,12 @@
       </span>
     {/if}
   </button>
+  <span role="status" class="sr-only">{announcement}</span>
 
   <!-- Facebook-Style Share Button -->
   <button
     onclick={openDialog}
-    class="inline-flex select-none items-center gap-2 rounded-md bg-[#F0F2F5] px-4 py-2 text-sm text-[#050505] font-semibold transition-all active:scale-95 dark:bg-[#3A3B3C] hover:bg-[#E4E6E9] dark:text-[#E4E6EB] dark:hover:bg-[#4E4F50]"
+    class="inline-flex select-none items-center gap-2 rounded-md bg-[#F0F2F5] px-4 py-2 text-sm text-[#050505] font-semibold transition-colors active:scale-95 dark:bg-[#3A3B3C] hover:bg-[#E4E6E9] dark:text-[#E4E6EB] dark:hover:bg-[#4E4F50]"
   >
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -185,235 +215,238 @@
   <dialog
     bind:this={dialog}
     onclick={handleDialogClick}
+    onclose={() => (shareOpen = false)}
     aria-labelledby="dialog-title"
-    class="backdrop:backdrop-blur-xs max-w-sm w-full overflow-hidden border-0 rounded-3xl bg-white p-0 shadow-2xl backdrop:bg-black/60 dark:bg-[#242526]"
+    class="max-w-sm w-full overflow-hidden border-0 rounded-3xl bg-white p-0 shadow-2xl backdrop:bg-black/60 dark:bg-[#242526]"
   >
-    <div class="p-5">
-      <!-- Modal Header -->
-      <div
-        class="mb-4 flex items-center justify-between border-b border-gray-200 pb-3 dark:border-gray-700"
-      >
-        <h2 id="dialog-title" class="text-base text-gray-900 font-bold dark:text-gray-100">
-          Chia sẻ lên
-        </h2>
-        <button
-          onclick={closeDialog}
-          aria-label="Đóng hộp thoại chia sẻ"
-          class="rounded-full p-1.5 text-gray-600 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+    {#if shareOpen}
+      <div class="p-5">
+        <!-- Modal Header -->
+        <div
+          class="mb-4 flex items-center justify-between border-b border-gray-200 pb-3 dark:border-gray-700"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-          >
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
-      </div>
-
-      <!-- Main Popular Channels in Vietnam (Facebook Mobile Style) -->
-      <div class="grid grid-cols-3 gap-3">
-        <!-- Facebook -->
-        <button
-          onclick={() => shareOn('facebook')}
-          class="flex flex-col items-center gap-1.5 rounded-2xl p-2.5 text-center transition-colors active:scale-95 hover:bg-gray-100 dark:hover:bg-gray-800"
-        >
-          <div
-            class="h-12 w-12 flex items-center justify-center rounded-full bg-[#0866FF] text-white shadow-sm"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="22"
-              height="22"
-              fill="currentColor"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path
-                d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"
-              />
-            </svg>
-          </div>
-          <span class="text-sm text-gray-800 font-medium dark:text-gray-200">Facebook</span>
-        </button>
-
-        <!-- Messenger -->
-        <button
-          onclick={() => shareOn('messenger')}
-          class="flex flex-col items-center gap-1.5 rounded-2xl p-2.5 text-center transition-colors active:scale-95 hover:bg-gray-100 dark:hover:bg-gray-800"
-        >
-          <div
-            class="h-12 w-12 flex items-center justify-center rounded-full from-[#00C6FF] to-[#0078FF] bg-gradient-to-tr text-white shadow-sm"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="22"
-              height="22"
-              fill="currentColor"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path
-                d="M12 0C5.373 0 0 4.974 0 11.111c0 3.497 1.745 6.616 4.47 8.653V24l4.086-2.242c1.09.301 2.246.464 3.444.464 6.627 0 12-4.975 12-11.111C24 4.974 18.627 0 12 0zm1.191 14.963l-3.055-3.26-5.963 3.26 6.559-6.963 3.13 3.259 5.888-3.259-6.559 6.963z"
-              />
-            </svg>
-          </div>
-          <span class="text-sm text-gray-800 font-medium dark:text-gray-200">Messenger</span>
-        </button>
-
-        <!-- Zalo -->
-        <button
-          onclick={() => shareOn('zalo')}
-          class="flex flex-col items-center gap-1.5 rounded-2xl p-2.5 text-center transition-colors active:scale-95 hover:bg-gray-100 dark:hover:bg-gray-800"
-        >
-          <div
-            aria-hidden="true"
-            class="h-12 w-12 flex items-center justify-center rounded-full bg-[#0068FF] text-sm text-white font-black tracking-tighter italic shadow-sm"
-          >
-            Zalo
-          </div>
-          <span class="text-sm text-gray-800 font-medium dark:text-gray-200">Zalo</span>
-        </button>
-
-        <!-- Telegram -->
-        <button
-          onclick={() => shareOn('telegram')}
-          class="flex flex-col items-center gap-1.5 rounded-2xl p-2.5 text-center transition-colors active:scale-95 hover:bg-gray-100 dark:hover:bg-gray-800"
-        >
-          <div
-            class="h-12 w-12 flex items-center justify-center rounded-full bg-[#229ED9] text-white shadow-sm"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              fill="currentColor"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path
-                d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.197 1.006.128.832.946z"
-              />
-            </svg>
-          </div>
-          <span class="text-sm text-gray-800 font-medium dark:text-gray-200">Telegram</span>
-        </button>
-
-        <!-- X (Twitter) -->
-        <button
-          onclick={() => shareOn('twitter')}
-          class="flex flex-col items-center gap-1.5 rounded-2xl p-2.5 text-center transition-colors active:scale-95 hover:bg-gray-100 dark:hover:bg-gray-800"
-        >
-          <div
-            class="h-12 w-12 flex items-center justify-center rounded-full bg-black text-white shadow-sm dark:bg-white dark:text-black"
+          <h2 id="dialog-title" class="text-base text-gray-900 font-bold dark:text-gray-100">
+            Chia sẻ lên
+          </h2>
+          <button
+            onclick={closeDialog}
+            aria-label="Đóng hộp thoại chia sẻ"
+            class="rounded-full p-1.5 text-gray-600 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="18"
               height="18"
-              fill="currentColor"
               viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
               aria-hidden="true"
             >
-              <path
-                d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"
-              />
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
-          </div>
-          <span class="text-sm text-gray-800 font-medium dark:text-gray-200">X (Twitter)</span>
-        </button>
+          </button>
+        </div>
 
-        <!-- Copy link button -->
-        <button
-          onclick={copyLink}
-          class="flex flex-col items-center gap-1.5 rounded-2xl p-2.5 text-center transition-colors active:scale-95 hover:bg-gray-100 dark:hover:bg-gray-800"
-        >
-          <div
-            class="h-12 w-12 flex items-center justify-center rounded-full shadow-sm transition-all {copySuccess
-              ? 'bg-emerald-600 text-white'
-              : 'bg-[#E4E6EB] text-gray-800 dark:bg-[#3A3B3C] dark:text-gray-100'}"
+        <!-- Main Popular Channels in Vietnam (Facebook Mobile Style) -->
+        <div class="grid grid-cols-3 gap-3">
+          <!-- Facebook -->
+          <button
+            onclick={() => shareOn('facebook')}
+            class="flex flex-col items-center gap-1.5 rounded-2xl p-2.5 text-center transition-colors active:scale-95 hover:bg-gray-100 dark:hover:bg-gray-800"
           >
-            {#if copySuccess}
+            <div
+              class="h-12 w-12 flex items-center justify-center rounded-full bg-[#0866FF] text-white shadow-sm"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="22"
+                height="22"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"
+                />
+              </svg>
+            </div>
+            <span class="text-sm text-gray-800 font-medium dark:text-gray-200">Facebook</span>
+          </button>
+
+          <!-- Messenger -->
+          <button
+            onclick={() => shareOn('messenger')}
+            class="flex flex-col items-center gap-1.5 rounded-2xl p-2.5 text-center transition-colors active:scale-95 hover:bg-gray-100 dark:hover:bg-gray-800"
+          >
+            <div
+              class="h-12 w-12 flex items-center justify-center rounded-full from-[#00C6FF] to-[#0078FF] bg-gradient-to-tr text-white shadow-sm"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="22"
+                height="22"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  d="M12 0C5.373 0 0 4.974 0 11.111c0 3.497 1.745 6.616 4.47 8.653V24l4.086-2.242c1.09.301 2.246.464 3.444.464 6.627 0 12-4.975 12-11.111C24 4.974 18.627 0 12 0zm1.191 14.963l-3.055-3.26-5.963 3.26 6.559-6.963 3.13 3.259 5.888-3.259-6.559 6.963z"
+                />
+              </svg>
+            </div>
+            <span class="text-sm text-gray-800 font-medium dark:text-gray-200">Messenger</span>
+          </button>
+
+          <!-- Zalo -->
+          <button
+            onclick={() => shareOn('zalo')}
+            class="flex flex-col items-center gap-1.5 rounded-2xl p-2.5 text-center transition-colors active:scale-95 hover:bg-gray-100 dark:hover:bg-gray-800"
+          >
+            <div
+              aria-hidden="true"
+              class="h-12 w-12 flex items-center justify-center rounded-full bg-[#0068FF] text-sm text-white font-black tracking-tighter italic shadow-sm"
+            >
+              Zalo
+            </div>
+            <span class="text-sm text-gray-800 font-medium dark:text-gray-200">Zalo</span>
+          </button>
+
+          <!-- Telegram -->
+          <button
+            onclick={() => shareOn('telegram')}
+            class="flex flex-col items-center gap-1.5 rounded-2xl p-2.5 text-center transition-colors active:scale-95 hover:bg-gray-100 dark:hover:bg-gray-800"
+          >
+            <div
+              class="h-12 w-12 flex items-center justify-center rounded-full bg-[#229ED9] text-white shadow-sm"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="20"
                 height="20"
+                fill="currentColor"
                 viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
                 aria-hidden="true"
               >
-                <polyline points="20 6 9 17 4 12"></polyline>
+                <path
+                  d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.197 1.006.128.832.946z"
+                />
               </svg>
-            {:else}
+            </div>
+            <span class="text-sm text-gray-800 font-medium dark:text-gray-200">Telegram</span>
+          </button>
+
+          <!-- X (Twitter) -->
+          <button
+            onclick={() => shareOn('twitter')}
+            class="flex flex-col items-center gap-1.5 rounded-2xl p-2.5 text-center transition-colors active:scale-95 hover:bg-gray-100 dark:hover:bg-gray-800"
+          >
+            <div
+              class="h-12 w-12 flex items-center justify-center rounded-full bg-black text-white shadow-sm dark:bg-white dark:text-black"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
+                width="18"
+                height="18"
+                fill="currentColor"
                 viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
                 aria-hidden="true"
               >
-                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                <path
+                  d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"
+                />
               </svg>
-            {/if}
-          </div>
-          <span
-            class="text-sm font-medium {copySuccess
-              ? 'text-emerald-600 font-bold dark:text-emerald-400'
-              : 'text-gray-800 dark:text-gray-200'}"
-          >
-            {copySuccess ? 'Đã sao chép!' : 'Sao chép link'}
-          </span>
-          <span class="sr-only" role="status">
-            {copySuccess ? 'Đã sao chép liên kết vào bộ nhớ tạm' : ''}
-          </span>
-        </button>
-      </div>
+            </div>
+            <span class="text-sm text-gray-800 font-medium dark:text-gray-200">X (Twitter)</span>
+          </button>
 
-      <!-- Native Share for other apps -->
-      <div class="mt-3 border-t border-gray-200 pt-3 dark:border-gray-700">
-        <button
-          onclick={triggerNativeShare}
-          class="w-full flex items-center justify-center gap-2 rounded-xl bg-gray-100 py-2.5 text-sm text-gray-700 font-semibold transition-colors active:scale-98 dark:bg-gray-800 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
+          <!-- Copy link button -->
+          <button
+            onclick={copyLink}
+            class="flex flex-col items-center gap-1.5 rounded-2xl p-2.5 text-center transition-colors active:scale-95 hover:bg-gray-100 dark:hover:bg-gray-800"
           >
-            <circle cx="18" cy="5" r="3"></circle>
-            <circle cx="6" cy="12" r="3"></circle>
-            <circle cx="18" cy="19" r="3"></circle>
-            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
-            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
-          </svg>
-          <span>Tùy chọn khác...</span>
-        </button>
+            <div
+              class="h-12 w-12 flex items-center justify-center rounded-full shadow-sm transition-colors {copySuccess
+                ? 'bg-emerald-600 text-white'
+                : 'bg-[#E4E6EB] text-gray-800 dark:bg-[#3A3B3C] dark:text-gray-100'}"
+            >
+              {#if copySuccess}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              {:else}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                </svg>
+              {/if}
+            </div>
+            <span
+              class="text-sm font-medium {copySuccess
+                ? 'text-emerald-600 font-bold dark:text-emerald-400'
+                : 'text-gray-800 dark:text-gray-200'}"
+            >
+              {copySuccess ? 'Đã sao chép!' : 'Sao chép link'}
+            </span>
+            <span class="sr-only" role="status">
+              {copySuccess ? 'Đã sao chép liên kết vào bộ nhớ tạm' : ''}
+            </span>
+          </button>
+        </div>
+
+        <!-- Native Share for other apps -->
+        <div class="mt-3 border-t border-gray-200 pt-3 dark:border-gray-700">
+          <button
+            onclick={triggerNativeShare}
+            class="w-full flex items-center justify-center gap-2 rounded-xl bg-gray-100 py-2.5 text-sm text-gray-700 font-semibold transition-colors active:scale-98 dark:bg-gray-800 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <circle cx="18" cy="5" r="3"></circle>
+              <circle cx="6" cy="12" r="3"></circle>
+              <circle cx="18" cy="19" r="3"></circle>
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+              <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+            </svg>
+            <span>Tùy chọn khác...</span>
+          </button>
+        </div>
       </div>
-    </div>
+    {/if}
   </dialog>
 </div>

@@ -92,7 +92,7 @@
 </svelte:head>
 
 {#if crumbs.length > 0}
-  <nav aria-label="Đường dẫn trang" class="mb-6 px-4 py-4 sm:px-6">
+  <nav aria-label="Đường dẫn trang" class="mb-6 px-[var(--gutter)] py-4">
     <ol
       class="m-0 flex flex-wrap list-none items-center gap-y-1 p-0 text-sm text-gray-950 dark:text-gray-50"
     >

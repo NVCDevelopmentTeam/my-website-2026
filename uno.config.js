@@ -16,6 +16,16 @@ export default defineConfig({
   ],
 
   // ─────────────────────────────────────────────────────────
+  // BREAKPOINTS in em, not px. Media queries in em follow the font size set in the browser, so with
+  // larger text the layout switches to the narrower (menu button, single column) form sooner
+  // instead of cutting the desktop menu off. At the default 16 px they are the usual
+  // 640 / 768 / 1024 / 1280 / 1536 px.
+  // ─────────────────────────────────────────────────────────
+  theme: {
+    breakpoints: { sm: '40em', md: '48em', lg: '64em', xl: '80em', '2xl': '96em' }
+  },
+
+  // ─────────────────────────────────────────────────────────
   // CUSTOM RULES — tailwindcss-animate-style classes used in
   // Menu.svelte / ToC.svelte / Contact.svelte / blog post page.
   // Not shipped by any preset — must be defined here or they

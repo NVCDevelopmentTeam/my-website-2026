@@ -31,7 +31,7 @@
         {#each tags as tag (tag.slug)}
           <a
             href={`/blog/tag/${tag.slug}`}
-            class="group inline-flex items-center gap-2 border border-purple-200 rounded-full bg-purple-50 px-4 py-2 text-sm text-purple-950 font-bold transition-all duration-200 dark:border-purple-800 hover:border-purple-300 dark:bg-purple-950/30 hover:bg-purple-100 dark:text-purple-200 dark:hover:border-purple-700 dark:hover:bg-purple-900/50"
+            class="group inline-flex items-center gap-2 border border-purple-200 rounded-full bg-purple-50 px-4 py-2 text-sm text-purple-950 font-bold transition-colors duration-200 dark:border-purple-800 hover:border-purple-300 dark:bg-purple-950/30 hover:bg-purple-100 dark:text-purple-200 dark:hover:border-purple-700 dark:hover:bg-purple-900/50"
           >
             <svg
               class="h-4 w-4 text-purple-800 dark:text-purple-300"

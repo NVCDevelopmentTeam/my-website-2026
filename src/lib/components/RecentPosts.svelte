@@ -181,9 +181,13 @@
     color: #d1d5db;
   }
 
-  /* The date and the reading time each stay on one line; the row wraps between them. */
-  .recent-posts__meta > * {
-    white-space: nowrap;
+  /* In the narrow sidebar next to the article the date and the reading time each stay on one
+     line (the row wraps between them). In one column, with plenty of room, and with very large
+     text, they may wrap like any other text instead of running off the screen. */
+  @media (min-width: 48em) {
+    .recent-posts__meta > * {
+      white-space: nowrap;
+    }
   }
 
   .recent-posts__view-all {

@@ -2,6 +2,7 @@
   import { page } from '$app/state'
   import { afterNavigate, preloadData } from '$app/navigation'
   import NavLink from './NavLink.svelte'
+  import { isLightMode } from '#lib/utils/device.js'
   import { pageHref } from '#lib/utils/url.js'
 
   /** @type {{ navPages?: { slug: string, metadata: { title: string } }[] }} */
@@ -26,7 +27,7 @@
     isMenuOpen = true
     // The visitor is about to pick a page: load them all now (touch screens have no hover or
     // focus to do it earlier) so the tap that follows feels instant.
-    for (const { href } of items) preloadData(href).catch(() => {})
+    if (!isLightMode()) for (const { href } of items) preloadData(href).catch(() => {})
   }
 
   /**
@@ -42,6 +43,15 @@
   // A chosen link keeps the overlay open until the new page has loaded: closing it at once handed
   // the screen reader back to the old page, which it then described (old title) before the new one.
   afterNavigate(() => isMenuOpen && closeMenu(false))
+
+  // Leaving the phone layout (window enlarged, device rotated, full screen switched on) closes the
+  // overlay: it would otherwise stay open, invisible, and keep the page from scrolling.
+  $effect(() => {
+    const wide = matchMedia('(min-width: 48em)')
+    const closeWhenWide = () => wide.matches && closeMenu(false)
+    wide.addEventListener('change', closeWhenWide)
+    return () => wide.removeEventListener('change', closeWhenWide)
+  })
 
   /** Esc closes the overlay; Tab and Shift+Tab cycle inside it (it is modal). @param {KeyboardEvent} e */
   function onKeydown(e) {
@@ -91,37 +101,42 @@
     {#if isMenuOpen}
       <div
         bind:this={overlay}
-        class="safe-top safe-bottom safe-x fixed inset-0 z-[100000] overflow-y-auto bg-white text-gray-950 duration-150 animate-in fade-in dark:bg-gray-950 dark:text-white"
+        class="safe-top safe-bottom safe-x fixed inset-0 z-[100000] overflow-y-auto bg-white px-[var(--gutter)] text-gray-950 duration-150 animate-in fade-in dark:bg-gray-950 dark:text-white"
         role="dialog"
         aria-modal="true"
         aria-label="Menu"
         tabindex="-1"
       >
-        <button
-          {@attach (button) => button.focus()}
-          onclick={() => closeMenu()}
-          aria-label="Đóng menu"
-          class="absolute right-5 top-5 z-10 min-h-[48px] min-w-[48px] flex cursor-pointer items-center justify-center border-0 bg-transparent p-2 text-gray-950 transition-opacity dark:text-white hover:opacity-70"
-        >
-          <svg
-            viewBox="0 0 24 24"
-            width="24"
-            height="24"
-            aria-hidden="true"
-            focusable="false"
-            fill="currentColor"
+        <!-- The close button sits where the open button was, at the right of the top row -->
+        <div class="min-h-[76px] flex items-center justify-end">
+          <button
+            onclick={() => closeMenu()}
+            aria-label="Đóng menu"
+            class="min-h-[48px] min-w-[48px] flex cursor-pointer items-center justify-center border-0 bg-transparent p-3 text-gray-950 transition-opacity dark:text-white hover:opacity-70"
           >
-            <path
-              d="m13.06 12 6.47-6.47-1.06-1.06L12 10.94 5.53 4.47 4.47 5.53 10.94 12l-6.47 6.47 1.06 1.06L12 13.06l6.47 6.47 1.06-1.06L13.06 12Z"
-            />
-          </svg>
-        </button>
+            <svg
+              viewBox="0 0 24 24"
+              width="24"
+              height="24"
+              aria-hidden="true"
+              focusable="false"
+              fill="currentColor"
+            >
+              <path
+                d="m13.06 12 6.47-6.47-1.06-1.06L12 10.94 5.53 4.47 4.47 5.53 10.94 12l-6.47 6.47 1.06 1.06L12 13.06l6.47 6.47 1.06-1.06L13.06 12Z"
+              />
+            </svg>
+          </button>
+        </div>
 
+        <!-- As in the WordPress menu: opening it moves focus to the first link (the close button is
+             one Shift+Tab back), and the dialog is announced as "Menu" -->
         <ul
-          class="m-0 w-full flex flex-col list-none items-start justify-start p-8 pt-20 space-y-1"
+          {@attach (list) => list.querySelector('a')?.focus()}
+          class="m-0 flex flex-col list-none items-start gap-[clamp(0.25rem,1.5vh,1rem)] p-0 pb-12 pt-[clamp(1.5rem,8vh,4rem)]"
         >
           {#each items as { href, title } (href)}
-            <li class="w-full">
+            <li>
               <NavLink
                 {href}
                 variant="list"

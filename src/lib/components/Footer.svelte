@@ -11,7 +11,7 @@
 <footer
   class="virtual mt-20 border-t border-gray-100 bg-gray-50 text-gray-900 transition-colors dark:border-gray-800 dark:bg-gray-950 dark:text-gray-100"
 >
-  <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6">
+  <div class="mx-auto max-w-7xl px-[var(--gutter)] py-12">
     <div class="flex flex-col items-start justify-between gap-12 md:flex-row">
       <!-- Minimal navigation -->
       <div class="space-y-4">

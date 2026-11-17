@@ -32,7 +32,7 @@
     {href}
     {onclick}
     aria-current={current}
-    class="block rounded-lg px-4 py-3 text-2xl text-gray-950 font-bold no-underline transition-colors aria-[current=page]:bg-gray-100 hover:bg-gray-100 dark:text-gray-50 aria-[current=page]:font-black -tracking-[0.1px] dark:aria-[current=page]:bg-gray-900 dark:hover:bg-gray-900"
+    class="min-h-[48px] inline-flex items-center rounded-sm py-1 text-[length:var(--fs-menu)] text-gray-950 font-semibold leading-tight decoration-[0.09em] underline-offset-[0.2em] no-underline dark:text-gray-50 aria-[current=page]:underline hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-800 dark:focus-visible:ring-sky-400"
   >
     {@render children()}
   </a>

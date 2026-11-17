@@ -1,17 +1,17 @@
 import { getStore } from '@netlify/blobs'
-import { createEngagementApi, slugReader } from '../lib/engagement.mjs'
+import { createEngagementApi, secretReader, slugReader } from '../lib/engagement.mjs'
 
 /** @type {ReturnType<typeof createEngagementApi> | undefined} */
 let api
 
-/** @param {Request} req @param {{ ip?: string, site?: { id?: string } }} context */
+/** @param {Request} req @param {{ ip?: string }} context */
 export default async (req, context) => {
+  const store = getStore('engagement')
   api ??= createEngagementApi({
-    store: getStore('engagement'),
+    store,
     getSlugs: slugReader(new URL(req.url).origin),
-    // Works without any setup (keyed with the site id). For a key nobody else could know, set an
-    // ENGAGEMENT_SECRET environment variable in Netlify; it is optional.
-    secret: process.env.ENGAGEMENT_SECRET || context.site?.id || 'engagement'
+    // Nothing to set up: the secret is generated and kept in the store (ENGAGEMENT_SECRET optional)
+    getSecret: secretReader(store, process.env.ENGAGEMENT_SECRET)
   })
 
   try {

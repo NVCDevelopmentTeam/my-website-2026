@@ -1,5 +1,6 @@
 <script>
   import { onNavigate } from '$app/navigation'
+  import { isLightMode } from '#lib/utils/device.js'
   import { navigating } from '$app/state'
   import Header from '#lib/components/Header.svelte'
   import Sidebar from '#lib/components/Sidebar.svelte'
@@ -30,8 +31,8 @@
   // View Transitions API integration — BF-cache safe (no beforeunload/unload)
   onNavigate(function (navigation) {
     if (navigation.shallow || !supportsViewTransitions) return
-    // No animation at all for people who asked for reduced motion
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    // No animation for people who asked for reduced motion, nor on weak phones and slow connections
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || isLightMode()) return
 
     return new Promise(function (resolve) {
       document.startViewTransition(async function () {
@@ -60,14 +61,14 @@
 
   <Header navPages={data.navPages} />
 
-  <div class="mx-auto max-w-7xl w-full px-4 pt-4 lg:px-8 sm:px-6">
+  <div class="mx-auto max-w-7xl w-full px-[var(--gutter)] pt-4">
     <Breadcrumbs />
   </div>
 
   <main
     id="main-content"
     tabindex="-1"
-    class="mx-auto max-w-7xl w-full flex-grow px-4 lg:px-8 sm:px-6 focus:outline-none"
+    class="mx-auto max-w-7xl w-full flex-grow px-[var(--gutter)] focus:outline-none"
   >
     <div class="py-12 md:grid md:grid-cols-12 lg:gap-12 md:gap-8">
       <div class="md:col-span-8">

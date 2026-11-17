@@ -18,6 +18,6 @@
     >
       <img src={logo} alt="" width="36" height="36" decoding="async" />
     </div>
-    <span class="sr-only tracking-wide sm:not-sr-only">{siteConfig.title}</span>
+    <span class="sr-only tracking-wide min-[22em]:not-sr-only">{siteConfig.title}</span>
   </NavLink>
 </div>

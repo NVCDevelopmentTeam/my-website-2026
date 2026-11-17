@@ -56,7 +56,7 @@
 {#if hasNavigation}
   <nav
     aria-label={labels.navigation}
-    class="mt-12 border-t border-gray-200 pt-8 duration-200 ease-in-out animate-in fade-in slide-in-from-bottom-3 dark:border-gray-800"
+    class="mt-12 border-t border-gray-200 pt-8 dark:border-gray-800"
   >
     <div class="flex flex-col items-stretch justify-between gap-6 sm:flex-row">
       <!-- Previous -->
@@ -73,7 +73,7 @@
             href={getPostUrl(prevPost.slug)}
             rel="prev"
             data-sveltekit-preload-data={prefetchEnabled ? 'hover' : undefined}
-            class="line-clamp-2 block text-lg text-sky-800 font-black leading-snug decoration-2 underline-offset-2 transition-all duration-200 dark:text-sky-400 hover:text-sky-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-sky-500 dark:hover:text-sky-300 dark:focus-visible:ring-offset-gray-950"
+            class="line-clamp-2 block text-lg text-sky-800 font-black leading-snug decoration-2 underline-offset-2 transition-colors duration-200 dark:text-sky-400 hover:text-sky-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-sky-500 dark:hover:text-sky-300 dark:focus-visible:ring-offset-gray-950"
           >
             {getPostTitle(prevPost)}
           </a>
@@ -102,7 +102,7 @@
             href={getPostUrl(nextPost.slug)}
             rel="next"
             data-sveltekit-preload-data={prefetchEnabled ? 'hover' : undefined}
-            class="line-clamp-2 block text-lg text-sky-800 font-black leading-snug decoration-2 underline-offset-2 transition-all duration-200 dark:text-sky-400 hover:text-sky-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-sky-500 dark:hover:text-sky-300 dark:focus-visible:ring-offset-gray-950"
+            class="line-clamp-2 block text-lg text-sky-800 font-black leading-snug decoration-2 underline-offset-2 transition-colors duration-200 dark:text-sky-400 hover:text-sky-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-sky-500 dark:hover:text-sky-300 dark:focus-visible:ring-offset-gray-950"
           >
             {getPostTitle(nextPost)}
           </a>

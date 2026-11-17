@@ -2,6 +2,7 @@
   import './layout.css'
   import { onMount } from 'svelte'
   import { afterNavigate, goto, preloadData } from '$app/navigation'
+  import { isLightMode } from '#lib/utils/device.js'
   import { scrollBehavior } from '#lib/utils/scroll.js'
 
   let { children } = $props()
@@ -18,6 +19,7 @@
     // hover, so start loading a link's page when it receives focus too.
     /** @param {FocusEvent} e */
     function preloadFocusedLink(e) {
+      if (isLightMode()) return // spend no data on pages nobody asked for
       const link = /** @type {Element} */ (e.target).closest?.('a[href^="/"]:not([href^="//"])')
       if (link) preloadData(/** @type {string} */ (link.getAttribute('href'))).catch(() => {})
     }

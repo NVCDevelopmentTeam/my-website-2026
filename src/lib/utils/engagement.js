@@ -1,8 +1,8 @@
 /**
  * Likes and reads of a post. The numbers live on the site's own Netlify function (see
  * netlify/lib/engagement.mjs), counted per visitor (IP address); this file only talks to it.
- * Every call returns null when the function cannot be reached (for example under `pnpm dev`),
- * and the page then simply shows no numbers.
+ * Every call returns null when the function cannot be reached (and always under `pnpm dev`, where
+ * there is no function), and the page then simply shows no numbers.
  */
 const API = '/api/engagement'
 
@@ -11,6 +11,7 @@ const API = '/api/engagement'
  * @returns {Promise<{ likes: number, views: number } | null>}
  */
 export async function fetchEngagement(slug) {
+  if (import.meta.env.DEV) return null
   try {
     const response = await fetch(`${API}?slug=${encodeURIComponent(slug)}`)
     return response.ok ? await response.json() : null
@@ -20,8 +21,8 @@ export async function fetchEngagement(slug) {
 }
 
 /**
- * The shared copy of the counts can be a few minutes old; what this visitor has already done is
- * never missing from it (counts only grow).
+ * The shared copy of the counts can be a few seconds old; what this visitor has already done is
+ * never missing from it (counts only grow while this visitor's own like is in place).
  * @param {{ likes: number, views: number }} counts
  * @param {string} slug
  */
@@ -33,13 +34,14 @@ export function withOwnActions(counts, slug) {
 }
 
 /**
- * Records a "like" or a "view" for this visitor. `created` is false when the server had already
- * counted the visitor, whatever this browser remembers.
+ * Records a "like", an "unlike" or a "view" for this visitor. `changed` is false when the server
+ * had nothing to change (it had counted the visitor already), whatever this browser remembers.
  * @param {string} slug
- * @param {'like' | 'view'} action
- * @returns {Promise<{ created: boolean, count: number } | null>}
+ * @param {'like' | 'unlike' | 'view'} action
+ * @returns {Promise<{ changed: boolean, count: number } | null>}
  */
 export async function sendEngagement(slug, action) {
+  if (import.meta.env.DEV) return null
   try {
     const response = await fetch(API, {
       method: 'POST',
@@ -68,10 +70,12 @@ export function hasEngaged(action, slug) {
 /**
  * @param {'like' | 'view'} action
  * @param {string} slug
+ * @param {boolean} [on]
  */
-export function markEngaged(action, slug) {
+export function setEngaged(action, slug, on = true) {
   try {
-    localStorage.setItem(`engaged:${action}:${slug}`, '1')
+    if (on) localStorage.setItem(`engaged:${action}:${slug}`, '1')
+    else localStorage.removeItem(`engaged:${action}:${slug}`)
   } catch {
     // Storage blocked (private mode): the server still counts each visitor once
   }

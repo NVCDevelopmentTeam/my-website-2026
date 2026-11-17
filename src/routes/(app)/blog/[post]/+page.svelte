@@ -13,8 +13,8 @@
   import {
     fetchEngagement,
     hasEngaged,
-    markEngaged,
     sendEngagement,
+    setEngaged,
     withOwnActions
   } from '#lib/utils/engagement.js'
 
@@ -41,8 +41,8 @@
       if (hasEngaged('view', slug)) return
       const result = await sendEngagement(slug, 'view')
       if (!result) return
-      markEngaged('view', slug)
-      if (current && result.created) stats.views = result.count
+      setEngaged('view', slug)
+      if (current && result.changed) stats.views = result.count
     })()
     return () => {
       current = false
@@ -116,9 +116,9 @@
   {/if}
 </svelte:head>
 
-<div class="px-4 sm:px-6">
+<div class="px-[var(--gutter)]">
   {#if metadata}
-    <article class="py-10 animate-fade-in" itemscope itemtype="https://schema.org/BlogPosting">
+    <article class="py-10" itemscope itemtype="https://schema.org/BlogPosting">
       <header class="mb-10 space-y-6">
         <!-- Title -->
         <h1

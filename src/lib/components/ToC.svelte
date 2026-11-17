@@ -297,7 +297,7 @@
 
 {#if hasToc}
   <div
-    class="my-8 border-l-4 border-blue-800 rounded-r-2xl bg-blue-50/50 p-4 shadow-sm transition-all duration-200 animate-in fade-in slide-in-from-left-5 dark:border-blue-400 dark:bg-gray-900 sm:p-6 hover:shadow-md {isSticky
+    class="my-8 border-l-4 border-blue-800 rounded-r-2xl bg-blue-50/50 p-4 shadow-sm transition-shadow duration-200 dark:border-blue-400 dark:bg-gray-900 sm:p-6 hover:shadow-md {isSticky
       ? 'lg:sticky lg:top-20'
       : ''}"
   >
@@ -354,17 +354,17 @@
               {@const isActive = activeHeading?.id === h.id}
               {@const bulletClass = getBulletClass(h.level)}
 
-              <li style="margin-left: {indent}px;" class="transition-all duration-200">
+              <li style="margin-left: {indent}px;">
                 <a
                   href="#{h.id}"
                   onclick={handleLinkClick}
-                  class="group relative flex items-start gap-2 rounded-xl px-3 py-2 text-sm no-underline transition-all duration-200 {isActive
+                  class="group relative flex items-start gap-2 rounded-xl px-3 py-2 text-sm no-underline transition-colors duration-200 {isActive
                     ? 'bg-white text-blue-900 font-bold shadow-sm before:absolute before:left-0 before:top-1/2 before:h-5 before:w-0.5 before:rounded-full before:bg-current dark:bg-gray-800 dark:text-blue-300 before:-translate-y-1/2'
                     : 'text-gray-950 hover:bg-white dark:text-gray-50 hover:text-blue-800 dark:hover:bg-gray-800 dark:hover:text-blue-400'}"
                   aria-current={isActive ? 'location' : undefined}
                 >
                   <span
-                    class="flex-shrink-0 transition-all duration-200 {bulletClass} {isActive
+                    class="flex-shrink-0 transition-[transform,opacity,color] duration-200 {bulletClass} {isActive
                       ? 'scale-110 text-blue-900 opacity-100 dark:text-blue-300'
                       : 'text-blue-800 opacity-70 group-hover:scale-105 dark:text-blue-400 group-hover:opacity-100'}"
                     aria-hidden="true"

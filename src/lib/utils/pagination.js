@@ -1,39 +1,12 @@
-import { siteConfig } from '#lib/config.js'
 import { building } from '$app/env'
 
 /**
- * Compute paginated listing parameters from a SvelteKit URL and call
- * `getFilteredPosts` with the right offset / limit.
- *
- * Centralises the duplicated logic that was in:
- *   - blog/+page.js
- *   - blog/category/[category]/+page.js
- *   - blog/tag/[tag]/+page.js
- *
- * @param {URL}    url           - The request URL (for ?page= query param).
- * @param {Object} filters      - Extra filters forwarded to `getFilteredPosts`
- *                                 (e.g. `{ category: 'Tech' }` or `{ tag: 'svelte' }`).
- * @param {typeof import('#lib/data/posts.js').getFilteredPosts} getFilteredPosts
- * @returns {{ posts: any[], pagination: { currentPage: number, totalPages: number, totalPosts: number, hasPrev: boolean, hasNext: boolean } }}
+ * Number of the page of a list that an address asks for (/blog?page=2). While the site is built
+ * only the first page exists, so the address is not read then.
+ * @param {URL} url
+ * @returns {number}
  */
-export function loadPaginatedPosts(url, filters, getFilteredPosts) {
-  const perPage = siteConfig.pagination.postsPerPage
-  const pageParam = building ? null : url.searchParams.get('page')
-  let currentPage = parseInt(pageParam || '1')
-
-  if (isNaN(currentPage) || currentPage < 1) currentPage = 1
-
-  const offset = (currentPage - 1) * perPage
-  const { posts, total, totalPages } = getFilteredPosts({ offset, limit: perPage, ...filters })
-
-  return {
-    posts,
-    pagination: {
-      currentPage,
-      totalPages: totalPages || Math.ceil(total / perPage),
-      totalPosts: total,
-      hasPrev: currentPage > 1,
-      hasNext: currentPage < totalPages
-    }
-  }
+export function pageFromUrl(url) {
+  const page = parseInt((building ? null : url.searchParams.get('page')) || '1')
+  return Number.isNaN(page) || page < 1 ? 1 : page
 }

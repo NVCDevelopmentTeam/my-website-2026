@@ -1,5 +1,6 @@
 import { getAllPages } from '#lib/data/pages.js'
 import { getFilteredPosts, getAllCategories, getAllTags } from '#lib/data/posts.js'
+import { toCard } from '#lib/data/cards.js'
 import { error } from '@sveltejs/kit'
 
 export const prerender = true
@@ -13,23 +14,6 @@ const toNavItem = ({ slug, filename, metadata }) => ({
   slug,
   filename,
   metadata: { title: metadata.title, menu: metadata.menu }
-})
-
-/** @param {any} post */
-const toCard = ({ slug, metadata: m }) => ({
-  slug,
-  metadata: {
-    slug: m.slug,
-    title: m.title,
-    author: m.author,
-    date: m.date,
-    categories: m.categories,
-    tags: m.tags,
-    description: m.description,
-    preview: m.preview,
-    readingTime: m.readingTime,
-    image: m.image
-  }
 })
 
 /** @type {import('./$types').LayoutServerLoad} */

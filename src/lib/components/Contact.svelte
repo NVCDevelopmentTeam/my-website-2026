@@ -77,7 +77,7 @@
       Họ và tên <span class="text-red-700 dark:text-red-400" aria-hidden="true">*</span>
     </label>
     <input
-      class="w-full border border-gray-400 rounded-xl px-4 py-3 text-gray-950 transition-all dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-sky-800 dark:focus:ring-sky-400"
+      class="w-full border border-gray-400 rounded-xl px-4 py-3 text-gray-950 transition-colors dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-sky-800 dark:focus:ring-sky-400"
       type="text"
       id="name"
       name="name"
@@ -91,7 +91,7 @@
       Địa chỉ email <span class="text-red-700 dark:text-red-400" aria-hidden="true">*</span>
     </label>
     <input
-      class="w-full border border-gray-400 rounded-xl px-4 py-3 text-gray-950 transition-all dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-sky-800 dark:focus:ring-sky-400"
+      class="w-full border border-gray-400 rounded-xl px-4 py-3 text-gray-950 transition-colors dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-sky-800 dark:focus:ring-sky-400"
       type="email"
       id="email"
       name="email"
@@ -105,7 +105,7 @@
       Tiêu đề <span class="text-red-700 dark:text-red-400" aria-hidden="true">*</span>
     </label>
     <input
-      class="w-full border border-gray-400 rounded-xl px-4 py-3 text-gray-950 transition-all dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-sky-800 dark:focus:ring-sky-400"
+      class="w-full border border-gray-400 rounded-xl px-4 py-3 text-gray-950 transition-colors dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-sky-800 dark:focus:ring-sky-400"
       type="text"
       id="title"
       name="title"
@@ -119,7 +119,7 @@
       Nội dung <span class="text-red-700 dark:text-red-400" aria-hidden="true">*</span>
     </label>
     <textarea
-      class="w-full border border-gray-400 rounded-xl px-4 py-3 text-gray-950 transition-all dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-sky-800 dark:focus:ring-sky-400"
+      class="w-full border border-gray-400 rounded-xl px-4 py-3 text-gray-950 transition-colors dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-sky-800 dark:focus:ring-sky-400"
       id="message"
       name="message"
       placeholder="Nhập nội dung tin nhắn của bạn ở đây..."
@@ -129,7 +129,7 @@
 
   <button
     type="submit"
-    class="w-full rounded-xl bg-sky-800 py-4 text-white font-bold shadow-lg transition-all duration-200 active:scale-[0.98] dark:bg-sky-400 hover:bg-sky-900 dark:text-gray-950 focus:outline-none focus:ring-4 focus:ring-sky-500/50 dark:hover:bg-sky-300"
+    class="w-full rounded-xl bg-sky-800 py-4 text-white font-bold shadow-lg transition-[background-color,transform] duration-200 active:scale-[0.98] dark:bg-sky-400 hover:bg-sky-900 dark:text-gray-950 focus:outline-none focus:ring-4 focus:ring-sky-500/50 dark:hover:bg-sky-300"
   >
     {status === 'Đang gửi...' ? 'Đang gửi tín hiệu...' : 'Gửi lời nhắn'}
   </button>

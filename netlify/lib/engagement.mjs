@@ -2,17 +2,22 @@
  * Likes and reads of the blog posts, kept on the site's own Netlify (Functions + Blobs): no third
  * party. Both are counted per visitor, where a visitor is an IP address:
  *
- *   - one like per visitor and post, one read per visitor and post (the first visit only);
+ *   - a visitor has at most one like per post (it can be taken back and given again, as on
+ *     Facebook) and is counted once as a reader of a post (the first visit only);
  *   - a post is the centre of the data: only slugs of posts that exist right now are accepted,
  *     and the data of posts that were deleted is removed (see removeOrphans);
- *   - nothing personal is stored: the key of an entry is an HMAC of the IP with a secret, so the
- *     address cannot be read back from it.
+ *   - nothing personal is stored: the key of an entry is an HMAC of the IP with a secret that was
+ *     generated at random and lives only in the store, so the address cannot be read back;
+ *   - search engines and link-preview robots are not counted.
  *
  * Each entry is its own blob: `<action>/<slug>/<visitor>`. Counting is listing, writing a second
  * time is a no-op (`onlyIfNew`), so there are no counters to race on.
  */
 
-const ACTIONS = ['like', 'view']
+const ACTIONS = ['like', 'unlike', 'view']
+const DAY = 24 * 60 * 60 * 1000
+const BOTS =
+  /bot|crawl|spider|slurp|preview|facebookexternalhit|headless|lighthouse|pingdom|monitor/i
 
 /**
  * @param {unknown} body
@@ -45,13 +50,35 @@ async function visitorId(ip, secret) {
 }
 
 /**
+ * The secret for hashing IPs. Nothing to configure: it is generated once at random and kept in the
+ * store, which only the site's functions can read. An ENGAGEMENT_SECRET environment variable, if
+ * you set one, is used instead.
+ * @param {{ get: Function, set: Function }} store
+ * @param {string} [fromEnv]
+ */
+export function secretReader(store, fromEnv) {
+  /** @type {Promise<string> | undefined} */
+  let cached
+  return () =>
+    (cached ??= (async () => {
+      if (fromEnv) return fromEnv
+      let secret = await store.get('_secret')
+      if (secret === null) {
+        await store.set('_secret', crypto.randomUUID() + crypto.randomUUID(), { onlyIfNew: true })
+        secret = await store.get('_secret') // if two instances raced, both read the winner
+      }
+      return secret
+    })())
+}
+
+/**
  * @param {{
- *   store: { list: Function, set: Function, delete: Function },
+ *   store: { list: Function, set: Function, get: Function, delete: Function },
  *   getSlugs: () => Promise<Set<string>>,
- *   secret: string
+ *   getSecret: () => Promise<string>
  * }} deps
  */
-export function createEngagementApi({ store, getSlugs, secret }) {
+export function createEngagementApi({ store, getSlugs, getSecret }) {
   /** @param {string} action @param {string} slug */
   async function countOf(action, slug) {
     let count = 0
@@ -59,6 +86,21 @@ export function createEngagementApi({ store, getSlugs, secret }) {
       count += blobs.length
     }
     return count
+  }
+
+  /** @param {string} key @returns {Promise<boolean>} whether the entry existed */
+  async function removeEntry(key) {
+    if ((await store.get(key)) === null) return false
+    await store.delete(key)
+    return true
+  }
+
+  /** Once a day, as a side effect of a write: forget the data of posts that were deleted. */
+  async function cleanUpOnceADay() {
+    const last = Number(await store.get('_cleanup'))
+    if (last && Date.now() - last < DAY) return
+    await store.set('_cleanup', String(Date.now()))
+    await removeOrphans(store, await getSlugs())
   }
 
   /**
@@ -76,12 +118,11 @@ export function createEngagementApi({ store, getSlugs, secret }) {
       return json(
         { likes, views },
         200,
-        // Shared counts: Netlify's CDN keeps one copy for a few minutes, so a busy post does not
-        // run this function (and read the store) on every page view. Browsers always ask the CDN,
-        // never keep their own copy, so a visitor's own like or read is not hidden by an old one.
+        // One shared copy at Netlify's CDN for a few seconds, so a busy post does not run this
+        // function on every page view, and a number is never old. Browsers always ask the CDN.
         {
           'Cache-Control': 'public, max-age=0, must-revalidate',
-          'Netlify-CDN-Cache-Control': 'public, s-maxage=300, stale-while-revalidate=3600'
+          'Netlify-CDN-Cache-Control': 'public, s-maxage=20'
         }
       )
     }
@@ -100,9 +141,23 @@ export function createEngagementApi({ store, getSlugs, secret }) {
       if (!ACTIONS.includes(action)) return json({ error: 'Unknown action' }, 400)
       if (!(await getSlugs()).has(slug)) return json({ error: 'Unknown post' }, 404)
 
-      const key = `${action}/${slug}/${await visitorId(ip, secret)}`
-      const { modified } = await store.set(key, '1', { onlyIfNew: true })
-      return json({ created: modified, count: await countOf(action, slug) })
+      const kind = action === 'unlike' ? 'like' : action
+      // Robots do not count (browsers always send a user agent, scripts often do not): the answer
+      // looks the same, nothing is written
+      const userAgent = req.headers.get('user-agent') ?? ''
+      if (!userAgent || BOTS.test(userAgent)) {
+        return json({ changed: false, count: await countOf(kind, slug) })
+      }
+
+      const key = `${kind}/${slug}/${await visitorId(ip, await getSecret())}`
+      const changed =
+        action === 'unlike'
+          ? await removeEntry(key)
+          : (await store.set(key, '1', { onlyIfNew: true })).modified
+
+      const count = await countOf(kind, slug)
+      await cleanUpOnceADay().catch((error) => console.error('engagement cleanup:', error))
+      return json({ changed, count })
     }
 
     return json({ error: 'Method not allowed' }, 405, { Allow: 'GET, POST' })
@@ -120,8 +175,8 @@ export async function removeOrphans(store, slugs) {
   if (slugs.size === 0) return 0
 
   let removed = 0
-  for (const action of ACTIONS) {
-    for await (const { blobs } of store.list({ prefix: `${action}/`, paginate: true })) {
+  for (const kind of ['like', 'view']) {
+    for await (const { blobs } of store.list({ prefix: `${kind}/`, paginate: true })) {
       for (const { key } of blobs) {
         if (!slugs.has(key.split('/')[1])) {
           await store.delete(key)
