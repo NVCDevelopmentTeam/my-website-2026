@@ -1,303 +1,146 @@
-// mdsvex.config.js
-import { visit } from 'unist-util-visit'
-import rehypeAutolinkHeadings from 'rehype-autolink-headings'
-import remarkHeadings from '@vcarl/remark-headings'
+// mdsvex.config.js — mdsvex 1.0 (Vite plugin; remark/rehype were replaced by parse plugins)
+import { migrate } from '@mdsvex/migrate'
+import { toc } from '@mdsvex/plugin-toc'
+import { anchors } from '@mdsvex/plugin-anchors'
+import { external_links } from '@mdsvex/plugin-external-links'
 import { slugify } from './src/lib/utils/slugify.js'
 import { truncate } from './src/lib/utils/truncate.js'
 
 /* -----------------------------------------------------
-   🧩 Helper: Get raw text from node
+   Local plugin "site" (replaces remarkExtractContent, rehypeInsertTocSlot, rehypeLazyLoadImages)
+   - summary: description / reading time / word count, written to plugin_data.site.summary
+   - toc_slot: wraps everything from the first heading on, so the ToC renders between the intro
+     and that heading (see src/lib/components/TocSlot.svelte)
+   - images: every image except the first one is lazy (the first one may be the LCP)
 ----------------------------------------------------- */
+/** Node types that are not body copy */
+const NON_BODY = new Set(['frontmatter', 'heading', 'html_comment', 'definition'])
+
+/** Tags that never belong in a post (old remarkSafeContent list) */
+const DANGEROUS_TAGS = new Set(['script', 'style', 'iframe', 'object', 'embed', 'link', 'meta'])
+
 /**
- * @param {any} node
- * @returns {string}
+ * Vite `pre` plugin. Documents stay plain CommonMark on disk (that is what Sveltia CMS writes),
+ * and are converted to mdsvex 1.0's PFM when they are compiled: in PFM `*x*` is bold and `_x_` is
+ * italic, so a raw `**x**` would render as a nested <strong>.
+ *
+ * Then curly braces in prose are text, never Svelte expressions or blocks. A stray
+ * `{` typed in the CMS would otherwise throw while prerendering and break the whole build.
+ * Code fences and inline code are left alone (mdsvex already escapes them).
+ * @type {import('vite').Plugin}
  */
-function toString(node) {
-  if (node.type === 'text') return node.value || ''
-  if (node.children) return node.children.map(toString).join('')
-  return ''
-}
+export const prepareMarkdown = {
+  name: 'commonmark-to-pfm-and-escape-braces',
+  enforce: 'pre',
+  transform(code, id) {
+    if (!/\.(md|svx)$/.test(id.split('?')[0])) return null
 
-/* -----------------------------------------------------
-   🧩 Remark Plugin - Auto Extract Content
------------------------------------------------------ */
-function remarkExtractContent() {
-  return /** @param {any} tree @param {any} file */ function transformer(tree, file) {
-    try {
-      if (!file.data.fm) {
-        file.data.fm = {}
+    let fence = ''
+    code = migrate(code)
+    let frontmatter = false
+    const lines = code.split('\n').map((line, i) => {
+      if (i === 0 && line.trim() === '---') return ((frontmatter = true), line)
+      if (frontmatter) return ((frontmatter = line.trim() !== '---'), line)
+
+      const marker = /^\s{0,3}(`{3,}|~{3,})/.exec(line)?.[1]
+      if (fence) {
+        if (marker && marker[0] === fence[0] && marker.length >= fence.length) fence = ''
+        return line
       }
+      if (marker) return ((fence = marker), line)
 
-      const fm = file.data.fm
-      const result = extractMetadata(tree)
-
-      // Only update if not explicitly set or too short
-      if (!fm.description || fm.description.length < 10) {
-        fm.description = result.description
-      }
-
-      if (!fm.preview || fm.preview.length < 10) {
-        fm.preview = result.preview
-      }
-
-      if (!fm.readingTime) {
-        fm.readingTime = result.readingTime
-      }
-
-      if (process.env.NODE_ENV === 'development') {
-        fm._wordsCount = result.wordsCount
-      }
-    } catch (err) {
-      console.error('[remarkExtractContent] Error:', err)
-    }
-  }
-}
-
-/** @param {any} tree */
-function extractMetadata(tree) {
-  const contentNodes = /** @type {any[]} */ (tree.children).filter(
-    (node) => node.type !== 'yaml' && node.type !== 'heading'
-  )
-  if (contentNodes.length === 0)
-    return { description: '', preview: '', readingTime: 1, wordsCount: 0 }
-
-  // Get text content, excluding headings for a better summary
-  const fullText = contentNodes.map(toString).join(' ')
-  const cleanText = fullText.replace(/\s+/g, ' ').trim()
-
-  const words = cleanText.split(/\s+/).filter(Boolean).length
-  const readingTime = Math.max(1, Math.ceil(words / 200))
-
-  // Description: ~150-160 chars for SEO - respects word boundaries
-  const description = truncate(cleanText, 160)
-
-  // Preview: ~160 chars for listings (approx 2 lines) - respects word boundaries
-  const preview = truncate(cleanText, 160)
-
-  return { description, preview, readingTime, wordsCount: words }
-}
-
-/* -----------------------------------------------------
-   🎯 Remark Plugin - Custom Slug with Vietnamese Support
------------------------------------------------------ */
-function remarkSlug() {
-  return /** @param {any} tree */ function transformer(tree) {
-    const usedSlugs = new Map()
-
-    visit(tree, 'heading', (node) => {
-      const text = toString(node)
-      let slug = slugify(text)
-
-      // Handle duplicate slugs
-      if (usedSlugs.has(slug)) {
-        const count = usedSlugs.get(slug)
-        usedSlugs.set(slug, count + 1)
-        slug = `${slug}-${count}`
-      } else {
-        usedSlugs.set(slug, 1)
-      }
-
-      if (!node.data) node.data = {}
-      if (!node.data.hProperties) node.data.hProperties = {}
-
-      // Set ID for both the remark node and the resulting HTML element
-      node.data.id = slug
-      node.data.hProperties.id = slug
+      // even parts are prose, odd parts are inline code spans
+      return line
+        .split(/(`+[^`]*`+)/)
+        .map((part, n) =>
+          n % 2 ? part : part.replace(/(?<!\\)\{/g, '&#123;').replace(/(?<!\\)\}/g, '&#125;')
+        )
+        .join('')
     })
+
+    return { code: lines.join('\n'), map: null }
   }
 }
 
-/* -----------------------------------------------------
-   🧩 Rehype Plugin - Lazy Load Images (excluding first image)
------------------------------------------------------ */
-function rehypeLazyLoadImages() {
-  return /** @param {any} tree */ function transformer(tree) {
-    let imgCount = 0
-    visit(tree, 'element', (node) => {
-      if (node.tagName === 'img') {
-        imgCount++
-        if (!node.properties) {
-          node.properties = {}
-        }
+/** @type {import('mdsvex').Bundle} */
+const site = {
+  name: 'site',
+  module: '#lib/components/markdown.js',
+  directives: { toc_slot: {} },
+  parse: {
+    name: 'site',
 
-        // Only add loading="lazy" for images after the first one
-        // to avoid delaying LCP if the first image is above the fold
-        if (imgCount > 1 && !node.properties.loading) {
-          node.properties.loading = 'lazy'
-        }
+    heading: {
+      parse(node, ctx) {
+        const scratch = /** @type {Record<string, any>} */ (ctx.scratch)
+        if (scratch.tocSlot || node.parent?.type !== 'root') return
+        // A table of contents belongs to posts only; pages (about, contact, …) never get one
+        if (!ctx.filename?.replace(/\\/g, '/').includes('/contents/posts/')) return
 
-        // Use async decoding to prevent main thread blocking
-        if (!node.properties.decoding) {
-          node.properties.decoding = 'async'
+        scratch.tocSlot = true
+        // A heading that opens the document has no intro to put the ToC after
+        if (node.prev) node.wrap_from('directive_container', { name: 'toc_slot' })
+      }
+    },
+
+    // A code block that scrolls sideways must be reachable with the keyboard (WCAG 2.1.1)
+    code_fence: {
+      parse(node) {
+        if (!node.attrs.tabindex) node.attrs.tabindex = '0'
+      }
+    },
+
+    html: {
+      parse(node) {
+        return () => {
+          if (!node.pending && DANGEROUS_TAGS.has(String(node.attrs.tag).toLowerCase()))
+            node.remove()
         }
       }
-    })
-  }
-}
+    },
 
-/* -----------------------------------------------------
-   🧩 Rehype Plugin - Extract TOC
------------------------------------------------------ */
-function rehypeExtractToc() {
-  return /** @param {any} tree @param {any} file */ function transformer(tree, file) {
-    /** @type {any[]} */
-    const toc = []
+    image: {
+      parse(node, ctx) {
+        const scratch = /** @type {Record<string, any>} */ (ctx.scratch)
+        scratch.images = (scratch.images ?? 0) + 1
 
-    // Walk only the top-level children of the document root.
-    // Skip all nodes (paragraphs, etc.) that appear before the first heading —
-    // those belong to the article introduction, not the main content.
-    // The TOC should represent only the main content, which starts at the
-    // first heading node.
-    /** @type {any[]} */
-    const topLevelNodes = tree.children || []
-
-    // Find the index of the first heading among top-level nodes
-    const firstHeadingIndex = topLevelNodes.findIndex(
-      (node) => node.type === 'element' && /^h[1-6]$/.test(node.tagName)
-    )
-
-    if (firstHeadingIndex === -1) {
-      // No headings in the document — TOC stays empty
-      if (!file.data.fm) file.data.fm = {}
-      if (!file.data.fm.toc || file.data.fm.toc.length === 0) {
-        file.data.fm.toc = toc
+        if (scratch.images > 1 && !node.attrs.loading) node.attrs.loading = 'lazy'
+        if (!node.attrs.decoding) node.attrs.decoding = 'async'
       }
-      return
-    }
+    },
 
-    // Collect all headings from the first heading onward (main content)
-    for (let i = firstHeadingIndex; i < topLevelNodes.length; i++) {
-      const node = topLevelNodes[i]
-      if (node.type !== 'element' || !/^h[1-6]$/.test(node.tagName)) continue
+    document(root, ctx) {
+      const blocks = []
 
-      // Use existing ID (set by remarkSlug) or generate one from text
-      const id = node.properties?.id || slugify(toString(node))
-      const title = toString(node)
-
-      if (id && title) {
-        toc.push({
-          level: parseInt(node.tagName.slice(1)),
-          title,
-          id
-        })
+      for (let node = root.first_child; node; node = node.next) {
+        if (!NON_BODY.has(node.type)) blocks.push(node.text_content)
       }
-    }
 
-    if (!file.data.fm) {
-      file.data.fm = {}
-    }
+      const text = blocks.join(' ').replace(/\s+/g, ' ').trim()
+      const words = text ? text.split(' ').length : 0
+      const excerpt = truncate(text, 160)
 
-    // Only set if not explicitly defined in frontmatter
-    if (!file.data.fm.toc || file.data.fm.toc.length === 0) {
-      file.data.fm.toc = toc
+      ctx.set('summary', {
+        description: excerpt,
+        preview: excerpt,
+        readingTime: Math.max(1, Math.ceil(words / 200)),
+        wordCount: words
+      })
     }
   }
 }
 
-/* -----------------------------------------------------
-   🧩 Rehype Plugin - Mark intro content (before the first heading)
-   so it can be visually reordered before the ToC via CSS `order`.
-   Nothing is moved or extracted from the tree — this only adds a
-   class, so there is zero risk of hydration mismatch.
------------------------------------------------------ */
-/* -----------------------------------------------------
-   🧩 Rehype Plugin - Insert a <slot name="toc"> marker right at the
-   boundary between the intro content and the first heading. The page
-   template fills this slot with the real <ToC> component (see
-   +page.svelte), so the ToC becomes an actual DOM child of the
-   article content at the correct position — true source order
-   matches visual order, with zero DOM manipulation and zero risk of
-   Svelte losing track of a manually-moved node.
------------------------------------------------------ */
-function rehypeInsertTocSlot() {
-  return /** @param {any} tree */ function transformer(tree) {
-    /** @type {any[]} */
-    const topLevelNodes = tree.children || []
-    const firstHeadingIndex = topLevelNodes.findIndex(
-      (node) => node.type === 'element' && /^h[1-6]$/.test(node.tagName)
-    )
-
-    if (firstHeadingIndex <= 0) return
-
-    tree.children.splice(firstHeadingIndex, 0, {
-      type: 'element',
-      tagName: 'slot',
-      properties: { name: 'toc' },
-      children: []
-    })
-  }
-}
-
-/* -----------------------------------------------------
-   🧩 Remark Plugin - Safe Content (CMS / Git authored text)
-   mdsvex compiles markdown into a Svelte component, so in prose:
-   - `{...}` is parsed as a Svelte expression: text like {a: 1} breaks the whole build
-     (and {@html ...} injects raw HTML);
-   - raw <script>/<style>/<iframe>… blocks are compiled and run.
-   Content is written by hand in the CMS, so treat it as text: braces are emitted as HTML
-   entities and dangerous raw tags are shown literally. Code blocks / inline code are
-   already escaped by mdsvex and are not touched. Must run AFTER the extraction plugins.
------------------------------------------------------ */
-const DANGEROUS_HTML = /<\s*\/?\s*(script|style|iframe|object|embed|link|meta)\b/i
-
-/** @param {string} text */
-function escapeHtml(text) {
-  return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/{/g, '&#123;')
-    .replace(/}/g, '&#125;')
-}
-
-function remarkSafeContent() {
-  return /** @param {any} tree */ function transformer(tree) {
-    // 1. dangerous raw HTML and Svelte blocks ({@html}, {#if}…) → literal, escaped text.
-    //    (mdsvex emits text nodes unescaped, so escape here and emit as raw html entities)
-    visit(tree, ['html', 'svelteBlock'], (node, index, parent) => {
-      if (!parent || index === undefined) return
-      if (node.type === 'html' && !DANGEROUS_HTML.test(node.value)) return
-      const literal = { type: 'html', value: escapeHtml(node.value) }
-      parent.children[index] =
-        parent.type === 'root' ? { type: 'paragraph', children: [literal] } : literal
-    })
-
-    // 2. braces in prose → entities (emitted as raw HTML, so they are not escaped twice)
-    visit(tree, 'text', (node) => {
-      if (/[{}]/.test(node.value)) {
-        node.type = 'html'
-        node.value = escapeHtml(node.value)
-      }
-    })
-  }
-}
-
-/* -----------------------------------------------------
-   🧩 Rehype Plugin - Secure External Links
------------------------------------------------------ */
-function rehypeExternalLinks() {
-  return /** @param {any} tree */ function transformer(tree) {
-    visit(tree, 'element', (node) => {
-      if (node.tagName === 'a' && node.properties && typeof node.properties.href === 'string') {
-        const href = node.properties.href
-        if (href.startsWith('http')) {
-          node.properties.target = '_blank'
-          node.properties.rel = 'noopener noreferrer'
-        }
-      }
-    })
-  }
-}
-
+/** @type {import('mdsvex').MdsvexOptions} */
 const config = {
   extensions: ['.svx', '.md'],
-  remarkPlugins: [remarkExtractContent, remarkSlug, remarkHeadings, remarkSafeContent],
-  rehypePlugins: [
-    rehypeExtractToc,
-    rehypeInsertTocSlot,
-    [rehypeAutolinkHeadings, { behavior: 'wrap' }],
-    rehypeLazyLoadImages,
-    rehypeExternalLinks
+  // Vietnamese-aware ids (đ, diacritics); duplicates get -1, -2 …
+  highlight: false, // plain <pre><code>, as before: no highlighter, no extra spans or theme CSS
+  heading_ids: { slug: (text) => slugify(text) || 'section' },
+  plugins: [
+    toc({ min_depth: 1, max_depth: 6 }),
+    anchors({ position: 'wrap' }),
+    external_links({ target: '_blank', rel: ['noopener', 'noreferrer'] }),
+    site
   ]
 }
 

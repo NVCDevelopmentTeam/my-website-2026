@@ -80,12 +80,14 @@
           {#if post.date || post.readingTime}
             <div class="recent-posts__meta wp-block-post-date has-small-font-size">
               {#if post.date}
-                <time class="post-date" datetime={post.date}>
-                  {toDisplayDate(post.date)}
-                </time>
+                <p>
+                  <time class="post-date" datetime={post.date}>
+                    {toDisplayDate(post.date)}
+                  </time>
+                </p>
               {/if}
               {#if post.readingTime}
-                <span class="recent-posts__reading-time">{post.readingTime} phút đọc</span>
+                <p class="recent-posts__reading-time">{post.readingTime} phút đọc</p>
               {/if}
             </div>
           {/if}
@@ -173,7 +175,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 0 0.75rem;
-    font-family: var(--font-mono);
+    font-family: var(--font-sans);
     font-size: 0.875rem;
     color: #4b5563;
   }

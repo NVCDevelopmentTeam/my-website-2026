@@ -3,13 +3,15 @@ import { slugify } from '#lib/utils/slugify.js'
 import { truncate } from '#lib/utils/truncate.js'
 import { parseList } from '#lib/utils/parseList.js'
 import { toISODate } from '#lib/utils/date.js'
+import { readDocument } from '#lib/utils/document.js'
 
-// Load only metadata for all markdown files to keep the bundle small
-/** Frontmatter is free-form (written by hand / via the CMS), so values are untyped */
-const modules = /** @type {Record<string, Record<string, any>>} */ (
+// `?data` parses each document without rendering it: only the frontmatter and the facts found in
+// the body (summary, headings) are bundled, never the compiled posts. Frontmatter is free-form
+// (written by hand / via the CMS), so values are untyped.
+const modules = /** @type {Record<string, any>} */ (
   import.meta.glob('/src/lib/contents/posts/*.md', {
-    eager: true,
-    import: 'metadata'
+    query: '?data',
+    eager: true
   })
 )
 
@@ -28,7 +30,7 @@ const modules = /** @type {Record<string, Record<string, any>>} */ (
  * @property {boolean} draft
  * @property {string | null} image
  * @property {any[]} toc
- * @property {number} [_wordsCount]
+ * @property {number} wordCount
  *
  * @typedef {{ slug: string, rawName: string, timestamp: number, metadata: PostMetadata }} Post
  * @typedef {{ metadata: { title: string, slug: string, description: string, count: number } }} CategoryItem
@@ -51,9 +53,9 @@ function getAllPosts() {
   if (cachedPosts) return cachedPosts
 
   var posts = Object.entries(modules)
-    .map(function ([path, metadata]) {
+    .map(function ([path, mod]) {
       var filename = path.split('/').pop()?.replace('.md', '') || 'untitled'
-      var meta = metadata || {}
+      var meta = readDocument(mod)
 
       // `slug` may be typed by hand in the CMS (spaces, diacritics, upper case) → normalise
       var slug = slugify(meta.slug) || slugify(filename)
@@ -106,8 +108,8 @@ function getAllPosts() {
           readingTime,
           draft: meta.draft === true || meta.draft === 'true',
           image: meta.image || null,
-          toc: meta.toc || [],
-          _wordsCount: meta._wordsCount
+          toc: meta.toc,
+          wordCount: meta.wordCount
         }
       }
     })

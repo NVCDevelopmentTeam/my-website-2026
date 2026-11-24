@@ -30,7 +30,9 @@
 
   // View Transitions API integration — BF-cache safe (no beforeunload/unload)
   onNavigate(function (navigation) {
+    if (navigation.shallow && navigation.type === 'goto') return
     if (navigation.shallow || !supportsViewTransitions) return
+
     // No animation for people who asked for reduced motion, nor on weak phones and slow connections
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || isLightMode()) return
 

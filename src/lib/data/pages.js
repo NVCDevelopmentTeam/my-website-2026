@@ -1,36 +1,30 @@
 import { slugify } from '#lib/utils/slugify.js'
+import { readDocument } from '#lib/utils/document.js'
 
-// Load only metadata for listing pages
-const modules = /** @type {Record<string, Record<string, any>>} */ (
-  import.meta.glob('/src/lib/contents/pages/*.md', {
-    eager: true,
-    import: 'metadata'
-  })
-)
-
-// Full content modules for page rendering
-const contentModules = /** @type {Record<string, any>} */ (
-  import.meta.glob('/src/lib/contents/pages/*.md', { eager: true })
+// Metadata only (`?data` parses a page without rendering it): used by menus and listings
+const modules = /** @type {Record<string, any>} */ (
+  import.meta.glob('/src/lib/contents/pages/*.md', { query: '?data', eager: true })
 )
 
 /**
  * Parsed list of all markdown pages, generated once at startup.
  */
-export const pages = Object.entries(modules).map(function ([filepath, metadata]) {
-  var filename = (filepath.split('/').pop() ?? '').replace('.md', '')
-  // `slug` may be typed by hand in the CMS (spaces, diacritics, upper case) → normalise
-  var slug = slugify(metadata.slug) || slugify(filename) || filename
-  var preview = metadata.description || '...'
+export const pages = Object.entries(modules).map(function ([filepath, mod]) {
+  const safeMetadata = readDocument(mod)
+  const filename = (filepath.split('/').pop() ?? '').replace('.md', '')
+  // `slug` may be typed by hand in the CMS (spaces, diacritics, upper case) -> normalise
+  const slug = slugify(safeMetadata.slug) || slugify(filename) || filename
+  const preview = safeMetadata.description || '...'
 
   return {
     slug,
     filename,
     metadata: {
-      title: metadata.title ?? slug,
-      description: metadata.description ?? preview,
-      menu: metadata.menu || ''
+      title: safeMetadata.title ?? slug,
+      description: safeMetadata.description ?? preview,
+      menu: safeMetadata.menu || ''
     },
-    priority: metadata.priority ?? 0.7
+    priority: safeMetadata.priority ?? 0.7
   }
 })
 
@@ -42,8 +36,8 @@ export const pages = Object.entries(modules).map(function ([filepath, metadata])
  * @param {string} [options.menu] - Filter by menu location
  */
 export function getAllPages(options = {}) {
-  var { limit = -1, menu = '' } = options
-  var resultPages = [...pages]
+  const { limit = -1, menu = '' } = options
+  let resultPages = [...pages]
 
   if (menu) {
     resultPages = resultPages.filter(function (page) {
@@ -51,33 +45,14 @@ export function getAllPages(options = {}) {
     })
   }
 
-  var sortedPages = [...resultPages].sort(function (a, b) {
+  const sortedPages = [...resultPages].sort(function (a, b) {
     return a.metadata.title.localeCompare(b.metadata.title)
   })
 
-  var limitedPages = limit > 0 ? sortedPages.slice(0, limit) : sortedPages
+  const limitedPages = limit > 0 ? sortedPages.slice(0, limit) : sortedPages
 
   return {
     pages: limitedPages,
     total: pages.length
-  }
-}
-
-/**
- * Get a specific page's metadata and content by slug.
- * @param {string} slug
- */
-export function getPageBySlug(slug) {
-  var match = Object.entries(contentModules).find(function ([path, module]) {
-    var filename = (path.split('/').pop() ?? '').replace('.md', '')
-    return (slugify(module.metadata?.slug) || slugify(filename)) === slug || filename === slug
-  })
-  if (!match) throw new Error('Page not found: ' + slug)
-
-  var module = match[1]
-  return {
-    filename: (match[0].split('/').pop() ?? '').replace('.md', ''),
-    metadata: module.metadata ?? {},
-    content: module.default
   }
 }

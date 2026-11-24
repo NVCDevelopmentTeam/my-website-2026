@@ -163,17 +163,32 @@ body {
     inset: 0;
     z-index: -1;
     pointer-events: none;
-    background-image: url('../lib/assets/background.webp?no-inline');
+    opacity: 0;
+    transition: opacity 0.6s ease-out;
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
   }
 
+  /* The photo is only decoration: it is requested after the page has loaded (the root layout adds
+     the class `bg-ready`), so it never delays the page, and then fades in. Not on weak phones,
+     slow connections or Data Saver. */
+  .bg-ready body::before {
+    opacity: 1;
+    background-image: url('../lib/assets/background.webp?no-inline');
+  }
+
   /* Dimmed in dark mode so the page does not glare */
-  .dark body::before {
+  .dark.bg-ready body::before {
     background-image:
       linear-gradient(rgb(0 0 0 / 0.7), rgb(0 0 0 / 0.7)),
       url('../lib/assets/background.webp?no-inline');
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    body::before {
+      transition: none;
+    }
   }
 }
 

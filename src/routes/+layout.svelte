@@ -10,17 +10,27 @@
   // A new page starts at the top (SvelteKit does this too; written out so it is instant, is never
   // animated, and always happens). Back/forward restore the old position, links with a #hash go
   // to their target, and a first load keeps whatever the browser restored.
-  afterNavigate(({ type, to }) => {
+  afterNavigate(({ type, to, shallow }) => {
+    if (shallow && type === 'goto') return
     if ((type === 'link' || type === 'goto') && !to?.url.hash) scrollTo(0, 0)
   })
 
   onMount(() => {
+    // The background photo (large screens) starts to load only when the page is done
+    const showBackground = () => {
+      if (!isLightMode()) document.documentElement.classList.add('bg-ready')
+    }
+
+    if (document.readyState === 'complete') showBackground()
+    else window.addEventListener('load', showBackground, { once: true })
+
     // SvelteKit preloads a page on mouse hover and touch; keyboard and screen-reader users never
     // hover, so start loading a link's page when it receives focus too.
     /** @param {FocusEvent} e */
     function preloadFocusedLink(e) {
       if (isLightMode()) return // spend no data on pages nobody asked for
-      const link = /** @type {Element} */ (e.target).closest?.('a[href^="/"]:not([href^="//"])')
+      if (!(e.target instanceof Element)) return
+      const link = e.target.closest('a[href^="/"]:not([href^="//"])')
       if (link) preloadData(/** @type {string} */ (link.getAttribute('href'))).catch(() => {})
     }
     document.addEventListener('focusin', preloadFocusedLink)
@@ -29,7 +39,8 @@
     // Cleanup returned from onMount — no beforeunload/unload handlers used.
     /** @param {MouseEvent} e */
     function handleAnchorClick(e) {
-      const link = /** @type {HTMLElement} */ (e.target).closest('a')
+      if (!(e.target instanceof Element)) return
+      const link = /** @type {HTMLAnchorElement | null} */ (e.target.closest('a'))
       if (!link) return
       const url = new URL(link.href)
       if (url.origin !== window.location.origin) return

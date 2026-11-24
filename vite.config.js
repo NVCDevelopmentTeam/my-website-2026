@@ -1,62 +1,37 @@
+// vite.config.js
 import { sveltekit } from '@sveltejs/kit/vite'
 import adapter from '@sveltejs/adapter-static'
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte'
 import { mdsvex } from 'mdsvex'
 import { defineConfig } from 'vite'
 import UnoCSS from '@unocss/svelte-scoped/vite'
-import mdsvexConfig from './mdsvex.config.js'
+import mdsvexConfig, { prepareMarkdown } from './mdsvex.config.js'
 
-const mdsvexExtensions = ['.md', '.svx']
-
-// Preprocessors
-/** @type {import('svelte/compiler').PreprocessorGroup} */
+/**
+ * Strip the legacy Svelte announcer node if present in markup.
+ * @type {import('svelte/compiler').PreprocessorGroup}
+ */
 const stripSvelteAnnouncer = {
   name: 'strip-svelte-announcer',
   markup: ({ content: code }) => {
-    code = code.replace(/<div id="svelte-announcer"[\s\S]*?<\/div>/, '<!---->')
-    return { code }
-  }
-}
-
-/** @type {import('svelte/compiler').PreprocessorGroup} */
-const modernizeMdsvexModuleScript = {
-  name: 'modernize-mdsvex-module-script',
-  markup: ({ content: code, filename }) => {
-    if (filename && (filename.endsWith('.md') || filename.endsWith('.svx'))) {
-      code = code.replace(/<script\s+context="module">/g, '<script module>')
-      code = code.replace(/<script\s+context='module'>/g, '<script module>')
-    }
-    return { code }
-  }
-}
-
-/** @type {import('svelte/compiler').PreprocessorGroup} */
-const wireTocSnippet = {
-  name: 'wire-toc-snippet',
-  markup: ({ content: code, filename }) => {
-    if (filename && (filename.endsWith('.md') || filename.endsWith('.svx'))) {
-      if (code.includes('<slot name="toc">')) {
-        code = code.replace(/<slot\s+name="toc"\s*>\s*<\/slot>/, '{@render tocSnippet?.()}')
-        code = code.replace(
-          '</script>',
-          '</script>\n\n<script>\n  let { toc: tocSnippet } = $props()\n</script>'
-        )
-      }
-    }
-    return { code }
+    const updated = code.replace(/<div id="svelte-announcer"[\s\S]*?<\/div>/, '<!---->')
+    return { code: updated }
   }
 }
 
 /**
- * UnoCSS svelte-scoped. Its `global-styles` plugin is fully supported on SvelteKit (it swaps the
- * `%unocss-svelte-scoped.global%` placeholder of app.html through the `transform` / `renderChunk`
- * hooks), but it also declares a `transformIndexHtml` hook that is a no-op for SvelteKit
- * (`if (!isSvelteKit)`). SvelteKit 3 does not support that hook and warns about it on every
- * `dev` / `build`. Dropping only that inert hook silences the warning without losing anything.
+ * UnoCSS svelte-scoped declares a `transformIndexHtml` hook that is a no-op under SvelteKit
+ * and can emit warnings in newer SvelteKit versions. Remove that hook while keeping all
+ * active styles and transforms intact.
  * @type {import('vite').PluginOption[]}
  */
 const unoPlugins = [UnoCSS()].flat().map((plugin) => {
-  if (plugin && 'name' in plugin && plugin.name === 'unocss:svelte-scoped:global-styles') {
+  if (
+    plugin &&
+    typeof plugin === 'object' &&
+    'name' in plugin &&
+    plugin.name === 'unocss:svelte-scoped:global-styles'
+  ) {
     const copy = /** @type {any} */ ({ ...plugin })
     delete copy.transformIndexHtml
     return copy
@@ -65,10 +40,8 @@ const unoPlugins = [UnoCSS()].flat().map((plugin) => {
 })
 
 /**
- * Dev only: `server.warmup` pre-transforms files, but the first SSR *request* still has to
- * initialise SvelteKit and evaluate every data module (~2 s). That cost used to land on the
- * first page the developer opened. Requesting the home page once as soon as the server is
- * listening pays it in advance, in the background. Nothing is built or served differently.
+ * Development helper: warm up the root SSR route once the dev server starts listening
+ * so the first browser request does not pay initial cold-start overhead alone.
  * @type {import('vite').Plugin}
  */
 const primeFirstRequest = {
@@ -79,7 +52,7 @@ const primeFirstRequest = {
       const address = server.httpServer?.address()
       if (address && typeof address === 'object') {
         fetch(`http://localhost:${address.port}/`).catch(() => {
-          // Only a head start: if the request fails the first real visit simply pays the cost
+          // Ignore background warm-up errors; normal requests will still render
         })
       }
     })
@@ -87,14 +60,8 @@ const primeFirstRequest = {
 }
 
 export default defineConfig({
-  // Dev only. `pnpm dev` compiles lazily, so the FIRST visit after every start used to pay for
-  // everything at once (mdsvex-compiling every markdown file, Svelte + UnoCSS for every
-  // component, then the 2 MB CMS bundle on /admin). Both options below make Vite do that work
-  // at startup, in the background, before the first request arrives.
+  // Pre-bundle common dependencies upfront to avoid mid-session re-optimization reloads
   optimizeDeps: {
-    // `svelte-seo` is needed by every page; `@sveltia/cms` only by /admin (a dynamic import).
-    // Left to be discovered, either one makes Vite re-optimize and force-reload the browser
-    // in the middle of the first visit. Pre-bundled once, then served from node_modules/.vite.
     include: ['svelte-seo', '@sveltia/cms']
   },
 
@@ -107,24 +74,20 @@ export default defineConfig({
 
   plugins: [
     primeFirstRequest,
+    // mdsvex 1.0 is a Vite plugin and has to come before sveltekit()
+    prepareMarkdown,
+    mdsvex(mdsvexConfig),
     ...unoPlugins,
 
     sveltekit({
-      // Compiler & Preprocessor options
-      extensions: ['.svelte', ...mdsvexExtensions],
-      preprocess: [
-        stripSvelteAnnouncer,
-        mdsvex(/** @type {any} */ (mdsvexConfig)),
-        modernizeMdsvexModuleScript,
-        wireTocSnippet,
-        vitePreprocess()
-      ],
+      preprocess: [stripSvelteAnnouncer, vitePreprocess()],
       compilerOptions: {
+        // Enable Svelte 5 runes for project files while leaving third-party packages untouched
         runes: ({ filename }) =>
           filename.split(/[/\\]/).includes('node_modules') ? undefined : true
       },
 
-      // KHÔNG bọc trong kit: { ... } nữa mà khai báo trực tiếp ở đây:
+      // Top-level SvelteKit options inside sveltekit() plugin config
       adapter: adapter({
         pages: 'build',
         assets: 'build',
@@ -149,26 +112,8 @@ export default defineConfig({
     cssCodeSplit: true,
     sourcemap: false,
     reportCompressedSize: false,
-    // SvelteKit writes its own <link rel="modulepreload"> tags into every page, so Vite's
-    // dynamic-import preload helper would only duplicate them.
+    // SvelteKit emits its own modulepreload tags, so skip Vite's duplicate helper
     modulePreload: false,
-    rollupOptions: {
-      // Code splitting is left to the bundler on purpose: hand-written chunk groups
-      // (`output.codeSplitting.groups`) changed module initialisation order and made
-      // SvelteKit's error handling reload the page in an endless loop on unknown URLs.
-      treeshake: {
-        moduleSideEffects: (id) => {
-          if (id.includes('.css') || id.includes('fontsource')) {
-            return true
-          }
-          if (id.includes('node_modules')) {
-            return false
-          }
-          return true
-        },
-        propertyReadSideEffects: false
-      }
-    },
     target: ['es2022', 'chrome89', 'safari15', 'firefox89'],
     chunkSizeWarningLimit: 600
   }

@@ -48,13 +48,13 @@
 
 {#if categories.length > 0}
   <div class="flex items-center gap-2 text-gray-950 font-bold dark:text-gray-50">
-    <span class="text-sm">danh mục:</span>
+    <p class="m-0 text-sm">Danh mục:</p>
     <ul class="m-0 flex flex-wrap list-none gap-2 p-0 text-sm">
       {#each categories as category (category.slug)}
         <li>
           <a
             href={`/blog/category/${category.slug}`}
-            class="border border-sky-200 rounded-full bg-sky-50 px-3 py-1 text-sky-900 font-bold transition-colors dark:border-sky-800 dark:bg-sky-950/30 hover:bg-sky-100 dark:text-sky-300 dark:hover:bg-sky-900/50"
+            class="min-h-[24px] inline-flex items-center border border-sky-200 rounded-full bg-sky-50 px-3 py-1 text-sky-900 font-bold transition-colors dark:border-sky-800 dark:bg-sky-950/30 hover:bg-sky-100 dark:text-sky-300 dark:hover:bg-sky-900/50"
           >
             {category.title}
           </a>

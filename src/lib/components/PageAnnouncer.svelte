@@ -14,8 +14,10 @@
   /** @type {ReturnType<typeof setTimeout>} */
   let clearTimer
 
-  afterNavigate(async ({ type }) => {
+  afterNavigate(async ({ type, shallow }) => {
+    if (shallow && type === 'goto') return
     if (type === 'enter') return
+
     clearTimeout(clearTimer)
     title = ''
     await tick() // the new page has been rendered, so document.title is the new one

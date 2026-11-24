@@ -18,7 +18,7 @@
 
         <Logo />
 
-        <div class="flex flex-wrap items-center justify-end gap-x-4 gap-y-2">
+        <div class="min-w-0 flex flex-1 flex-wrap items-center justify-end gap-x-4 gap-y-2">
           <ThemeSwitcher />
           <Menu {navPages} />
         </div>

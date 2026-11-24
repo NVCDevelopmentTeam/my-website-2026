@@ -227,6 +227,7 @@
 
   // Handle navigation (including deep links)
   afterNavigate(async (nav) => {
+    if (nav.shallow && nav.type === 'goto') return
     if (nav.shallow) return
 
     if (nav.to?.url.hash) {

@@ -5,7 +5,6 @@
   import PostCategories from '#lib/components/PostCategories.svelte'
   import PostTags from '#lib/components/PostTags.svelte'
   import LikeAndShare from '#lib/components/LikeAndShare.svelte'
-  import ToC from '#lib/components/ToC.svelte'
   import FAQ from '#lib/components/FAQ.svelte'
   import PostNavigation from '#lib/components/PostNavigation.svelte'
   import SEO from '#lib/components/SEO.svelte'
@@ -21,7 +20,6 @@
   const { data } = $props()
   const { content: PostContent, metadata } = $derived.by(() => data)
   const faqs = $derived(/** @type {Record<string, any>} */ (metadata)?.faqs || [])
-  const hasToc = $derived(metadata?.toc && metadata.toc.length > 0)
   // Likes and reads of this post, from the site's own counter. null = not available (yet).
   /** @type {{ likes: number | null, views: number | null }} */
   let stats = $state({ likes: null, views: null })
@@ -48,9 +46,6 @@
       current = false
     }
   })
-
-  // Visual ordering of intro / ToC / main content is handled entirely by
-  // CSS (see .post-intro-block / order-toc rules) — no DOM manipulation.
 
   const seoConfig = $derived(
     getSeoConfig({
@@ -99,7 +94,7 @@
           },
           keywords: metadata.tags?.join(', ') || '',
           articleSection: metadata.categories?.[0] || 'Blog',
-          wordCount: /** @type {Record<string, any>} */ (metadata).wordCount || 0,
+          wordCount: metadata.wordCount || 0,
           timeRequired: `PT${metadata.readingTime || 5}M`
         })
       : ''
@@ -132,23 +127,23 @@
         <div
           class="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-gray-950 font-bold dark:text-gray-50"
         >
-          <span itemprop="author" itemscope itemtype="https://schema.org/Person">
+          <div itemprop="author" itemscope itemtype="https://schema.org/Person">
             <meta itemprop="name" content={metadata.author || siteConfig.author.name} />
             <PostAuthor post={{ metadata }} />
-          </span>
-          <span itemprop="datePublished">
+          </div>
+          <div itemprop="datePublished">
             <PostDate post={{ metadata }} />
-          </span>
+          </div>
           {#if metadata.updated}
             <meta itemprop="dateModified" content={metadata.updated} />
           {/if}
-          <span class="text-gray-950 font-bold dark:text-gray-200">
+          <p class="m-0 text-gray-950 font-bold dark:text-gray-200">
             <meta itemprop="timeRequired" content="PT{metadata.readingTime}M" />
             {metadata.readingTime} phút đọc
-          </span>
+          </p>
 
           {#if stats.views !== null}
-            <span class="text-gray-950 font-bold dark:text-gray-200">{stats.views} lượt đọc</span>
+            <p class="m-0 text-gray-950 font-bold dark:text-gray-200">{stats.views} lượt đọc</p>
           {/if}
         </div>
 
@@ -162,25 +157,15 @@
         <meta itemprop="description" content={metadata.description} />
       </header>
 
-      <!-- Post content — the compiled PostContent has a <slot name="toc">
-           inserted at build time (see rehypeInsertTocSlot in
-           mdsvex.config.js) right between the intro paragraph(s) and the
-           first heading. Filling that slot here makes the ToC a real DOM
-           child at the correct position — true source order matches
-           visual order, no CSS reordering trick, no DOM manipulation. -->
+      <!-- Post content. The ToC is part of the compiled document: mdsvex wraps everything from the
+           first heading on in a `toc_slot` directive (mdsvex.config.js, TocSlot.svelte), so it sits
+           between the intro and that heading in true source order — no CSS reordering, no DOM
+           manipulation. -->
       <section
         class="max-w-none prose prose-neutral prose-img:rounded-[2rem] prose-a:text-sky-900 prose-headings:text-gray-950 prose-li:text-gray-950 prose-ol:text-gray-950 prose-p:text-gray-950 prose-strong:text-gray-950 prose-ul:text-gray-950 prose-a:font-bold prose-headings:font-black prose-img:shadow-2xl dark:prose-invert dark:prose-a:text-sky-400 dark:prose-headings:text-white dark:prose-li:text-gray-50 dark:prose-ol:text-gray-50 dark:prose-p:text-gray-50 dark:prose-strong:text-white dark:prose-ul:text-gray-50"
         itemprop="articleBody"
       >
-        <PostContent>
-          {#snippet toc()}
-            {#if hasToc}
-              <div class="not-prose my-10">
-                <ToC post={{ metadata }} />
-              </div>
-            {/if}
-          {/snippet}
-        </PostContent>
+        <PostContent />
       </section>
 
       {#if faqs.length > 0}
