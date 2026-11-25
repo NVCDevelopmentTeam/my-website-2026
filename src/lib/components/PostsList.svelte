@@ -24,12 +24,16 @@
         </a>
 
         <div
-          class="flex flex-wrap items-center gap-3 text-sm text-gray-950 font-bold dark:text-gray-50"
+          class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-950 font-bold dark:text-gray-50"
         >
           <PostAuthor {post} />
           <span class="h-1 w-1 rounded-full bg-current opacity-50" aria-hidden="true"></span>
           <PostDate {post} />
-          <span class="h-1 w-1 rounded-full bg-current opacity-50" aria-hidden="true"></span>
+        </div>
+
+        <!-- Categories on their own line: a separator dot at the end of the line above would
+             point at nothing when the row wraps -->
+        <div class="text-sm text-gray-950 font-bold dark:text-gray-50">
           <PostCategories {post} />
         </div>
 

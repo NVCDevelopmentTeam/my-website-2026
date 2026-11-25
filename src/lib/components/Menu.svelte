@@ -53,22 +53,16 @@
   })
 
   // ───────────────────────────────────────────────────────────────────────────────────────────
-  // Bar or popup. From 890 px (55.625em) the menu is a plain list in the header, but only while the
-  // whole list fits next to the logo; otherwise (page zoom, a larger browser text size, long
-  // titles) the popup button takes its place, never a list with a "…" button. Full screen (F11)
-  // gives the room back, so the list returns. 890 px is the breakpoint of the WordPress.org header
-  // this menu is modelled on (the Twenty Twenty-Five theme alone uses 600 px). It is in em so that
-  // a larger browser text size moves it as well.
+  // Bar or popup, exactly as in WordPress Twenty Twenty-Five (overlayMenu: "mobile"): from 600 px
+  // (37.5em) the menu is a plain list in the header and wraps onto more lines when it needs the
+  // room; below that it is the popup button. Nothing is measured in JavaScript, so a window that
+  // is resized, zoomed or put in full screen (F11) always lands on the right one. Written in em so
+  // that a larger browser text size moves the breakpoint as well.
   // ───────────────────────────────────────────────────────────────────────────────────────────
-  let navWidth = $state(0) // room for the menu: the <nav> fills what the logo and theme button leave
-  let needed = $state(0) // width of the whole list, measured on an invisible copy
   let isWide = $state(false)
 
-  const misfit = $derived(navWidth > 0 && needed > navWidth)
-  const popupMode = $derived(!isWide || misfit)
-
   $effect(() => {
-    const wide = matchMedia('(min-width: 55.625em)')
+    const wide = matchMedia('(min-width: 37.5em)')
     const update = () => (isWide = wide.matches)
 
     update()
@@ -79,7 +73,7 @@
 
   // The popup is meaningless once the list is back in the bar: close it without moving focus
   $effect(() => {
-    if (!popupMode && isMenuOpen) closeMenu(false)
+    if (isWide && isMenuOpen) closeMenu(false)
   })
 
   /** Esc closes the overlay; Tab and Shift+Tab cycle inside it (it is modal). @param {KeyboardEvent} e */
@@ -102,44 +96,20 @@
 
 <svelte:window onkeydown={onKeydown} />
 
-<nav
-  class="relative min-w-0 flex flex-1 items-center justify-end"
-  aria-label="Điều hướng chính"
-  bind:clientWidth={navWidth}
->
-  <!-- Menu bar (600 px and wider, while the whole list fits): a plain list -->
-  {#if !misfit}
-    <div class="hidden min-w-0 flex-1 items-center justify-end min-[55.625em]:flex">
-      <ul
-        class="m-0 max-w-full flex flex-nowrap list-none items-center gap-3 border border-gray-200 rounded-2xl bg-white px-4 py-2 shadow-md dark:border-gray-800 dark:bg-gray-950"
-      >
-        {#each items as { href, title } (href)}
-          <li><NavLink {href}>{title}</NavLink></li>
-        {/each}
-      </ul>
-    </div>
-  {/if}
+<nav class="min-w-0 flex flex-1 items-center justify-end" aria-label="Điều hướng chính">
+  <!-- Menu bar (600 px and wider): a plain list that wraps when it needs the room -->
+  <div class="hidden min-w-0 flex-1 items-center justify-end min-[37.5em]:flex">
+    <ul
+      class="m-0 max-w-full flex flex-wrap list-none items-center justify-end gap-x-3 gap-y-1 border border-gray-200 rounded-2xl bg-white px-4 py-2 shadow-md dark:border-gray-800 dark:bg-gray-950"
+    >
+      {#each items as { href, title } (href)}
+        <li><NavLink {href}>{title}</NavLink></li>
+      {/each}
+    </ul>
+  </div>
 
-  <!-- Invisible copy of the list: tells how much room the whole bar needs -->
-  <ul
-    bind:offsetWidth={needed}
-    aria-hidden="true"
-    inert
-    class="pointer-events-none invisible absolute right-0 top-0 m-0 w-max flex flex-nowrap list-none items-center gap-3 border border-transparent rounded-2xl px-4 py-2"
-  >
-    {#each items as { href, title } (href)}
-      <li><span class="inline-block px-4 py-2 font-black">{title}</span></li>
-    {/each}
-  </ul>
-
-  <!-- Popup button + full-screen overlay: below 600 px, or when the list does not fit the bar.
-       Static classes on purpose: UnoCSS (svelte-scoped) does not generate CSS for classes that are
-       picked inside an expression. -->
-  {#if misfit}
-    <div>{@render popup()}</div>
-  {:else}
-    <div class="min-[55.625em]:hidden">{@render popup()}</div>
-  {/if}
+  <!-- Popup button + full-screen overlay: below 600 px -->
+  <div class="min-[37.5em]:hidden">{@render popup()}</div>
 </nav>
 
 {#snippet popup()}

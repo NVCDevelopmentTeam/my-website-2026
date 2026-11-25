@@ -1,5 +1,6 @@
 # Static site (adapter-static): every page is prerendered at build time and served
-# from Netlify's CDN. No Functions / Edge Functions / server runtime are used.
+# from Netlify's CDN. The only server code is one small Function (likes and reads, see
+# [functions] below); no Edge Functions and no server runtime.
 [build]
   command = "pnpm build"
   publish = "build"
