@@ -216,7 +216,7 @@
     bind:this={dialog}
     onclick={handleDialogClick}
     onclose={() => (shareOpen = false)}
-    aria-labelledby="dialog-title"
+    aria-labelledby={shareOpen ? 'dialog-title' : undefined}
     class="max-w-sm w-full overflow-hidden border-0 rounded-3xl bg-white p-0 shadow-2xl backdrop:bg-black/60 dark:bg-[#242526]"
   >
     {#if shareOpen}

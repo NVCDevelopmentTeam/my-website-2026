@@ -1,6 +1,4 @@
 <script>
-  import { onNavigate } from '$app/navigation'
-  import { isLightMode } from '#lib/utils/device.js'
   import { navigating } from '$app/state'
   import Header from '#lib/components/Header.svelte'
   import Sidebar from '#lib/components/Sidebar.svelte'
@@ -22,26 +20,6 @@
       isSlow = true
     }, 250)
     return () => clearTimeout(timer)
-  })
-
-  // Cache View Transitions API support detection once (avoid repeated DOM reads)
-  const supportsViewTransitions =
-    typeof document !== 'undefined' && 'startViewTransition' in document
-
-  // View Transitions API integration — BF-cache safe (no beforeunload/unload)
-  onNavigate(function (navigation) {
-    if (navigation.shallow && navigation.type === 'goto') return
-    if (navigation.shallow || !supportsViewTransitions) return
-
-    // No animation for people who asked for reduced motion, nor on weak phones and slow connections
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || isLightMode()) return
-
-    return new Promise(function (resolve) {
-      document.startViewTransition(async function () {
-        resolve()
-        await navigation.complete
-      })
-    })
   })
 </script>
 

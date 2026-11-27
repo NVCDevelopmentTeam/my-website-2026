@@ -16,9 +16,13 @@
   })
 
   onMount(() => {
-    // The background photo (large screens) starts to load only when the page is done
+    // The background photo (large screens) starts to load only when the page is done and the
+    // browser has nothing else to do, so its fade-in never competes with hydration
     const showBackground = () => {
-      if (!isLightMode()) document.documentElement.classList.add('bg-ready')
+      if (isLightMode()) return
+      const show = () => document.documentElement.classList.add('bg-ready')
+      if ('requestIdleCallback' in window) requestIdleCallback(show, { timeout: 3000 })
+      else setTimeout(show, 1000)
     }
 
     if (document.readyState === 'complete') showBackground()

@@ -3,13 +3,9 @@
 
   let theme = $state('light')
 
+  // Light is the default, dark only when the visitor chose it in this session (see app.html)
   onMount(() => {
-    // Check for saved theme or system preference
-    const savedTheme = localStorage.getItem('theme-preference')
-
-    const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-
-    theme = savedTheme || systemTheme
+    theme = sessionStorage.getItem('theme-preference') === 'dark' ? 'dark' : 'light'
 
     // Only apply if the current state doesn't match the desired theme
     const isDarkMode = document.documentElement.classList.contains('dark')
@@ -33,7 +29,11 @@
       requestAnimationFrame(() => root.classList.remove('theme-switching'))
     )
 
-    localStorage.setItem('theme-preference', newTheme)
+    try {
+      sessionStorage.setItem('theme-preference', newTheme)
+    } catch {
+      // storage blocked (private mode, strict settings): the theme still changes for this page
+    }
     theme = newTheme
   }
 

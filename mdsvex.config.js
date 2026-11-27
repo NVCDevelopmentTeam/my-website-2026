@@ -83,13 +83,6 @@ const site = {
       }
     },
 
-    // A code block that scrolls sideways must be reachable with the keyboard (WCAG 2.1.1)
-    code_fence: {
-      parse(node) {
-        if (!node.attrs.tabindex) node.attrs.tabindex = '0'
-      }
-    },
-
     html: {
       parse(node) {
         return () => {

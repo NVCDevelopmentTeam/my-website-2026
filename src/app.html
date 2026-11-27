@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="color-scheme" content="light dark" />
+    <meta name="color-scheme" content="light" />
     <meta name="text-scale" content="scale" />
     <meta name="theme-color" content="#0052FF" />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
@@ -17,14 +17,17 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
-    <!-- Theme: runs before the first paint so the page never flashes. Same key as ThemeSwitcher. -->
+    <!-- Theme: runs before the first paint so the page never flashes. The site is light unless the
+         visitor switched it to dark in this browsing session (sessionStorage: it is forgotten when
+         the tab is closed). The system setting is deliberately not followed. Same key as
+         ThemeSwitcher. -->
     <script>
       try {
-        const saved = localStorage.getItem('theme-preference')
-        const dark =
-          saved === 'dark' ||
-          (saved !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches)
-        document.documentElement.classList.toggle('dark', dark)
+        localStorage.removeItem('theme-preference') // older versions kept the choice for ever
+        document.documentElement.classList.toggle(
+          'dark',
+          sessionStorage.getItem('theme-preference') === 'dark'
+        )
       } catch {}
     </script>
     %unocss-svelte-scoped.global% %sveltekit.head%

@@ -54,20 +54,8 @@ html {
 }
 
 /* Open menu overlay: the page behind it does not scroll (WordPress does the same). */
-html:has([aria-modal='true']) {
+html.menu-open {
   overflow: hidden;
-}
-
-/* View Transitions API (see routes/(app)/+layout.svelte onNavigate) plays a
-   cross-fade by default whenever the browser supports it, regardless of the
-   user's motion preference — disable that animation explicitly for users
-   who have requested reduced motion. */
-/* Page-to-page transition: a short cross-fade (the default is 250 ms and captures the whole
-   screen, which is heavy on large and full-screen windows). */
-::view-transition-old(root),
-::view-transition-new(root) {
-  animation-duration: 150ms;
-  animation-timing-function: ease-out;
 }
 
 /* Tell the browser which colour scheme the page is using right now. Without this, browser
@@ -107,6 +95,16 @@ main :where(p, li, td, th) {
   text-wrap: pretty;
   overflow-wrap: break-word;
 }
+/* Code blocks wrap instead of scrolling sideways: there is no scrolling area to reach with the
+   keyboard (a scrolling <pre> needs a tab stop, which Svelte's own a11y check rejects), and
+   nothing is cut off when the page is zoomed to 400% (WCAG 1.4.10 Reflow). */
+main pre,
+main .prose pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  overflow-x: visible;
+}
+
 main :where(a, h1, h2, h3, h4),
 nav[aria-label='Đường dẫn trang'] :where(a, li, span) {
   overflow-wrap: anywhere;
@@ -125,14 +123,6 @@ nav[aria-label='Đường dẫn trang'] :where(a, li, span) {
 .theme-switching *::after {
   transition: none !important;
   animation: none !important;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  ::view-transition-group(*),
-  ::view-transition-old(*),
-  ::view-transition-new(*) {
-    animation: none !important;
-  }
 }
 
 body {
@@ -170,19 +160,29 @@ body {
     background-size: cover;
   }
 
-  /* The photo is only decoration: it is requested after the page has loaded (the root layout adds
-     the class `bg-ready`), so it never delays the page, and then fades in. Not on weak phones,
-     slow connections or Data Saver. */
+  /* The photo is only decoration: it is requested after the page has loaded and has become
+     interactive (the root layout adds the class `bg-ready`), so it never delays the page, and
+     then fades in. Not on weak phones, slow connections or Data Saver. */
   .bg-ready body::before {
     opacity: 1;
     background-image: url('../lib/assets/background.webp?no-inline');
   }
 
-  /* Dimmed in dark mode so the page does not glare */
-  .dark.bg-ready body::before {
-    background-image:
-      linear-gradient(rgb(0 0 0 / 0.7), rgb(0 0 0 / 0.7)),
-      url('../lib/assets/background.webp?no-inline');
+  /* Dimmed in dark mode so the page does not glare. A layer of its own whose only change is its
+     opacity: switching the theme then costs the GPU one composited frame, where swapping the
+     background image of the big layer made the whole screen repaint (and stutter). */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: rgb(0 0 0 / 0.7);
+    opacity: 0;
+  }
+
+  .dark.bg-ready body::after {
+    opacity: 1;
   }
 
   @media (prefers-reduced-motion: reduce) {

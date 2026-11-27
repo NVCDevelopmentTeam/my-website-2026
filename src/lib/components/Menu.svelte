@@ -53,22 +53,30 @@
   })
 
   // ───────────────────────────────────────────────────────────────────────────────────────────
-  // Bar or popup, exactly as in WordPress Twenty Twenty-Five (overlayMenu: "mobile"): from 600 px
-  // (37.5em) the menu is a plain list in the header and wraps onto more lines when it needs the
-  // room; below that it is the popup button. Nothing is measured in JavaScript, so a window that
-  // is resized, zoomed or put in full screen (F11) always lands on the right one. Written in em so
-  // that a larger browser text size moves the breakpoint as well.
+  // Bar or popup. From 1024 px (64em) the menu is a plain list in the header, as wide as the room
+  // allows, and wraps onto more lines if it must; below that it is the popup button (the popup of
+  // WordPress Twenty Twenty-Five / WordPress.org). An ordinary, not maximised window (about 1000 px)
+  // therefore gets the popup, and full screen (F11) the list. Nothing is measured in JavaScript,
+  // so a window that is resized or put in full screen always lands on the right one. Written in em
+  // so that a larger browser text size moves the breakpoint as well.
   // ───────────────────────────────────────────────────────────────────────────────────────────
   let isWide = $state(false)
 
   $effect(() => {
-    const wide = matchMedia('(min-width: 37.5em)')
+    const wide = matchMedia('(min-width: 64em)')
     const update = () => (isWide = wide.matches)
 
     update()
     wide.addEventListener('change', update)
 
     return () => wide.removeEventListener('change', update)
+  })
+
+  // A class on <html> instead of a `:has()` selector in the CSS: `html:has(...)` makes the browser
+  // check the whole page again whenever anything changes, the theme switch included
+  $effect(() => {
+    document.documentElement.classList.toggle('menu-open', isMenuOpen)
+    return () => document.documentElement.classList.remove('menu-open')
   })
 
   // The popup is meaningless once the list is back in the bar: close it without moving focus
@@ -96,9 +104,9 @@
 
 <svelte:window onkeydown={onKeydown} />
 
-<nav class="min-w-0 flex flex-1 items-center justify-end" aria-label="Điều hướng chính">
-  <!-- Menu bar (600 px and wider): a plain list that wraps when it needs the room -->
-  <div class="hidden min-w-0 flex-1 items-center justify-end min-[37.5em]:flex">
+<nav class="flex flex-auto items-center justify-end" aria-label="Điều hướng chính">
+  <!-- Menu bar (1024 px and wider): a plain list that wraps when it needs the room -->
+  <div class="hidden flex-auto items-center justify-end min-[64em]:flex">
     <ul
       class="m-0 max-w-full flex flex-wrap list-none items-center justify-end gap-x-3 gap-y-1 border border-gray-200 rounded-2xl bg-white px-4 py-2 shadow-md dark:border-gray-800 dark:bg-gray-950"
     >
@@ -108,8 +116,8 @@
     </ul>
   </div>
 
-  <!-- Popup button + full-screen overlay: below 600 px -->
-  <div class="min-[37.5em]:hidden">{@render popup()}</div>
+  <!-- Popup button + full-screen overlay: below 1024 px -->
+  <div class="min-[64em]:hidden">{@render popup()}</div>
 </nav>
 
 {#snippet popup()}

@@ -13,15 +13,16 @@
 >
   <div class="w-full">
     <div class="mx-auto max-w-[1340px] px-[clamp(16px,5vw,50px)]">
-      <div class="w-full flex flex-wrap items-center justify-between gap-y-2 py-4">
+      <div class="w-full flex flex-wrap items-center justify-between gap-x-4 gap-y-2 py-4">
         <SkipLink />
 
-        <Logo />
-
-        <div class="min-w-0 flex flex-1 flex-wrap items-center justify-end gap-x-4 gap-y-2">
+        <!-- Logo and theme button stay together; the menu wraps below them when the row is full -->
+        <div class="flex items-center gap-4">
+          <Logo />
           <ThemeSwitcher />
-          <Menu {navPages} />
         </div>
+
+        <Menu {navPages} />
       </div>
     </div>
   </div>
